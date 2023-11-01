@@ -21,13 +21,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import pl.pawelosinski.skatefreak.LoginService
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginForm() {
     val context = LocalContext.current
-    SkateFreakTheme{
+    val loginService = LoginService()
+    SkateFreakTheme {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -55,6 +57,9 @@ fun LoginForm() {
                     var message = "Zalogowano\n " +
                             "Email: $email, " +
                             "Password: $password"
+                    if (!loginService.login(email, password)) {
+                        message = "Nie udało się zalogować"
+                    }
                     Toast.makeText(
                         context,
                         message,
@@ -69,11 +74,12 @@ fun LoginForm() {
             }
         }
     }
-
 }
 
 @Preview(name = "Logowanie")
 @Composable
 fun LoginFormPreview() {
-    LoginForm()
+    SkateFreakTheme {
+        LoginForm()
+    }
 }
