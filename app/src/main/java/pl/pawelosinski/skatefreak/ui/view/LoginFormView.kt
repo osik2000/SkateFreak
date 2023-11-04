@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.android.gms.common.SignInButton
 import pl.pawelosinski.skatefreak.service.LoginService
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
@@ -71,6 +72,16 @@ fun LoginForm() {
                     .padding(top = 16.dp)
             ) {
                 Text("Login")
+            }
+            SignInButton(context).apply {
+                setSize(SignInButton.SIZE_STANDARD)
+                setOnClickListener {
+                    Toast.makeText(
+                        context,
+                        "Sign in button clicked",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
     }
