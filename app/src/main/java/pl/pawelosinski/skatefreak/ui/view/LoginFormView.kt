@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import pl.pawelosinski.skatefreak.LoginService
+import pl.pawelosinski.skatefreak.service.LoginService
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 @OptIn(ExperimentalMaterial3Api::class)

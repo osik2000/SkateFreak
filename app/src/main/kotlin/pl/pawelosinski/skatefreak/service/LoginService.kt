@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak
+package pl.pawelosinski.skatefreak.service
 
 class LoginService {
     private var isUserLoggedIn: Boolean = false
