@@ -33,7 +33,7 @@ private val myLightColorScheme = lightColorScheme(
 
 @Composable
 fun SkateFreakTheme(
-    darkTheme: Boolean = false,
+    darkTheme: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = if (darkTheme) myDarkColorScheme else myLightColorScheme
