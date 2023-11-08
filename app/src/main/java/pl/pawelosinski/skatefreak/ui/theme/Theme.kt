@@ -19,8 +19,8 @@ private val myDarkColorScheme = darkColorScheme( // main and only scheme for now
     surface = MySurfaceColor,
     onPrimary = MyWhiteColor,
     onSecondary = MyWhiteColor,
-    onTertiary = MyBlackColor,
-    onBackground = MyBlackColor,
+    onTertiary = MyWhiteColor,
+    onBackground = MyWhiteColor,
     onSurface = MySecondaryColor
 )
 
