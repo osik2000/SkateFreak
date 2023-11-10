@@ -52,6 +52,7 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
+import pl.pawelosinski.skatefreak.auth.PhoneAuthUserData
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import java.util.concurrent.TimeUnit
 
@@ -66,10 +67,8 @@ class LoginActivity : ComponentActivity() {
     private lateinit var signInResultLauncher: ActivityResultLauncher<Intent>
 
     // PHONE AUTH VARIABLES
-    private var storedVerificationId: String? = ""
-    private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
-    private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
-    private var isPhoneAuthInProgress = false
+    private lateinit var options: PhoneAuthOptions
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,6 +96,7 @@ class LoginActivity : ComponentActivity() {
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                phoneAuthUserData.isAuthInProgress = true
                 // This callback will be invoked in two situations:
                 // 1 - Instant verification. In some cases the phone number can be instantly
                 //     verified without needing to send or enter a verification code.
@@ -108,6 +108,7 @@ class LoginActivity : ComponentActivity() {
             }
 
             override fun onVerificationFailed(e: FirebaseException) {
+                phoneAuthUserData.isAuthInProgress = true
                 // This callback is invoked in an invalid request for verification is made,
                 // for instance if the the phone number format is not valid.
                 Log.w(PHONE_TAG, "onVerificationFailed", e)
@@ -115,18 +116,37 @@ class LoginActivity : ComponentActivity() {
                 when (e) {
                     is FirebaseAuthInvalidCredentialsException -> {
                         // Invalid request
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Niepoprawny numer telefonu\n" +
+                                    "Wprowadź numer w formacie: +48XXXXXXXXX",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     is FirebaseTooManyRequestsException -> {
                         // The SMS quota for the project has been exceeded
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Przekroczono limit SMSów\n" +
+                                    "Spróbuj ponownie później",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                     is FirebaseAuthMissingActivityForRecaptchaException -> {
                         // reCAPTCHA verification attempted with null Activity
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Błąd weryfikacji\n" +
+                                    "Spróbuj ponownie później...",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
 
                 }
                 isUserLoggedIn = false
+                phoneAuthUserData.isAuthInProgress = false
 
                 // Show a message and update the UI
             }
@@ -137,13 +157,23 @@ class LoginActivity : ComponentActivity() {
             ) {
                 // The SMS verification code has been sent to the provided phone number, we
                 // now need to ask the user to enter the code and then construct a credential
-                // by combining the code with a verification ID.
-                Log.d(PHONE_TAG, "onCodeSent:$verificationId")
+                // by combining the code with a verification ID.                Log.d(PHONE_TAG, "onCodeSent:$verificationId")
+                Toast.makeText(
+                    this@LoginActivity,
+                    "Wysłano wiadomość z kodem weryfikacyjnym na numer:\n " +
+                            "\'${phoneAuthUserData.userPhoneNumber}\'",
+                    Toast.LENGTH_SHORT
+                ).show()
+
 
                 // Save verification ID and resending token so we can use them later
                 storedVerificationId = verificationId
                 resendToken = token
-                isPhoneAuthInProgress = true
+                phoneAuthUserData.userVerificationNumber = token.toString()
+                phoneAuthUserData.userVerificationId = verificationId
+                phoneAuthUserData.isUserLoggedIn = false
+                phoneAuthUserData.isVerificationCompleted = false
+                phoneAuthUserData.isAuthInProgress = true
                 updateUI(null, this@LoginActivity)
             }
         }
@@ -158,20 +188,20 @@ class LoginActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
 
-                ) {
+                    ) {
                     Column(
                         modifier = Modifier
-                        //.fillMaxSize()
+                            //.fillMaxSize()
                             .padding(16.dp),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        if(auth.currentUser != null){
+                        if (auth.currentUser != null) {
                             Text(
                                 text = "Witaj ${auth.currentUser?.displayName}!",
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
-                            GoogleSignOutButton()
+                            SignOutButton()
                             // Button to go to LoggedUserMenuActivity
                             Button(
                                 onClick = {
@@ -184,13 +214,12 @@ class LoginActivity : ComponentActivity() {
                             ) {
                                 Text("Przejdź do menu głównego")
                             }
-                        }
-                        else {
+                        } else {
                             Text(
                                 text = "Zaloguj się",
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
-                            PhoneLoginForm(context)
+                            PhoneLoginForm()
                             GoogleSignInButton()
                         }
 
@@ -201,12 +230,16 @@ class LoginActivity : ComponentActivity() {
         }
     }
 
-//    override fun onStart() {
-//        super.onStart()
-//        // Check if user is signed in (non-null) and update UI accordingly.
-////        val currentUser = auth.currentUser
-////        updateUI(currentUser, this)
-//    }
+    override fun onStart() {
+        super.onStart()
+        // Check if user is signed in (non-null) and update UI accordingly.
+//        val currentUser = auth.currentUser
+
+        if (this::options.isInitialized && phoneAuthUserData.isAuthInProgress) PhoneAuthProvider.verifyPhoneNumber(options)
+
+
+//        updateUI(currentUser, this)
+    }
 
 
     // Google Sign in on result
@@ -264,7 +297,6 @@ class LoginActivity : ComponentActivity() {
     }
 
 
-
     // [START signin]
     private fun googleSignIn() {
         val signInIntent = googleSignInClient.signInIntent
@@ -272,28 +304,32 @@ class LoginActivity : ComponentActivity() {
     }
 
 
-    private fun googleSignOut() {
+    private fun signOut() {
         googleSignInClient.signOut().addOnCompleteListener(this) {
             isUserLoggedIn = false
             userLoggedBy = null
             // Update the UI after sign out (e.g., navigate to the sign-in screen)
             updateUI(null, this)
         }
+        phoneAuthUserData = PhoneAuthUserData()
+        storedVerificationId = ""
+        resendToken = null
+        options = PhoneAuthOptions.newBuilder().build()
         auth.signOut()
     }
     // [END signin]
 
     // PHONE AUTH START
     private fun startPhoneNumberVerification(phoneNumber: String) {
+        phoneAuthUserData.userPhoneNumber = phoneNumber
         // [START start_phone_auth]
-        val options = PhoneAuthOptions.newBuilder(auth)
+        options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phoneNumber) // Phone number to verify
             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
             .setActivity(this) // Activity (for callback binding)
             .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
-        isPhoneAuthInProgress = true
         // [END start_phone_auth]
     }
 
@@ -328,18 +364,21 @@ class LoginActivity : ComponentActivity() {
             .addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
+                    phoneAuthUserData.isVerificationCompleted = true
 
                     val user = task.result?.user
-                    Log.d(PHONE_TAG, "signInWithCredential:success\n" +
-                            "isUserLoggedIn: $isUserLoggedIn" +
-                            "user: $user" +
-                            "user.displayName: ${user?.displayName}" +
-                            "user.email: ${user?.email}" +
-                            "user.photoUrl: ${user?.photoUrl}" +
-                            "user.uid: ${user?.uid}" +
-                            "user.providerId: ${user?.providerId}" +
-                            "user.phoneNumber: ${user?.phoneNumber}" +
-                            "user.metadata: ${user?.metadata}")
+                    Log.d(
+                        PHONE_TAG, "signInWithCredential:success\n" +
+                                "isUserLoggedIn: $isUserLoggedIn" +
+                                "user: $user" +
+                                "user.displayName: ${user?.displayName}" +
+                                "user.email: ${user?.email}" +
+                                "user.photoUrl: ${user?.photoUrl}" +
+                                "user.uid: ${user?.uid}" +
+                                "user.providerId: ${user?.providerId}" +
+                                "user.phoneNumber: ${user?.phoneNumber}" +
+                                "user.metadata: ${user?.metadata}"
+                    )
                     userLoggedBy = "PhoneAuthActivity"
                     updateUI(user, this)
                 } else {
@@ -363,8 +402,11 @@ class LoginActivity : ComponentActivity() {
             "user: $user" +
                     "isUserLoggedIn: $isUserLoggedIn"
         )
-        if (user != null && !isUserLoggedIn){
+        if (user != null && !isUserLoggedIn) {
             isUserLoggedIn = true
+            if (phoneAuthUserData.isVerificationCompleted) {
+                phoneAuthUserData.isUserLoggedIn = true
+            }
             //
             Log.d(
                 userLoggedBy,
@@ -377,9 +419,8 @@ class LoginActivity : ComponentActivity() {
                         "PhoneNumber: ${user.phoneNumber} \n" +
                         "Metadata: ${user.metadata} \n"
             )
-        }
-        else {
-            if (isUserLoggedIn){
+        } else {
+            if (isUserLoggedIn) {
                 Toast.makeText(
                     context,
                     "Użytkownik jest już zalogowany",
@@ -389,8 +430,7 @@ class LoginActivity : ComponentActivity() {
                     userLoggedBy,
                     "signInWithCredential:user is already logged in"
                 )
-            }
-            else {
+            } else {
                 Toast.makeText(
                     context,
                     "Nie udało się zalogować",
@@ -402,6 +442,10 @@ class LoginActivity : ComponentActivity() {
                 )
             }
         }
+        Log.w(
+            userLoggedBy,
+            "signInWithCredential:RECREATING ACTIVITY"
+        )
         // refresh activity
         this.recreate()
     }
@@ -409,6 +453,11 @@ class LoginActivity : ComponentActivity() {
     companion object {
         private const val GOOGLE_TAG = "GoogleActivity"
         private const val PHONE_TAG = "PhoneAuthActivity"
+        private var phoneAuthUserData = PhoneAuthUserData()
+        // PHONE AUTH VARIABLES
+        private var storedVerificationId: String? = ""
+        private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
+        private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
     }
 
     @Composable
@@ -432,13 +481,13 @@ class LoginActivity : ComponentActivity() {
     }
 
     @Composable
-    fun GoogleSignOutButton() {
+    fun SignOutButton() {
         Button(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp),
             onClick = {
-                googleSignOut()
+                signOut()
 //                val intent = Intent(this, MainActivity::class.java)
 //                startActivity(intent)
             }
@@ -449,7 +498,7 @@ class LoginActivity : ComponentActivity() {
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
-    fun PhoneLoginForm(context: Context) {
+    fun PhoneLoginForm() {
 //        val loginService = LoginService()
         Column(
             modifier = Modifier
@@ -458,16 +507,21 @@ class LoginActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            var phone by remember { mutableStateOf("") }
+            var phone by remember { mutableStateOf(phoneAuthUserData.userPhoneNumber) }
             var verificationCode by remember { mutableStateOf("") }
+//            val pattern = remember { Regex("^\\+48\\d\\d\\d\\d\\d\\d\\d\\d\\d$") }
             OutlinedTextField(
                 value = phone,
-                onValueChange = { phone = it },
+                onValueChange = {
+                        phone = it
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Phone (+48XXXXXXXXX)") },
                 singleLine = true
             )
-            if(isPhoneAuthInProgress){
-                val pattern = remember { Regex("^\\d\\d\\d\\d\\d\\d$") }
+            Log.d(PHONE_TAG, "isAuthInProgress: ${phoneAuthUserData.isAuthInProgress}")
+            if (phoneAuthUserData.isAuthInProgress) {
+                val pattern = remember { Regex("^\\d?\\d?\\d?\\d?\\d?\\d?$") }
                 OutlinedTextField(
                     value = verificationCode,
                     onValueChange = {
@@ -483,19 +537,15 @@ class LoginActivity : ComponentActivity() {
 
             Button(
                 onClick = {
-                    val message : String = if(!isPhoneAuthInProgress){
+                    if (
+                        !phoneAuthUserData.isAuthInProgress &&
+                        !phoneAuthUserData.isVerificationCompleted &&
+                        !phoneAuthUserData.isUserLoggedIn
+                    ) {
                         startPhoneNumberVerification(phone)
-                        "Wysłano wiadomość z kodem weryfikacyjnym na numer:\n " +
-                                "\'$phone\'"
-                    } else {
+                    } else if (!phoneAuthUserData.isVerificationCompleted) {
                         verifyPhoneNumberWithCode(storedVerificationId, verificationCode)
-                        "Weryfikacja danych..."
                     }
-                    Toast.makeText(
-                        context,
-                        message,
-                        Toast.LENGTH_SHORT
-                    ).show()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
