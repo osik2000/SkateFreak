@@ -198,7 +198,7 @@ class LoginActivity : ComponentActivity() {
                     ) {
                         if (auth.currentUser != null) {
                             Text(
-                                text = "Witaj ${auth.currentUser?.displayName}!",
+                                text = "Witaj ${auth.currentUser?.displayName ?: auth.currentUser?.phoneNumber}!",
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
                             SignOutButton()
@@ -314,7 +314,6 @@ class LoginActivity : ComponentActivity() {
         phoneAuthUserData = PhoneAuthUserData()
         storedVerificationId = ""
         resendToken = null
-        options = PhoneAuthOptions.newBuilder().build()
         auth.signOut()
     }
     // [END signin]
@@ -419,28 +418,28 @@ class LoginActivity : ComponentActivity() {
                         "PhoneNumber: ${user.phoneNumber} \n" +
                         "Metadata: ${user.metadata} \n"
             )
-        } else {
-            if (isUserLoggedIn) {
-                Toast.makeText(
-                    context,
-                    "Użytkownik jest już zalogowany",
-                    Toast.LENGTH_SHORT
-                ).show()
-                Log.w(
-                    userLoggedBy,
-                    "signInWithCredential:user is already logged in"
-                )
-            } else {
-                Toast.makeText(
-                    context,
-                    "Nie udało się zalogować",
-                    Toast.LENGTH_SHORT
-                ).show()
-                Log.w(
-                    userLoggedBy,
-                    "signInWithCredential:failure"
-                )
-            }
+        } else { // TODO popraw to
+//            if (isUserLoggedIn) {
+//                Toast.makeText(
+//                    context,
+//                    "Użytkownik jest już zalogowany",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                Log.w(
+//                    userLoggedBy,
+//                    "signInWithCredential:user is already logged in"
+//                )
+//            } else {
+//                Toast.makeText(
+//                    context,
+//                    "Nie udało się zalogować",
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//                Log.w(
+//                    userLoggedBy,
+//                    "signInWithCredential:failure"
+//                )
+//            }
         }
         Log.w(
             userLoggedBy,
@@ -507,7 +506,13 @@ class LoginActivity : ComponentActivity() {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            var phone by remember { mutableStateOf(phoneAuthUserData.userPhoneNumber) }
+            var phone by remember {
+                if(phoneAuthUserData.userPhoneNumber.isEmpty()) {
+                    mutableStateOf("+48")
+                } else {
+                    mutableStateOf(phoneAuthUserData.userPhoneNumber)
+                }
+            }
             var verificationCode by remember { mutableStateOf("") }
 //            val pattern = remember { Regex("^\\+48\\d\\d\\d\\d\\d\\d\\d\\d\\d$") }
             OutlinedTextField(

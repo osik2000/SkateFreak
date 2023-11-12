@@ -50,7 +50,7 @@ class LoggedUserMenuActivity : ComponentActivity() {
                 text = "Menu Główne",
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            Text(text = "Witaj ${user?.displayName}!", modifier = Modifier.padding(16.dp))
+            Text(text = "Witaj ${user?.displayName ?: user?.phoneNumber}!", modifier = Modifier.padding(16.dp))
             Log.d("LoggedUserMenuActivity", "User: ${user?.displayName}")
         }
     }
