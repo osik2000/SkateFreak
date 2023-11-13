@@ -197,10 +197,32 @@ class LoginActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         if (auth.currentUser != null) {
+                            //TODO check if user data is all set
+
+                            Log.d(
+                                PHONE_TAG, "[###signInWithCredential### - success]\n" +
+                                        "isUserLoggedIn: $isUserLoggedIn\n" +
+                                        "user: $auth.currentUser\n" +
+                                        "user.displayName: ${auth.currentUser?.displayName}\n" +
+                                        "user.email: ${auth.currentUser?.email}\n" +
+                                        "user.photoUrl: ${auth.currentUser?.photoUrl}\n" +
+                                        "user.uid: ${auth.currentUser?.uid}\n" +
+                                        "user.providerId: ${auth.currentUser?.providerId}\n" +
+                                        "user.phoneNumber: ${auth.currentUser?.phoneNumber}\n" +
+                                        "user.metadata: ${auth.currentUser?.metadata}\n" +
+                                        "isDisplayNameNull: ${auth.currentUser?.displayName == null}\n" +
+                                        "isPhoneNumberNull: ${auth.currentUser?.phoneNumber == null}\n"
+                            )
+                            // Text with auth.displayName when its not empty or auth.phoneNumber
                             Text(
-                                text = "Witaj ${auth.currentUser?.displayName ?: auth.currentUser?.phoneNumber}!",
+                                text = if (auth.currentUser?.displayName?.isNotEmpty() == true) {
+                                    "Witaj ${auth.currentUser?.displayName}"
+                                } else {
+                                    "Witaj ${auth.currentUser?.phoneNumber}"
+                                },
                                 modifier = Modifier.padding(bottom = 16.dp)
                             )
+
                             SignOutButton()
                             // Button to go to LoggedUserMenuActivity
                             Button(
@@ -366,18 +388,7 @@ class LoginActivity : ComponentActivity() {
                     phoneAuthUserData.isVerificationCompleted = true
 
                     val user = task.result?.user
-                    Log.d(
-                        PHONE_TAG, "signInWithCredential:success\n" +
-                                "isUserLoggedIn: $isUserLoggedIn" +
-                                "user: $user" +
-                                "user.displayName: ${user?.displayName}" +
-                                "user.email: ${user?.email}" +
-                                "user.photoUrl: ${user?.photoUrl}" +
-                                "user.uid: ${user?.uid}" +
-                                "user.providerId: ${user?.providerId}" +
-                                "user.phoneNumber: ${user?.phoneNumber}" +
-                                "user.metadata: ${user?.metadata}"
-                    )
+
                     userLoggedBy = "PhoneAuthActivity"
                     updateUI(user, this)
                 } else {
@@ -418,28 +429,6 @@ class LoginActivity : ComponentActivity() {
                         "PhoneNumber: ${user.phoneNumber} \n" +
                         "Metadata: ${user.metadata} \n"
             )
-        } else { // TODO popraw to
-//            if (isUserLoggedIn) {
-//                Toast.makeText(
-//                    context,
-//                    "Użytkownik jest już zalogowany",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//                Log.w(
-//                    userLoggedBy,
-//                    "signInWithCredential:user is already logged in"
-//                )
-//            } else {
-//                Toast.makeText(
-//                    context,
-//                    "Nie udało się zalogować",
-//                    Toast.LENGTH_SHORT
-//                ).show()
-//                Log.w(
-//                    userLoggedBy,
-//                    "signInWithCredential:failure"
-//                )
-//            }
         }
         Log.w(
             userLoggedBy,
