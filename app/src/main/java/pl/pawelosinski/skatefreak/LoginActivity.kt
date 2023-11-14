@@ -4,12 +4,14 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.AttributeSet
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -120,7 +122,7 @@ class LoginActivity : ComponentActivity() {
                             this@LoginActivity,
                             "Niepoprawny numer telefonu\n" +
                                     "Wprowadź numer w formacie: +48XXXXXXXXX",
-                            Toast.LENGTH_SHORT
+                            Toast.LENGTH_LONG
                         ).show()
                     }
 
@@ -232,7 +234,8 @@ class LoginActivity : ComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = 16.dp)
+                                    .padding(16.dp),
+                                shape = MaterialTheme.shapes.small
                             ) {
                                 Text("Przejdź do menu głównego")
                             }
@@ -453,7 +456,10 @@ class LoginActivity : ComponentActivity() {
         // Reference to the GoogleSignInClient from the activity
 
         AndroidView(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .border(1.dp, MaterialTheme.colorScheme.onSurface, MaterialTheme.shapes.small),
             factory = { context ->
                 SignInButton(context).apply {
                     setSize(SignInButton.SIZE_WIDE)
@@ -478,7 +484,8 @@ class LoginActivity : ComponentActivity() {
                 signOut()
 //                val intent = Intent(this, MainActivity::class.java)
 //                startActivity(intent)
-            }
+            },
+            shape = MaterialTheme.shapes.small
         ) {
             Text(text = "Sign Out")
         }
@@ -543,7 +550,8 @@ class LoginActivity : ComponentActivity() {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp)
+                    .padding(top = 16.dp),
+                shape = MaterialTheme.shapes.small
             ) {
                 Text("Login")
             }

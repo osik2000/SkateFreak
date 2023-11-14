@@ -16,17 +16,23 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 class LoggedUserMenuActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
-    private var user: FirebaseUser? = null
+    private lateinit var user: User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize Firebase Auth
         auth = Firebase.auth
+        user = User.getUserFromFirebaseUser(auth.currentUser)
+
+        if (!user.checkRequiredData()) {
+            Log.d("LoggedUserMenuActivity", "User data is incomplete:\n$user")
+        }
 
         setContent {
             SkateFreakTheme {
@@ -45,13 +51,12 @@ class LoggedUserMenuActivity : ComponentActivity() {
         Column(
             modifier = Modifier.fillMaxSize(),
         ) {
-            user = auth.currentUser
             Text(
                 text = "Menu Główne",
                 modifier = Modifier.padding(bottom = 16.dp)
             )
-            Text(text = "Witaj ${user?.displayName ?: user?.phoneNumber}!", modifier = Modifier.padding(16.dp))
-            Log.d("LoggedUserMenuActivity", "User: ${user?.displayName}")
+            Text(text = "Witaj ${user.name.isNotEmpty() ?: user.phoneNumber}!", modifier = Modifier.padding(16.dp))
+            Log.d("LoggedUserMenuActivity", "User: ${user.name}")
         }
     }
 

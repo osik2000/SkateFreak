@@ -7,4 +7,6 @@ class LoginService {
         isUserLoggedIn = (email.isNotEmpty() && password.isNotEmpty())
         return isUserLoggedIn
     }
+
+
 }
