@@ -14,7 +14,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
@@ -53,9 +52,19 @@ class LoggedUserMenuActivity : ComponentActivity() {
         ) {
             Text(
                 text = "Menu Główne",
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.padding(16.dp)
             )
-            Text(text = "Witaj ${user.name.isNotEmpty() ?: user.phoneNumber}!", modifier = Modifier.padding(16.dp))
+            if (user.name.isNotEmpty()) {
+                Text(
+                    text = "Witaj ${user.name}!",
+                    modifier = Modifier.padding(16.dp)
+                )
+            } else {
+                Text(
+                    text = "Witaj ${user.phoneNumber}!",
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
             Log.d("LoggedUserMenuActivity", "User: ${user.name}")
         }
     }
