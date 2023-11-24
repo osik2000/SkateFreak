@@ -13,6 +13,11 @@
         android:theme="@style/Theme.SkateFreak"
         tools:targetApi="31">
         <activity
+            android:name=".UserSetDataActivity"
+            android:exported="false"
+            android:label="@string/title_activity_user_set_data"
+            android:theme="@style/Theme.SkateFreak" />
+        <activity
             android:name=".LoggedUserMenuActivity"
             android:exported="false"
             android:label="@string/title_activity_logged_user_menu"

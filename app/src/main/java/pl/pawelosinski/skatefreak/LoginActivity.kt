@@ -1,10 +1,8 @@
 package pl.pawelosinski.skatefreak
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -15,7 +13,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -55,14 +52,17 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
 import pl.pawelosinski.skatefreak.auth.PhoneAuthUserData
+import pl.pawelosinski.skatefreak.auth.loggedUser
+import pl.pawelosinski.skatefreak.model.User
+import pl.pawelosinski.skatefreak.service.DataService
+import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import java.util.concurrent.TimeUnit
 
 class LoginActivity : ComponentActivity() {
+    val dataService = DataService()
 
     private lateinit var auth: FirebaseAuth
-    private var userLoggedBy: String? = null
-    private var isUserLoggedIn: Boolean = false
 
     // GOOGLE AUTH VARIABLES
     private lateinit var googleSignInClient: GoogleSignInClient
@@ -176,14 +176,14 @@ class LoginActivity : ComponentActivity() {
                 phoneAuthUserData.isUserLoggedIn = false
                 phoneAuthUserData.isVerificationCompleted = false
                 phoneAuthUserData.isAuthInProgress = true
-                updateUI(null, this@LoginActivity)
+                updateUI(null)
             }
         }
         // [END phone_auth_callbacks]
 
 
         setContent {
-            val context = LocalContext.current
+            LocalContext.current
             SkateFreakTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
@@ -191,65 +191,7 @@ class LoginActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
 
                     ) {
-                    Column(
-                        modifier = Modifier
-                            //.fillMaxSize()
-                            .padding(16.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        if (auth.currentUser != null) {
-                            //TODO check if user data is all set
-
-                            Log.d(
-                                PHONE_TAG, "[###signInWithCredential### - success]\n" +
-                                        "isUserLoggedIn: $isUserLoggedIn\n" +
-                                        "user: $auth.currentUser\n" +
-                                        "user.displayName: ${auth.currentUser?.displayName}\n" +
-                                        "user.email: ${auth.currentUser?.email}\n" +
-                                        "user.photoUrl: ${auth.currentUser?.photoUrl}\n" +
-                                        "user.uid: ${auth.currentUser?.uid}\n" +
-                                        "user.providerId: ${auth.currentUser?.providerId}\n" +
-                                        "user.phoneNumber: ${auth.currentUser?.phoneNumber}\n" +
-                                        "user.metadata: ${auth.currentUser?.metadata}\n" +
-                                        "isDisplayNameNull: ${auth.currentUser?.displayName == null}\n" +
-                                        "isPhoneNumberNull: ${auth.currentUser?.phoneNumber == null}\n"
-                            )
-                            // Text with auth.displayName when its not empty or auth.phoneNumber
-                            Text(
-                                text = if (auth.currentUser?.displayName?.isNotEmpty() == true) {
-                                    "Witaj ${auth.currentUser?.displayName}"
-                                } else {
-                                    "Witaj ${auth.currentUser?.phoneNumber}"
-                                },
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-
-                            SignOutButton()
-                            // Button to go to LoggedUserMenuActivity
-                            Button(
-                                onClick = {
-                                    val intent = Intent(context, LoggedUserMenuActivity::class.java)
-                                    startActivity(intent)
-                                },
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                shape = MaterialTheme.shapes.small
-                            ) {
-                                Text("Przejdź do menu głównego")
-                            }
-                        } else {
-                            Text(
-                                text = "Zaloguj się",
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
-                            PhoneLoginForm()
-                            GoogleSignInButton()
-                        }
-
-
-                    }
+                    LoginScreen()
                 }
             }
         }
@@ -260,7 +202,9 @@ class LoginActivity : ComponentActivity() {
         // Check if user is signed in (non-null) and update UI accordingly.
 //        val currentUser = auth.currentUser
 
-        if (this::options.isInitialized && phoneAuthUserData.isAuthInProgress) PhoneAuthProvider.verifyPhoneNumber(options)
+        if (this::options.isInitialized && phoneAuthUserData.isAuthInProgress) PhoneAuthProvider.verifyPhoneNumber(
+            options
+        )
 
 
 //        updateUI(currentUser, this)
@@ -296,12 +240,14 @@ class LoginActivity : ComponentActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(GOOGLE_TAG, "signInWithCredential:success")
+                    userLoggedBy = "GoogleActivity"
                     val user = auth.currentUser
-                    updateUI(user, this)
+                    if (loggedUser.firebaseId.isEmpty()) loggedUser = dataService.getUserById(user?.uid ?: "")
+                    updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(GOOGLE_TAG, "signInWithCredential:failure", task.exception)
-                    updateUI(null, this)
+                    updateUI(null)
                 }
             }
     }
@@ -317,7 +263,7 @@ class LoginActivity : ComponentActivity() {
             // Handle the unsuccessful sign-in attempt
             Log.w(GOOGLE_TAG, "Google sign in failed", e)
             // Update your UI here to remove sign-in related elements or to show a message
-            updateUI(null, this)
+            updateUI(null)
         }
     }
 
@@ -334,12 +280,13 @@ class LoginActivity : ComponentActivity() {
             isUserLoggedIn = false
             userLoggedBy = null
             // Update the UI after sign out (e.g., navigate to the sign-in screen)
-            updateUI(null, this)
+            updateUI(null)
         }
         phoneAuthUserData = PhoneAuthUserData()
         storedVerificationId = ""
         resendToken = null
         auth.signOut()
+        loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
     }
     // [END signin]
 
@@ -365,21 +312,21 @@ class LoginActivity : ComponentActivity() {
     }
 
     // [START resend_verification]
-//    private fun resendVerificationCode( // TODO zaimplementowac
-//        phoneNumber: String,
-//        token: PhoneAuthProvider.ForceResendingToken?,
-//    ) {
-//        val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
-//            .setPhoneNumber(phoneNumber) // Phone number to verify
-//            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-//            .setActivity(this) // (optional) Activity for callback binding
-//            // If no activity is passed, reCAPTCHA verification can not be used.
-//            .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
-//        if (token != null) {
-//            optionsBuilder.setForceResendingToken(token) // callback's ForceResendingToken
-//        }
-//        PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
-//    }
+    private fun resendVerificationCode( // TODO zaimplementowac
+        phoneNumber: String,
+        token: PhoneAuthProvider.ForceResendingToken?,
+    ) {
+        val optionsBuilder = PhoneAuthOptions.newBuilder(auth)
+            .setPhoneNumber(phoneNumber) // Phone number to verify
+            .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
+            .setActivity(this) // (optional) Activity for callback binding
+            // If no activity is passed, reCAPTCHA verification can not be used.
+            .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
+        if (token != null) {
+            optionsBuilder.setForceResendingToken(token) // callback's ForceResendingToken
+        }
+        PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
+    }
     // [END resend_verification]
 
     // [START sign_in_with_phone]
@@ -393,7 +340,7 @@ class LoginActivity : ComponentActivity() {
                     val user = task.result?.user
 
                     userLoggedBy = "PhoneAuthActivity"
-                    updateUI(user, this)
+                    updateUI(user)
                 } else {
                     // Sign in failed, display a message and update the UI
                     Log.w(PHONE_TAG, "signInWithCredential:failure", task.exception)
@@ -402,13 +349,13 @@ class LoginActivity : ComponentActivity() {
                         Log.w(PHONE_TAG, "signInWithCredential:WRONG CREDENTIALS", task.exception)
                     }
                     // Update UI
-                    updateUI(null, this)
+                    updateUI(null)
                 }
             }
     }
     // [END sign_in_with_phone]
 
-    private fun updateUI(user: FirebaseUser?, context: Context?) {
+    private fun updateUI(user: FirebaseUser?) {
         val userLoggedBy = userLoggedBy ?: "UnknownLoginMethodActivity"
         Log.d(
             userLoggedBy,
@@ -416,6 +363,9 @@ class LoginActivity : ComponentActivity() {
                     "isUserLoggedIn: $isUserLoggedIn"
         )
         if (user != null && !isUserLoggedIn) {
+            if (loggedUser.firebaseId.isEmpty()) {
+                loggedUser = User.getUserFromFirebaseUser(user)
+            }
             isUserLoggedIn = true
             if (phoneAuthUserData.isVerificationCompleted) {
                 phoneAuthUserData.isUserLoggedIn = true
@@ -442,13 +392,109 @@ class LoginActivity : ComponentActivity() {
     }
 
     companion object {
+        private var userLoggedBy: String? = null
+        private var isUserLoggedIn: Boolean = false
+        private var isUserDataSet: Boolean = false
+
+        // GOOGLE AUTH VARIABLES
         private const val GOOGLE_TAG = "GoogleActivity"
         private const val PHONE_TAG = "PhoneAuthActivity"
-        private var phoneAuthUserData = PhoneAuthUserData()
+
         // PHONE AUTH VARIABLES
+        private var phoneAuthUserData = PhoneAuthUserData()
         private var storedVerificationId: String? = ""
         private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
         private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
+    }
+
+
+    @Composable
+    fun LoginScreen() {
+        var isUserDataSet by remember {
+            mutableStateOf(isUserDataSet)
+        }
+
+        val currentUser by remember {
+            mutableStateOf(loggedUser)
+        }
+        Column(
+            modifier = Modifier
+                .padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (currentUser.firebaseId.isNotEmpty()) {
+                //TODO check if user data is all set
+                if (!isUserDataSet) {
+                    isUserDataSet = currentUser.checkRequiredData()
+                }
+
+                Log.d(
+                    PHONE_TAG, "[###signInWithCredential### - success]\n" +
+                            "isUserLoggedIn: $isUserLoggedIn\n" +
+                            "user: $currentUser\n" +
+                            "user.email: ${currentUser.email}\n" +
+                            "user.photoUrl: ${currentUser.photoUrl}\n" +
+                            "user.uid: ${currentUser.firebaseId}\n" +
+                            "user.phoneNumber: ${currentUser.phoneNumber}\n" +
+                            "user.displayName: ${currentUser.name}\n" +
+                            "user.nickname: ${currentUser.nickname}\n" +
+                            "user.city: ${currentUser.city}\n" +
+                            "isUserDataSet: $isUserDataSet\n"
+                )
+                // Text with auth.displayName when its not empty or auth.phoneNumber
+                Text(
+                    text = if (!isUserDataSet) {
+                        "Aby kontynuować, proszę uzupełnić dane profilu"
+                    } else if (currentUser.name.isNotEmpty()) {
+                        "Witaj ${currentUser.name}"
+                    } else {
+                        "Witaj ${currentUser.phoneNumber}"
+                    },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                if (isUserDataSet) {
+                    // Button to go to LoggedUserMenuActivity
+                    MainMenuButton()
+                } else {
+                    // Button to go to UserDataActivity
+                    Button(
+                        onClick = {
+                            val intent = Intent(this@LoginActivity, UserSetDataActivity::class.java)
+                            startActivity(intent)
+                        },
+                        modifier = myCommonModifier,
+                        shape = MaterialTheme.shapes.small
+                    ) {
+                        Text("Uzupełnij dane użytkownika")
+                    }
+                }
+                SignOutButton()
+            } else {
+                Text(
+                    text = "Zaloguj się",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                PhoneLoginForm()
+                GoogleSignInButton()
+            }
+        }
+    }
+
+    @Composable
+    fun MainMenuButton() {
+        val context = LocalContext.current
+        Button(
+            onClick = {
+                val intent = Intent(context, LoggedUserMenuActivity::class.java)
+                startActivity(intent)
+            },
+            modifier = myCommonModifier,
+            shape = MaterialTheme.shapes.small
+        ) {
+            Text("Przejdź do menu głównego")
+        }
     }
 
     @Composable
@@ -456,9 +502,7 @@ class LoginActivity : ComponentActivity() {
         // Reference to the GoogleSignInClient from the activity
 
         AndroidView(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+            modifier = myCommonModifier
                 .border(1.dp, MaterialTheme.colorScheme.onSurface, MaterialTheme.shapes.small),
             factory = { context ->
                 SignInButton(context).apply {
@@ -477,13 +521,9 @@ class LoginActivity : ComponentActivity() {
     @Composable
     fun SignOutButton() {
         Button(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = myCommonModifier,
             onClick = {
                 signOut()
-//                val intent = Intent(this, MainActivity::class.java)
-//                startActivity(intent)
             },
             shape = MaterialTheme.shapes.small
         ) {
@@ -495,15 +535,26 @@ class LoginActivity : ComponentActivity() {
     @Composable
     fun PhoneLoginForm() {
 //        val loginService = LoginService()
+        val isAuthInProgress by remember {
+            mutableStateOf(phoneAuthUserData.isAuthInProgress)
+        }
+        val isVerificationCompleted by remember {
+            mutableStateOf(phoneAuthUserData.isVerificationCompleted)
+        }
+        val isUserLoggedIn by remember {
+            mutableStateOf(phoneAuthUserData.isUserLoggedIn)
+        }
+        val storedVerificationId by remember {
+            mutableStateOf(storedVerificationId)
+        }
         Column(
             modifier = Modifier
-//            .fillMaxSize()
                 .padding(16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             var phone by remember {
-                if(phoneAuthUserData.userPhoneNumber.isEmpty()) {
+                if (phoneAuthUserData.userPhoneNumber.isEmpty()) {
                     mutableStateOf("+48")
                 } else {
                     mutableStateOf(phoneAuthUserData.userPhoneNumber)
@@ -514,14 +565,14 @@ class LoginActivity : ComponentActivity() {
             OutlinedTextField(
                 value = phone,
                 onValueChange = {
-                        phone = it
+                    phone = it
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 label = { Text("Phone (+48XXXXXXXXX)") },
                 singleLine = true
             )
             Log.d(PHONE_TAG, "isAuthInProgress: ${phoneAuthUserData.isAuthInProgress}")
-            if (phoneAuthUserData.isAuthInProgress) {
+            if (isAuthInProgress) {
                 val pattern = remember { Regex("^\\d?\\d?\\d?\\d?\\d?\\d?$") }
                 OutlinedTextField(
                     value = verificationCode,
@@ -534,30 +585,36 @@ class LoginActivity : ComponentActivity() {
                     label = { Text("Kod Weryfikacyjny SMS") },
                     singleLine = true
                 )
+                Button(
+                    onClick = {
+                        resendVerificationCode(phone, resendToken)
+                    },
+                    modifier = myCommonModifier,
+                    shape = MaterialTheme.shapes.small
+                ) {
+                    Text("Wyślij ponownie kod weryfikacyjny")
+                }
             }
 
             Button(
                 onClick = {
                     if (
-                        !phoneAuthUserData.isAuthInProgress &&
-                        !phoneAuthUserData.isVerificationCompleted &&
-                        !phoneAuthUserData.isUserLoggedIn
+                        !isAuthInProgress &&
+                        !isVerificationCompleted &&
+                        !isUserLoggedIn
                     ) {
                         startPhoneNumberVerification(phone)
-                    } else if (!phoneAuthUserData.isVerificationCompleted) {
+                    } else if (!isVerificationCompleted) {
                         verifyPhoneNumberWithCode(storedVerificationId, verificationCode)
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
+                modifier = myCommonModifier,
                 shape = MaterialTheme.shapes.small
             ) {
                 Text("Login")
             }
         }
     }
-
 }
 
 

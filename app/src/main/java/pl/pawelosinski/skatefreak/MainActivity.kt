@@ -8,8 +8,6 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,8 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,9 +48,7 @@ class MainActivity : ComponentActivity() {
             Text(
                 text = "Menu Główne",
                 textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                modifier = myCommonModifier
             )
             Button(
                 onClick = {
@@ -63,9 +60,7 @@ class MainActivity : ComponentActivity() {
                     val intent = Intent(context, LoginActivity::class.java)
                     startActivity(intent)
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
+                modifier = myCommonModifier
             ) {
                 Text("Zaloguj się aby kontynuować")
             }

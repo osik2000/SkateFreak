@@ -1,15 +1,16 @@
 package pl.pawelosinski.skatefreak.model
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseUser
 
-class User(
-    val firebaseId: String,
-    var name: String,
-    var email: String,
-    var phoneNumber: String,
-    var photoUrl: String,
-    val nickname: String,
-    var city: String
+data class User(
+    val firebaseId: String = "",
+    var name: String = "",
+    var email: String = "",
+    var phoneNumber: String = "",
+    var photoUrl: String = "",
+    var nickname: String = "",
+    var city: String = ""
 ) {
 
     override fun toString(): String {
@@ -23,43 +24,31 @@ class User(
     }
 
     fun checkRequiredData() : Boolean {
-        return !(firebaseId.isEmpty() ||
+        return !(
+                firebaseId.isEmpty() ||
                 name.isEmpty() ||
                 email.isEmpty() ||
                 phoneNumber.isEmpty() ||
-                nickname.isEmpty()
+                nickname.isEmpty() ||
+                city.isEmpty()
                 )
     }
 
     companion object {
         fun getUserFromFirebaseUser(firebaseUser: FirebaseUser?): User {
             if (firebaseUser == null || firebaseUser.uid.isEmpty()) {
-                throw NoSuchElementException("FirebaseUser is null")
+                Log.d("User", "getUserFromFirebaseUser: firebaseUser is null")
             }
-            else {
-                return User(
-                    firebaseId = firebaseUser?.uid ?: "",
-                    name = firebaseUser?.displayName ?: "",
-                    email = firebaseUser?.email ?: "",
-                    phoneNumber = firebaseUser?.phoneNumber ?: "",
-                    photoUrl = firebaseUser?.photoUrl.toString(),
-                    nickname = firebaseUser?.displayName ?: "",
-                    city = ""
-                )
-            }
+            return User(
+                firebaseId = firebaseUser?.uid ?: "",
+                photoUrl = firebaseUser?.photoUrl.toString(),
+                nickname = "",
+                email = firebaseUser?.email ?: "",
+                name = firebaseUser?.displayName ?: "",
+                phoneNumber = firebaseUser?.phoneNumber ?: "",
+                city = ""
+            )
         }
     }
 
-}
-
-fun FirebaseUser.toUser(firebaseUser: FirebaseUser): User {
-    return User(
-        firebaseId = firebaseUser.uid,
-        name = firebaseUser.displayName ?: "",
-        email = firebaseUser.email ?: "",
-        phoneNumber = firebaseUser.phoneNumber ?: "",
-        photoUrl = firebaseUser.photoUrl.toString(),
-        nickname = firebaseUser.displayName ?: "",
-        city = ""
-    )
 }

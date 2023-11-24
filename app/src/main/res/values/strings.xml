@@ -3,4 +3,5 @@
     <string name="app_name_firebase">skatefreak-3b665</string>
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_logged_user_menu">LoggedUserMenuActivity</string>
+    <string name="title_activity_user_set_data">UserSetDataActivity</string>
 </resources>
