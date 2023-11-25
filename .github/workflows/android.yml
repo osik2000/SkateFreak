@@ -33,5 +33,6 @@ jobs:
       run: |
         echo "$GOOGLE_SERVICES" > app/google-services.json
         echo "$SECRET_STRINGS" > app/src/main/res/values/secret_strings.xml
+        cat app/src/main/res/values/secret_strings.xml
     - name: Build with Gradle
       run: ./gradlew build
