@@ -25,7 +25,7 @@ jobs:
     - name: Create gitignored files
       env:
         GOOGLE_SERVICES: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        SECRET_STRINGS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        SECRET_STRINGS: ${{ secrets.SECRET_STRINGS }}
       run: |
         echo "$GOOGLE_SERVICES" | base64 -di > app/google-services.json
         echo "$SECRET_STRINGS" | base64 -di > app/src/main/res/values/secret_strings.xml
