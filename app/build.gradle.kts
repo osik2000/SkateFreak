@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "pl.pawelosinski.skatefreak"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "pl.pawelosinski.skatefreak"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
