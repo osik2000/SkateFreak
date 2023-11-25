@@ -55,14 +55,14 @@ android {
 
 dependencies {
 
-val composeBom = platform(libs.androidx.compose.bom)
-implementation(composeBom)
-androidTestImplementation(composeBom)
+    val composeBom = platform("androidx.compose.bom")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
     implementation("androidx.activity:activity-compose")
-    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.navigation:navigation-compose:2.5.0")
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
