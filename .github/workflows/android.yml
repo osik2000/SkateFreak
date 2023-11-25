@@ -27,8 +27,8 @@ jobs:
         GOOGLE_SERVICES: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         SECRET_STRINGS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
       run: |
-        cat "$GOOGLE_SERVICES" | base64 -di > app/google-services.json
-        cat "$SECRET_STRINGS" | base64 -di > app/src/main/res/values/secret_strings.xml
+        echo "$GOOGLE_SERVICES" | base64 -di > app/google-services.json
+        echo "$SECRET_STRINGS" | base64 -di > app/src/main/res/values/secret_strings.xml
         cat app/src/main/res/values/secret_strings.xml
     - name: Build with Gradle
       run: ./gradlew build
