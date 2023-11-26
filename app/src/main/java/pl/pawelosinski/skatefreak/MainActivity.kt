@@ -59,6 +59,7 @@ class MainActivity : ComponentActivity() {
                     ).show()
                     val intent = Intent(context, LoginActivity::class.java)
                     startActivity(intent)
+                    finish()
                 },
                 modifier = myCommonModifier
             ) {

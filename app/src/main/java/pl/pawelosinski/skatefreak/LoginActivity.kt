@@ -463,6 +463,7 @@ class LoginActivity : ComponentActivity() {
                         onClick = {
                             val intent = Intent(this@LoginActivity, UserSetDataActivity::class.java)
                             startActivity(intent)
+                            finish()
                         },
                         modifier = myCommonModifier,
                         shape = MaterialTheme.shapes.small
