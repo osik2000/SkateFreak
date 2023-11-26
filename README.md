@@ -1,3 +1,5 @@
+[![Android CI](https://github.com/osik2000/SkateFreak/actions/workflows/android.yml/badge.svg)](https://github.com/osik2000/SkateFreak/actions/workflows/android.yml)
+
 # Aplikacja Mobilna do Nauki Trików Deskorolkowych
 
 ## Opis
