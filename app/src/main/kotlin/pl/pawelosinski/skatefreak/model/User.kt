@@ -14,24 +14,26 @@ data class User(
 ) {
 
     override fun toString(): String {
-        return "User(firebaseId='$firebaseId', " +
-                "name='$name', " +
-                "email='$email', " +
-                "phoneNumber='$phoneNumber', " +
-                "photoUrl='$photoUrl', " +
-                "nickname='$nickname', " +
-                "city='$city')"
+        return "User(firebaseId='$firebaseId',\n" +
+                "name='$name',\n" +
+                "email='$email',\n" +
+                "phoneNumber='$phoneNumber',\n" +
+                "photoUrl='$photoUrl',\n" +
+                "nickname='$nickname',\n" +
+                "city='$city')\n"
     }
 
     fun checkRequiredData() : Boolean {
-        return !(
+        val isUserDataSet = !(
                 firebaseId.isEmpty() ||
-                name.isEmpty() ||
-                email.isEmpty() ||
-                phoneNumber.isEmpty() ||
-                nickname.isEmpty() ||
-                city.isEmpty()
+                        name.isEmpty() ||
+                        email.isEmpty() ||
+                        phoneNumber.isEmpty() ||
+                        nickname.isEmpty() ||
+                        city.isEmpty()
                 )
+        Log.d("UserLog", "CheckingRequiredData: $isUserDataSet")
+        return isUserDataSet
     }
 
     companion object {

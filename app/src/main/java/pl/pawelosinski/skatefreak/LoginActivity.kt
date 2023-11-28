@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -45,7 +44,6 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
@@ -60,7 +58,7 @@ import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import java.util.concurrent.TimeUnit
 
 class LoginActivity : ComponentActivity() {
-    val dataService = DataService()
+    private val dataService = DataService()
 
     private lateinit var auth: FirebaseAuth
 
@@ -176,7 +174,7 @@ class LoginActivity : ComponentActivity() {
                 phoneAuthUserData.isUserLoggedIn = false
                 phoneAuthUserData.isVerificationCompleted = false
                 phoneAuthUserData.isAuthInProgress = true
-                updateUI(null)
+                updateUI()
             }
         }
         // [END phone_auth_callbacks]
@@ -240,14 +238,18 @@ class LoginActivity : ComponentActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(GOOGLE_TAG, "signInWithCredential:success")
-                    userLoggedBy = "GoogleActivity"
-                    val user = auth.currentUser
-                    if (loggedUser.firebaseId.isEmpty()) loggedUser = dataService.getUserById(user?.uid ?: "")
-                    updateUI(user)
+                    userLoggedBy = GOOGLE_TAG
+                    dataService.getUserById(auth.currentUser?.uid!!, onSuccess = {
+                        updateUI()
+                    }, onFail = {
+                        loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
+                        updateUI()
+                    })
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w(GOOGLE_TAG, "signInWithCredential:failure", task.exception)
-                    updateUI(null)
+                    loggedUser = User()
+                    updateUI()
                 }
             }
     }
@@ -263,7 +265,8 @@ class LoginActivity : ComponentActivity() {
             // Handle the unsuccessful sign-in attempt
             Log.w(GOOGLE_TAG, "Google sign in failed", e)
             // Update your UI here to remove sign-in related elements or to show a message
-            updateUI(null)
+            loggedUser = User()
+            updateUI()
         }
     }
 
@@ -280,13 +283,13 @@ class LoginActivity : ComponentActivity() {
             isUserLoggedIn = false
             userLoggedBy = null
             // Update the UI after sign out (e.g., navigate to the sign-in screen)
-            updateUI(null)
+            loggedUser = User()
+            updateUI()
         }
         phoneAuthUserData = PhoneAuthUserData()
         storedVerificationId = ""
         resendToken = null
         auth.signOut()
-        loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
     }
     // [END signin]
 
@@ -312,7 +315,8 @@ class LoginActivity : ComponentActivity() {
     }
 
     // [START resend_verification]
-    private fun resendVerificationCode( // TODO zaimplementowac
+    private fun resendVerificationCode(
+        // TODO zaimplementowac
         phoneNumber: String,
         token: PhoneAuthProvider.ForceResendingToken?,
     ) {
@@ -336,11 +340,9 @@ class LoginActivity : ComponentActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     phoneAuthUserData.isVerificationCompleted = true
-
-                    val user = task.result?.user
-
-                    userLoggedBy = "PhoneAuthActivity"
-                    updateUI(user)
+                    dataService.getUserById(task.result?.user?.uid!!)
+                    userLoggedBy = PHONE_TAG
+                    updateUI()
                 } else {
                     // Sign in failed, display a message and update the UI
                     Log.w(PHONE_TAG, "signInWithCredential:failure", task.exception)
@@ -349,23 +351,25 @@ class LoginActivity : ComponentActivity() {
                         Log.w(PHONE_TAG, "signInWithCredential:WRONG CREDENTIALS", task.exception)
                     }
                     // Update UI
-                    updateUI(null)
+                    updateUI()
                 }
             }
     }
     // [END sign_in_with_phone]
 
-    private fun updateUI(user: FirebaseUser?) {
+    private fun updateUI() {
         val userLoggedBy = userLoggedBy ?: "UnknownLoginMethodActivity"
         Log.d(
             userLoggedBy,
-            "user: $user" +
-                    "isUserLoggedIn: $isUserLoggedIn"
+            "[UPDATE-UI]\n" +
+                    "user: $loggedUser\n" +
+                    "isUserLoggedIn: $isUserLoggedIn\n"
         )
-        if (user != null && !isUserLoggedIn) {
-            if (loggedUser.firebaseId.isEmpty()) {
-                loggedUser = User.getUserFromFirebaseUser(user)
-            }
+        if (loggedUser.firebaseId.isEmpty()) {
+            loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
+        }
+        if (loggedUser.firebaseId.isNotEmpty() && !isUserLoggedIn) {
+
             isUserLoggedIn = true
             if (phoneAuthUserData.isVerificationCompleted) {
                 phoneAuthUserData.isUserLoggedIn = true
@@ -374,13 +378,19 @@ class LoginActivity : ComponentActivity() {
             Log.d(
                 userLoggedBy,
                 "signInWithCredential:success" +
-                        "Email: ${user.email}, \n" +
-                        "Name: ${user.displayName} \n" +
-                        "PhotoUrl: ${user.photoUrl} \n" +
-                        "Uid: ${user.uid} \n" +
-                        "ProviderId: ${user.providerId} \n" +
-                        "PhoneNumber: ${user.phoneNumber} \n" +
-                        "Metadata: ${user.metadata} \n"
+                        "FirebaseId: ${loggedUser.firebaseId}, \n" +
+                        "Nickname: ${loggedUser.nickname}, \n" +
+                        "Email: ${loggedUser.email}, \n" +
+                        "Name: ${loggedUser.name} \n" +
+                        "PhotoUrl: ${loggedUser.photoUrl} \n" +
+                        "PhoneNumber: ${loggedUser.phoneNumber} \n" +
+                        "City: ${loggedUser.city} \n"
+            )
+        }
+        else {
+            Log.d(
+                userLoggedBy,
+                "user already logged in: $isUserLoggedIn"
             )
         }
         Log.w(
@@ -424,13 +434,15 @@ class LoginActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (currentUser.firebaseId.isNotEmpty()) {
-                //TODO check if user data is all set
+                dataService.getUserById(currentUser.firebaseId)
+                Log.d("LoginActivity", "Before data check: isUserDataSet: $isUserDataSet")
                 if (!isUserDataSet) {
                     isUserDataSet = currentUser.checkRequiredData()
+                    Log.d("LoginActivity", "After data check: isUserDataSet: $isUserDataSet")
                 }
 
                 Log.d(
-                    PHONE_TAG, "[###signInWithCredential### - success]\n" +
+                    userLoggedBy, "[###signInWithCredential### - success]\n" +
                             "isUserLoggedIn: $isUserLoggedIn\n" +
                             "user: $currentUser\n" +
                             "user.email: ${currentUser.email}\n" +
@@ -488,8 +500,9 @@ class LoginActivity : ComponentActivity() {
         val context = LocalContext.current
         Button(
             onClick = {
-                val intent = Intent(context, LoggedUserMenuActivity::class.java)
+                val intent = Intent(context, MainMenuActivity::class.java)
                 startActivity(intent)
+                finish()
             },
             modifier = myCommonModifier,
             shape = MaterialTheme.shapes.small
@@ -532,7 +545,6 @@ class LoginActivity : ComponentActivity() {
         }
     }
 
-    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     fun PhoneLoginForm() {
 //        val loginService = LoginService()

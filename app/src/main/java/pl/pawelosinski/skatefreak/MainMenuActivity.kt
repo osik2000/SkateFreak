@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import pl.pawelosinski.skatefreak.service.DataService
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
@@ -35,6 +38,17 @@ class MainMenuActivity : ComponentActivity() {
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(text = "Menu Główne", modifier = Modifier.padding(16.dp))
+
+                        //logout button
+                        Button(
+                            modifier = Modifier.padding(16.dp),
+                            onClick = {
+                                Firebase.auth.signOut()
+                                finish()
+                            }
+                        ) {
+                            Text(text = "Wyloguj")
+                        }
                     }
                 }
             }
