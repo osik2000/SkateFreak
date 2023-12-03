@@ -271,7 +271,7 @@ class LoginActivity : ComponentActivity() {
     }
 
 
-    // [START signin]
+    // [START signin] //TODO extract to separate class
     private fun googleSignIn() {
         val signInIntent = googleSignInClient.signInIntent
         signInResultLauncher.launch(signInIntent)
@@ -340,9 +340,14 @@ class LoginActivity : ComponentActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     phoneAuthUserData.isVerificationCompleted = true
-                    dataService.getUserById(task.result?.user?.uid!!)
+                    dataService.getUserById(task.result?.user?.uid!!, onSuccess = {
+                        updateUI()
+                    }, onFail = {
+                        loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
+                        updateUI()
+                    })
                     userLoggedBy = PHONE_TAG
-                    updateUI()
+                    Log.d(PHONE_TAG, "signInWithCredential:success")
                 } else {
                     // Sign in failed, display a message and update the UI
                     Log.w(PHONE_TAG, "signInWithCredential:failure", task.exception)
@@ -483,7 +488,7 @@ class LoginActivity : ComponentActivity() {
                         Text("Uzupełnij dane użytkownika")
                     }
                 }
-                SignOutButton()
+                SignOutButton(signOut = { signOut() })
             } else {
                 Text(
                     text = "Zaloguj się",
@@ -530,19 +535,6 @@ class LoginActivity : ComponentActivity() {
                 }
             }
         )
-    }
-
-    @Composable
-    fun SignOutButton() {
-        Button(
-            modifier = myCommonModifier,
-            onClick = {
-                signOut()
-            },
-            shape = MaterialTheme.shapes.small
-        ) {
-            Text(text = "Sign Out")
-        }
     }
 
     @Composable
@@ -631,7 +623,18 @@ class LoginActivity : ComponentActivity() {
 }
 
 
-
+@Composable
+fun SignOutButton(signOut : () -> Unit = {}) {
+    Button(
+        modifier = myCommonModifier,
+        onClick = {
+            signOut()
+        },
+        shape = MaterialTheme.shapes.small
+    ) {
+        Text(text = "Sign Out")
+    }
+}
 
 
 
