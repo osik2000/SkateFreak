@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -32,6 +33,7 @@ import pl.pawelosinski.skatefreak.service.DataService
 import pl.pawelosinski.skatefreak.ui.common.MyDivider
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 class UserSetDataActivity : ComponentActivity() {
     private val dataService = DataService()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -258,6 +260,7 @@ class UserSetDataActivity : ComponentActivity() {
             }
         }
 
+        @OptIn(ExperimentalMaterial3Api::class)
         @Composable
         fun ChangeCity() {
             var city by remember { mutableStateOf(loggedUser.city) }

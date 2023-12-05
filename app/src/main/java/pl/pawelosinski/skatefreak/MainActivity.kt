@@ -24,18 +24,21 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import pl.pawelosinski.skatefreak.auth.loggedUser
 import pl.pawelosinski.skatefreak.service.DataService
+import pl.pawelosinski.skatefreak.ui.common.BottomNavigationBar
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
+import pl.pawelosinski.skatefreak.ui.mainScreen.MainScreen
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
 class MainActivity : ComponentActivity() {
+
     private var isUserLoggedIn = checkIfUserIsLoggedIn()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            SkateFreakTheme {
+            SkateFreakTheme (darkTheme = true) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -43,6 +46,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     //BeforeLoginScreen()
                     LoadingScreen()
+//                    BottomNavigationBar()
                 }
             }
         }
@@ -70,36 +74,6 @@ class MainActivity : ComponentActivity() {
             finish()
         })
         return isUserLoggedIn
-    }
-
-    @Composable
-    fun BeforeLoginScreen() {
-        val context = LocalContext.current
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = "Menu Główne",
-                textAlign = TextAlign.Center,
-                modifier = myCommonModifier
-            )
-            Button(
-                onClick = {
-                    Toast.makeText(
-                        context,
-                        "Otwieranie Ekranu Logowania...",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    val intent = Intent(context, LoginActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                },
-                modifier = myCommonModifier
-            ) {
-                Text("Zaloguj się aby kontynuować")
-            }
-        }
     }
 
     @Composable
@@ -133,13 +107,47 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Preview(
-        showBackground = true,
-        showSystemUi = true)
-    @Composable
-    fun BeforeLoginScreenPreview() {
-        SkateFreakTheme {
-            BeforeLoginScreen()
+
+}
+
+@Composable
+fun BeforeLoginScreen() {
+    val context = LocalContext.current
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(
+            text = "Menu Główne",
+            textAlign = TextAlign.Center,
+            modifier = myCommonModifier
+        )
+        Button(
+            onClick = {
+                Toast.makeText(
+                    context,
+                    "Otwieranie Ekranu Logowania...",
+                    Toast.LENGTH_SHORT
+                ).show()
+                val intent = Intent(context, LoginActivity::class.java)
+//                startActivity(intent)
+//                finish()
+            },
+            modifier = myCommonModifier
+        ) {
+            Text("Zaloguj się aby kontynuować")
         }
+    }
+}
+
+
+
+@Preview(
+    showBackground = true,
+    showSystemUi = true)
+@Composable
+fun BeforeLoginScreenPreview() {
+    SkateFreakTheme {
+        BeforeLoginScreen()
     }
 }
