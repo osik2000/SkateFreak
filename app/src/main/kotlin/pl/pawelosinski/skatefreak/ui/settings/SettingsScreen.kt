@@ -22,20 +22,23 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import pl.pawelosinski.skatefreak.SignOutButton
-import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
+import pl.pawelosinski.skatefreak.ui.auth.SignOutButton
+import pl.pawelosinski.skatefreak.local.ThemePreferences
+import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
-    var themePreferences: ThemePreferences = ThemePreferences(LocalContext.current)
 
-
-    // Przykładowe stany ustawień
+    // Notifications
     var notificationsEnabled by remember { mutableStateOf(true) }
-    var selectedTheme by remember { mutableStateOf(themePreferences.getThemeSelection()) }
+
+    // Theme
+    val themePreferences = ThemePreferences(LocalContext.current)
+    val currentTheme = if (isDarkMode) "Dark" else "Light"
+    var selectedTheme by remember { mutableStateOf(currentTheme) }
     val themes = listOf("Light", "Dark")
 
     // Budowa ekranu ustawień
@@ -67,6 +70,7 @@ fun SettingsScreen(navController: NavController) {
                             selected = theme == selectedTheme,
                             onClick = {
                                 selectedTheme = theme
+                                isDarkMode = theme == "Dark"
                                 themePreferences.saveThemeSelection(theme)
                             }
                         )
@@ -74,7 +78,7 @@ fun SettingsScreen(navController: NavController) {
                 }
                 SignOutButton(signOut = {
                     Firebase.auth.signOut()
-                })
+                }) // TODO repair sign out
             }
         }
     }

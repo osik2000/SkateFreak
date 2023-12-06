@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak
+package pl.pawelosinski.skatefreak.ui.auth
 
 import android.os.Bundle
 import android.util.Log
@@ -15,8 +15,8 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
+import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.model.User
-import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 class LoggedUserMenuActivity : ComponentActivity() {
@@ -25,8 +25,6 @@ class LoggedUserMenuActivity : ComponentActivity() {
     private lateinit var user: User
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val themePreferences = ThemePreferences(this)
-        val isDarkTheme = themePreferences.getThemeSelection() == "Dark"
         // Initialize Firebase Auth
         auth = Firebase.auth
         user = User.getUserFromFirebaseUser(auth.currentUser)
@@ -36,7 +34,7 @@ class LoggedUserMenuActivity : ComponentActivity() {
         }
 
         setContent {
-            SkateFreakTheme (darkTheme = isDarkTheme) {
+            SkateFreakTheme (darkTheme = isDarkMode) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),

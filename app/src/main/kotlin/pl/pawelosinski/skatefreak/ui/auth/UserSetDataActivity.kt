@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak
+package pl.pawelosinski.skatefreak.ui.auth
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
@@ -28,21 +27,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import pl.pawelosinski.skatefreak.auth.loggedUser
-import pl.pawelosinski.skatefreak.service.DataService
-import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
+import pl.pawelosinski.skatefreak.local.isDarkMode
+import pl.pawelosinski.skatefreak.local.loggedUser
+import pl.pawelosinski.skatefreak.service.DatabaseService
 import pl.pawelosinski.skatefreak.ui.common.MyDivider
+import pl.pawelosinski.skatefreak.ui.menu.MainMenuActivity
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
-@OptIn(ExperimentalMaterial3Api::class)
 class UserSetDataActivity : ComponentActivity() {
-    private val dataService = DataService()
+    private val databaseService = DatabaseService()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val themePreferences = ThemePreferences(this)
-        val isDarkTheme = themePreferences.getThemeSelection() == "Dark"
         setContent {
-            SkateFreakTheme (darkTheme = isDarkTheme) {
+            SkateFreakTheme(darkTheme = isDarkMode) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     //modifier = Modifier.fillMaxSize(),
@@ -68,13 +65,14 @@ class UserSetDataActivity : ComponentActivity() {
                         MyDivider()
                         ChangeCity()
                         MyDivider()
-                        SaveAllButton()
+                        SaveAllButton(databaseService, this@UserSetDataActivity)
                     }
-
                 }
             }
         }
     }
+}
+
     @Composable
     fun EditButton(onClick: () -> Unit) {
         Button(
@@ -96,7 +94,7 @@ class UserSetDataActivity : ComponentActivity() {
     }
 
     @Composable
-    fun SaveAllButton() { // TODO add validation
+    fun SaveAllButton(databaseService: DatabaseService, componentActivity: ComponentActivity) { // TODO add validation
         val context = LocalContext.current
         Button(
             onClick = {
@@ -107,12 +105,12 @@ class UserSetDataActivity : ComponentActivity() {
                 }
                 else {
                     Log.d("UserSetDataActivity", "User data is complete:\n$loggedUser")
-                    dataService.changeUserData()
+                    databaseService.changeUserData()
                     Toast.makeText(context, "Dane użytkownika zaaktualizowane", Toast.LENGTH_SHORT).show()
                     //Navigate to MainMenuActivity
                     val intent = Intent(context, MainMenuActivity::class.java)
-                    startActivity(intent)
-                    finish()
+                    componentActivity.startActivity(intent)
+                    componentActivity.finish()
                 }
             },
             modifier = Modifier.padding(16.dp)
@@ -263,7 +261,6 @@ class UserSetDataActivity : ComponentActivity() {
             }
         }
 
-        @OptIn(ExperimentalMaterial3Api::class)
         @Composable
         fun ChangeCity() {
             var city by remember { mutableStateOf(loggedUser.city) }
@@ -297,4 +294,3 @@ class UserSetDataActivity : ComponentActivity() {
                 }
             }
         }
-    }

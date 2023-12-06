@@ -5,54 +5,26 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import pl.pawelosinski.skatefreak.auth.loggedUser
+import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.User
 
 
-class DataService {
+class DatabaseService {
 
     private val database = Firebase.database
 
 
     fun changeUserData() {
-        // [START write_message]
         // Write a message to the database
         val myRef = database.getReference("users/${loggedUser.firebaseId}")
-
-        myRef.setValue(loggedUser)
-
-        // [END write_message]
-
-        // [START read_message]
-        // Read from the database
-//        myRef.addValueEventListener(object : ValueEventListener {
-//            override fun onDataChange(dataSnapshot: DataSnapshot) {
-//                // This method is called once with the initial value and again
-//                // whenever data at this location is updated.
-//                val user = dataSnapshot.getValue(User::class.java)
-//                Log.d("ChangeUserData", "loggedUser is: $user")
-//                loggedUser = user ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
-//            }
-//
-//            override fun onCancelled(error: DatabaseError) {
-//                // Failed to read value
-//                Log.w("ChangeUserData", "Failed to read value.", error.toException())
-//            }
-//        })
-        // [END read_message]
+        myRef.setValue(loggedUser).addOnSuccessListener {
+            Log.d("DataService", "User Data saved successfully.")
+        }.addOnFailureListener() {
+            Log.e("DataService", "Error writing data", it)
+        }
     }
 
     fun getUserById(id: String, onSuccess : () -> Unit = {}, onFail : () -> Unit = {}) {
-        //check if connection is available
-        FirebaseDatabase.getInstance().getReference(".info/connected").get().addOnSuccessListener {
-            val connected = it.getValue(Boolean::class.java)!!
-            if (!connected) {
-                onFail()
-            }
-        }.addOnFailureListener{
-            onFail()
-        }
-
         Log.d("DataService", "getUserById: $id")
 
         database.getReference("users").child(id).get().addOnSuccessListener {

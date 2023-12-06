@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -19,19 +18,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
+import pl.pawelosinski.skatefreak.R
+import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
 @Composable
 fun TricksScreen(navController: NavController) {
-    val themePreferences = ThemePreferences(LocalContext.current)
-    val isDarkTheme = themePreferences.getThemeSelection() == "Dark"
-    SkateFreakTheme (darkTheme = isDarkTheme){
+    SkateFreakTheme (darkTheme = isDarkMode){
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -41,19 +38,19 @@ fun TricksScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-//                Box(
-//                    modifier = Modifier.fillMaxWidth()
-//                        .height(200.dp)
-//                        .padding(horizontal = 15.dp, vertical = 10.dp)
-//                        .clip(MaterialTheme.shapes.large)
-//                ) {
-//                    Image(
-//                        painter = painterResource(Icons.Default.Info.hashCode()),
-//                        contentDescription = "info_screen_bg",
-//                        contentScale = ContentScale.Crop,
-//                        modifier = Modifier.fillMaxSize()
-//                    )
-//                }
+                Box(
+                    modifier = Modifier.fillMaxWidth()
+                        .height(200.dp)
+                        .padding(horizontal = 15.dp, vertical = 10.dp)
+                        .clip(MaterialTheme.shapes.large)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.baseline_skateboarding_20),
+                        contentDescription = "info_screen_bg",
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
                 Text(
                     "Tricks Screen",
                     style = MaterialTheme.typography.titleLarge,

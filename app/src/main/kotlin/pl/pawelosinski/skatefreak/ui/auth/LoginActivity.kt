@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak
+package pl.pawelosinski.skatefreak.ui.auth
 
 import android.app.Activity
 import android.content.Intent
@@ -49,17 +49,20 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.auth
+import pl.pawelosinski.skatefreak.ui.menu.MainMenuActivity
+import pl.pawelosinski.skatefreak.R
 import pl.pawelosinski.skatefreak.auth.PhoneAuthUserData
-import pl.pawelosinski.skatefreak.auth.loggedUser
 import pl.pawelosinski.skatefreak.model.User
-import pl.pawelosinski.skatefreak.service.DataService
-import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
+import pl.pawelosinski.skatefreak.service.DatabaseService
+import pl.pawelosinski.skatefreak.local.ThemePreferences
+import pl.pawelosinski.skatefreak.local.isDarkMode
+import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import java.util.concurrent.TimeUnit
 
 class LoginActivity : ComponentActivity() {
-    private val dataService = DataService()
+    private val databaseService = DatabaseService()
 
     private lateinit var auth: FirebaseAuth
 
@@ -73,8 +76,6 @@ class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val themePreferences = ThemePreferences(this)
-        val isDarkTheme = themePreferences.getThemeSelection() == "Dark"
 
         // Initialize Firebase Auth
         auth = Firebase.auth
@@ -95,7 +96,6 @@ class LoginActivity : ComponentActivity() {
             }
         }
 
-        // Initialize phone auth callbacks
         // [START phone_auth_callbacks]
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
@@ -186,7 +186,7 @@ class LoginActivity : ComponentActivity() {
 
         setContent {
 //            LocalContext.current
-            SkateFreakTheme (darkTheme = isDarkTheme){
+            SkateFreakTheme (darkTheme = isDarkMode){
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -243,7 +243,7 @@ class LoginActivity : ComponentActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(GOOGLE_TAG, "signInWithCredential:success")
                     userLoggedBy = GOOGLE_TAG
-                    dataService.getUserById(auth.currentUser?.uid!!, onSuccess = {
+                    databaseService.getUserById(auth.currentUser?.uid!!, onSuccess = {
                         updateUI()
                     }, onFail = {
                         loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
@@ -344,7 +344,7 @@ class LoginActivity : ComponentActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     phoneAuthUserData.isVerificationCompleted = true
-                    dataService.getUserById(task.result?.user?.uid!!, onSuccess = {
+                    databaseService.getUserById(task.result?.user?.uid!!, onSuccess = {
                         updateUI()
                     }, onFail = {
                         loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
@@ -443,7 +443,7 @@ class LoginActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (currentUser.firebaseId.isNotEmpty()) {
-                dataService.getUserById(currentUser.firebaseId)
+                databaseService.getUserById(currentUser.firebaseId)
                 Log.d("LoginActivity", "Before data check: isUserDataSet: $isUserDataSet")
                 if (!isUserDataSet) {
                     isUserDataSet = currentUser.checkRequiredData()

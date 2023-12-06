@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak.sharedPreferences
+package pl.pawelosinski.skatefreak.local
 
 import android.content.Context
 

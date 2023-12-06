@@ -9,7 +9,7 @@ val MyTertiaryColor = Color(0xFFC69C72)
 val MyBackgroundColor = Color(0xFF040403)
 val MySurfaceColor = Color(0xFF040403)
 val MyWhiteColor = Color(0xFFFFFFFF)
-val MyBlackColor = Color(0xFF000000)
+// val MyBlackColor = Color(0xFF000000)
 
 // LIGHT THEME PALETTE
 val Purple40 = Color(0xFF6650a4)
