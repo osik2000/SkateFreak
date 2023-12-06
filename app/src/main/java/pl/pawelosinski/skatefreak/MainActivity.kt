@@ -24,6 +24,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import pl.pawelosinski.skatefreak.auth.loggedUser
 import pl.pawelosinski.skatefreak.service.DataService
+import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
 import pl.pawelosinski.skatefreak.ui.common.BottomNavigationBar
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.mainScreen.MainScreen
@@ -36,9 +37,10 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        val themePreferences = ThemePreferences(this)
+        val isDarkTheme = themePreferences.getThemeSelection() == "Dark"
         setContent {
-            SkateFreakTheme (darkTheme = true) {
+            SkateFreakTheme (darkTheme = isDarkTheme) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),

@@ -53,6 +53,7 @@ import pl.pawelosinski.skatefreak.auth.PhoneAuthUserData
 import pl.pawelosinski.skatefreak.auth.loggedUser
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.service.DataService
+import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import java.util.concurrent.TimeUnit
@@ -72,6 +73,9 @@ class LoginActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val themePreferences = ThemePreferences(this)
+        val isDarkTheme = themePreferences.getThemeSelection() == "Dark"
+
         // Initialize Firebase Auth
         auth = Firebase.auth
 
@@ -181,8 +185,8 @@ class LoginActivity : ComponentActivity() {
 
 
         setContent {
-            LocalContext.current
-            SkateFreakTheme {
+//            LocalContext.current
+            SkateFreakTheme (darkTheme = isDarkTheme){
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -624,7 +628,9 @@ class LoginActivity : ComponentActivity() {
 
 
 @Composable
-fun SignOutButton(signOut : () -> Unit = {}) {
+fun SignOutButton(signOut : () -> Unit = {
+    // Configure Google Sign In
+}) {
     Button(
         modifier = myCommonModifier,
         onClick = {

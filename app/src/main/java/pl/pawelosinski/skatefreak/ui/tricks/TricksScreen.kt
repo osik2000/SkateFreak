@@ -19,15 +19,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
 @Composable
 fun TricksScreen(navController: NavController) {
-    SkateFreakTheme {
+    val themePreferences = ThemePreferences(LocalContext.current)
+    val isDarkTheme = themePreferences.getThemeSelection() == "Dark"
+    SkateFreakTheme (darkTheme = isDarkTheme){
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background

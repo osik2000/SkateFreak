@@ -1,23 +1,13 @@
 package pl.pawelosinski.skatefreak.ui.settings
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,12 +17,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
+import pl.pawelosinski.skatefreak.SignOutButton
 import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
@@ -49,37 +39,46 @@ fun SettingsScreen(navController: NavController) {
     val themes = listOf("Light", "Dark")
 
     // Budowa ekranu ustawień
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Settings") }
-            )
-        }
-    ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            // Przełącznik
-            RowSettingsItem(
-                title = "Enable Notifications",
-                description = "Turn on or off notifications"
-            ) {
-                Switch(checked = notificationsEnabled, onCheckedChange = { notificationsEnabled = it })
+    SkateFreakTheme (darkTheme = selectedTheme == "Dark") {
+        Scaffold(
+            topBar = {
+                CenterAlignedTopAppBar(
+                    title = { Text("Settings") }
+                )
             }
-
-            // Przyciski radio
-            Text("Select Theme", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
-            themes.forEach { theme ->
+        ) { innerPadding ->
+            Column(modifier = Modifier.padding(innerPadding)) {
+                // Przełącznik
                 RowSettingsItem(
-                    title = theme,
-                    description = "Set application theme to $theme"
+                    title = "Enable Notifications",
+                    description = "Turn on or off notifications"
                 ) {
-                    RadioButton(
-                        selected = theme == selectedTheme,
-                        onClick = { selectedTheme = theme }
-                    )
+                    Switch(checked = notificationsEnabled, onCheckedChange = { notificationsEnabled = it })
                 }
+
+                // Przyciski radio
+                Text("Select Theme", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
+                themes.forEach { theme ->
+                    RowSettingsItem(
+                        title = theme,
+                        description = "Set application theme to $theme"
+                    ) {
+                        RadioButton(
+                            selected = theme == selectedTheme,
+                            onClick = {
+                                selectedTheme = theme
+                                themePreferences.saveThemeSelection(theme)
+                            }
+                        )
+                    }
+                }
+                SignOutButton(signOut = {
+                    Firebase.auth.signOut()
+                })
             }
         }
     }
+
 }
 
 @Composable
@@ -95,3 +94,5 @@ fun RowSettingsItem(title: String, description: String, content: @Composable () 
         content()
     }
 }
+
+

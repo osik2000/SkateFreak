@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import pl.pawelosinski.skatefreak.auth.loggedUser
 import pl.pawelosinski.skatefreak.service.DataService
+import pl.pawelosinski.skatefreak.sharedPreferences.ThemePreferences
 import pl.pawelosinski.skatefreak.ui.common.MyDivider
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
@@ -38,8 +39,10 @@ class UserSetDataActivity : ComponentActivity() {
     private val dataService = DataService()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val themePreferences = ThemePreferences(this)
+        val isDarkTheme = themePreferences.getThemeSelection() == "Dark"
         setContent {
-            SkateFreakTheme {
+            SkateFreakTheme (darkTheme = isDarkTheme) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     //modifier = Modifier.fillMaxSize(),
