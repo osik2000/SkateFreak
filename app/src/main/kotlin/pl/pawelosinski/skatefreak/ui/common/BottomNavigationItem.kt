@@ -5,13 +5,17 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
+import pl.pawelosinski.skatefreak.R
 
 
 data class BottomNavigationItem(
     val route: String = "",
     val title: String = "",
-    val icon: ImageVector = Icons.Default.Home,
+    val icon: ImageVector = Icons.Default.Warning,
+    val resource: Int = R.drawable.baseline_skateboarding_20
 ) {
 
     fun bottomNavigationItems() : List<BottomNavigationItem> {
@@ -24,7 +28,7 @@ data class BottomNavigationItem(
             BottomNavigationItem(
                 route = "tricks",
                 title = "Tricki",
-                icon = Icons.Default.Info
+                resource = R.drawable.baseline_skateboarding_20
             ),
             BottomNavigationItem(
                 route = "profile",
