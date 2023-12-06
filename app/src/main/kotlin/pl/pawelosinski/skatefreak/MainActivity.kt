@@ -18,11 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
-import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.local.LocalDataInit
-import pl.pawelosinski.skatefreak.service.DatabaseService
-import pl.pawelosinski.skatefreak.local.ThemePreferences
 import pl.pawelosinski.skatefreak.local.isDarkMode
+import pl.pawelosinski.skatefreak.local.loggedUser
+import pl.pawelosinski.skatefreak.service.DatabaseService
 import pl.pawelosinski.skatefreak.ui.auth.LoginActivity
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.menu.MainMenuActivity

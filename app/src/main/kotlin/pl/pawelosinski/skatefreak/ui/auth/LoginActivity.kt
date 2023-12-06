@@ -54,7 +54,6 @@ import pl.pawelosinski.skatefreak.R
 import pl.pawelosinski.skatefreak.auth.PhoneAuthUserData
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.service.DatabaseService
-import pl.pawelosinski.skatefreak.local.ThemePreferences
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier

@@ -9,7 +9,7 @@ import pl.pawelosinski.skatefreak.ui.common.BottomNavigationBar
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 class MainMenuActivity : ComponentActivity() {
-    private val databaseService = DatabaseService()
+//    private val databaseService = DatabaseService()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

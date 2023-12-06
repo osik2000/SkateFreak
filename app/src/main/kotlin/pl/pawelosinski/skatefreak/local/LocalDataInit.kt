@@ -1,9 +1,6 @@
 package pl.pawelosinski.skatefreak.local
 
 import android.content.Context
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.compose.foundation.isSystemInDarkTheme
 
 class LocalDataInit (context : Context) {
     // Theme

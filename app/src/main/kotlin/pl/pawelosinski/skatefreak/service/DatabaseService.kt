@@ -2,7 +2,6 @@ package pl.pawelosinski.skatefreak.service
 
 import android.util.Log
 import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import pl.pawelosinski.skatefreak.local.loggedUser

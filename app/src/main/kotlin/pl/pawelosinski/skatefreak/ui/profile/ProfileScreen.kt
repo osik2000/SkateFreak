@@ -64,7 +64,7 @@ fun UserAvatar() {
             .data(loggedUser.photoUrl)
             .crossfade(true)
             .build(), // Ładujemy obraz z URL
-        placeholder = painterResource(R.drawable.baseline_skateboarding_20), // Placeholder
+        placeholder = painterResource(R.drawable.baseline_skateboarding_24), // Placeholder
         contentDescription = "Profile Picture",
         modifier = Modifier
             .width(200.dp)
