@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -13,22 +13,22 @@
         android:theme="@style/Theme.SkateFreak"
         tools:targetApi="31">
         <activity
-            android:name=".MainMenuActivity"
+            android:name=".ui.menu.MainMenuActivity"
             android:exported="false"
             android:label="@string/title_activity_main_menu"
             android:theme="@style/Theme.SkateFreak" />
         <activity
-            android:name=".UserSetDataActivity"
+            android:name=".ui.auth.UserSetDataActivity"
             android:exported="false"
             android:label="@string/title_activity_user_set_data"
             android:theme="@style/Theme.SkateFreak" />
         <activity
-            android:name=".LoggedUserMenuActivity"
+            android:name=".ui.auth.LoggedUserMenuActivity"
             android:exported="false"
             android:label="@string/title_activity_logged_user_menu"
             android:theme="@style/Theme.SkateFreak" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".ui.auth.LoginActivity"
             android:exported="false"
             android:label="@string/title_activity_login"
             android:theme="@style/Theme.SkateFreak" />

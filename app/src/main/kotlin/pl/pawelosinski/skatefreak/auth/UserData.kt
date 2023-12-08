@@ -1,10 +1,5 @@
 package pl.pawelosinski.skatefreak.auth
 
-import pl.pawelosinski.skatefreak.model.User
-
-
-var loggedUser: User = User()
-
 class PhoneAuthUserData {
     var isUserLoggedIn: Boolean = false
     var isVerificationCompleted: Boolean = false
