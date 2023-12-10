@@ -10,7 +10,8 @@ data class User(
     var phoneNumber: String = "",
     var photoUrl: String = "",
     var nickname: String = "",
-    var city: String = ""
+    var city: String = "",
+    var favoriteTrickRecords: List<String> = listOf(),
 ) {
 
     override fun toString(): String {
@@ -20,7 +21,8 @@ data class User(
                 "phoneNumber='$phoneNumber',\n" +
                 "photoUrl='$photoUrl',\n" +
                 "nickname='$nickname',\n" +
-                "city='$city')\n"
+                "city='$city')\n" +
+                "favoriteTrickRecords=$favoriteTrickRecords"
     }
 
     fun checkRequiredData() : Boolean {
@@ -48,7 +50,8 @@ data class User(
                 email = firebaseUser?.email ?: "",
                 name = firebaseUser?.displayName ?: "",
                 phoneNumber = firebaseUser?.phoneNumber ?: "",
-                city = ""
+                city = "",
+                favoriteTrickRecords = listOf()
             )
         }
     }

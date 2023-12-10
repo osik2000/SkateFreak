@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
+import androidx.annotation.OptIn
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -14,6 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.datasource.DataSource
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.exoplayer.ExoPlayer
@@ -21,6 +25,7 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 
+@OptIn(UnstableApi::class) @SuppressLint("OpaqueUnitKey")
 @Composable
 fun VideoPlayer(videoUrl: String) {
     val context = LocalContext.current
@@ -31,26 +36,36 @@ fun VideoPlayer(videoUrl: String) {
         }
     }
 
-    DisposableEffect(Unit) {
+    val interactionSource = remember { MutableInteractionSource() }
+
+    DisposableEffect(
+        AndroidView(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = interactionSource,
+                indication = null, // brak wizualnego wskaźnika kliknięcia
+                onClick = {
+                    exoPlayer.playWhenReady = !exoPlayer.playWhenReady
+                }
+            ),
+        factory = { context ->
+            PlayerView(context).apply {
+                player = exoPlayer
+                useController = false
+            }
+        },
+        update = { playerView ->
+            playerView.player = exoPlayer
+        }
+    )) {
         onDispose {
             exoPlayer.release()
         }
     }
     exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
 
-    AndroidView(
-        modifier = Modifier
-            .fillMaxWidth(),
-        factory = { context ->
-            PlayerView(context).apply {
-                player = exoPlayer
-            }
-        },
-        update = { playerView ->
-            playerView.player?.playWhenReady = false
 
-        }
-    )
 }
 
 
