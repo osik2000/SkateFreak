@@ -7,6 +7,6 @@ data class TrickRecord(
     val date: String = "",
     val userDescription: String = "",
     val videoUrl: String = "",
-    val isFavorite: Boolean = false,
+    val isFavorite: Boolean = false, //TODO chyba nie
 ) {
 }
