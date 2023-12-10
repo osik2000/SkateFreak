@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak.ui.tricks
+package pl.pawelosinski.skatefreak.ui.tricks.record
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement

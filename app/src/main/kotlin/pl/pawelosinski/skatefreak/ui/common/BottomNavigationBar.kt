@@ -25,7 +25,7 @@ import androidx.navigation.compose.rememberNavController
 import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
 import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
-import pl.pawelosinski.skatefreak.ui.tricks.TricksScreen
+import pl.pawelosinski.skatefreak.ui.tricks.info.TricksScreen
 
 @Composable
 fun BottomNavigationBar() {

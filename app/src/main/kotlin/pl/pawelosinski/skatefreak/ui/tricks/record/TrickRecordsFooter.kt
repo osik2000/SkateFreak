@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak.ui.tricks
+package pl.pawelosinski.skatefreak.ui.tricks.record
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

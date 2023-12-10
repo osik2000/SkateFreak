@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak.ui.tricks
+package pl.pawelosinski.skatefreak.ui.tricks.info
 
 import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image

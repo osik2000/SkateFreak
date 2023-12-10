@@ -36,6 +36,7 @@ fun VideoPlayer(videoUrl: String) {
             exoPlayer.release()
         }
     }
+    exoPlayer.repeatMode = Player.REPEAT_MODE_OFF
 
     AndroidView(
         modifier = Modifier
@@ -46,7 +47,8 @@ fun VideoPlayer(videoUrl: String) {
             }
         },
         update = { playerView ->
-            playerView.player?.playWhenReady = true
+            playerView.player?.playWhenReady = false
+
         }
     )
 }

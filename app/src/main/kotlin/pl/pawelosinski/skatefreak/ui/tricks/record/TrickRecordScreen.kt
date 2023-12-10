@@ -1,6 +1,5 @@
-package pl.pawelosinski.skatefreak.ui.tricks
+package pl.pawelosinski.skatefreak.ui.tricks.record
 
-import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -20,7 +19,6 @@ import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.service.LocalDataService
 import pl.pawelosinski.skatefreak.ui.common.VideoPlayer
-import pl.pawelosinski.skatefreak.ui.common.VideoPlayer2
 
 @OptIn(UnstableApi::class) @Composable
 fun TrickRecordComposable(trickRecord: TrickRecord) {

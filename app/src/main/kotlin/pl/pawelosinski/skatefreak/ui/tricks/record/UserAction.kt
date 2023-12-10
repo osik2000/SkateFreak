@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak.ui.tricks
+package pl.pawelosinski.skatefreak.ui.tricks.record
 
 import android.util.Log
 import androidx.compose.foundation.background

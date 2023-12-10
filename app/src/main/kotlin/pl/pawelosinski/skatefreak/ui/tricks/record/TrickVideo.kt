@@ -1,4 +1,4 @@
-//package pl.pawelosinski.testdm
+package pl.pawelosinski.skatefreak.ui.tricks.record//package pl.pawelosinski.testdm
 //
 //import android.annotation.SuppressLint
 //import android.os.Bundle

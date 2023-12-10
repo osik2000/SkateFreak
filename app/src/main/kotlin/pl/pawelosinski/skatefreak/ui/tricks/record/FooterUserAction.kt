@@ -1,4 +1,4 @@
-package pl.pawelosinski.skatefreak.ui.tricks
+package pl.pawelosinski.skatefreak.ui.tricks.record
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,9 +10,11 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.service.databaseService
+import pl.pawelosinski.skatefreak.ui.common.myToast
 
 /**
  * Footer user action
@@ -21,6 +23,7 @@ import pl.pawelosinski.skatefreak.service.databaseService
  */
 @Composable
 fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
+    val context = LocalContext.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -31,7 +34,8 @@ fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
             onClick = {
                 databaseService.addTrickRecordToFavorites(
                     userID = trickRecord.userID,
-                    trickRecordID = trickRecord.id
+                    trickRecordID = trickRecord.id,
+                    onSuccess = { myToast(context = context, message = it) }
                 )
             }
         )
