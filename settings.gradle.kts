@@ -10,6 +10,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+//        maven {
+//            name = "DailymotionMavenRelease"
+//            url = uri("https://mvn.dailymotion.com/repository/releases/")
+//        }
     }
 }
 

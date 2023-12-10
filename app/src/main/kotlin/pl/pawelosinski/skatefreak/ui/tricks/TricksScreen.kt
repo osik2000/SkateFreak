@@ -15,11 +15,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import pl.pawelosinski.skatefreak.R
+import pl.pawelosinski.skatefreak.local.allTricks
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
@@ -32,18 +34,22 @@ fun TricksScreen(navController: NavController) {
             color = MaterialTheme.colorScheme.background
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(15.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
                 Box(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                        .fillMaxWidth()
                         .height(200.dp)
                         .padding(horizontal = 15.dp, vertical = 10.dp)
                         .clip(MaterialTheme.shapes.large)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.baseline_skateboarding_24),
+                        colorFilter = ColorFilter.lighting(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.onPrimary),
                         contentDescription = "info_screen_bg",
                         contentScale = ContentScale.Fit,
                         modifier = Modifier.fillMaxSize()
@@ -54,6 +60,9 @@ fun TricksScreen(navController: NavController) {
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )
+//                DailymotionPlayer(playerId = "xmbx2" , videoId = "x8qf4eg")
+
+                TrickInfoComposable(trickInfo = allTricks[0])
             }
         }
     }
