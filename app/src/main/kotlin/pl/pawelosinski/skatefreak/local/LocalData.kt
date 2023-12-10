@@ -1,6 +1,7 @@
 package pl.pawelosinski.skatefreak.local
 
 import pl.pawelosinski.skatefreak.model.TrickInfo
+import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.model.User
 
 var loggedUser: User = User()
@@ -14,7 +15,7 @@ val allTricks: List<TrickInfo> = listOf(
         "Ollie is a basic trick in skateboarding. It is a combination of movements performed in the air in order to jump over an obstacle.",
         "Easy",
         "Zwykłe",
-        "https://www.surfertoday.com/images/stories/ollie-higher.jpg"
+        "https://i.makeagif.com/media/9-12-2016/1TJjLm.gif"
     ),
     TrickInfo(
         "2",
@@ -39,5 +40,60 @@ val allTricks: List<TrickInfo> = listOf(
         "Easy",
         "Flip",
         "http://freestylekb.com/wiki/images/8/80/Pop_Shove-It.gif"
+    ),
+    TrickInfo(
+        "5",
+        "Drop In",
+        "Drop In is a basic trick in skateboarding. It is a combination of movements performed in the air in order to jump over an obstacle.",
+        "Easy",
+        "Other",
+        "https://media1.tenor.com/m/bXbQHKg2tQYAAAAd/skatedrop-skate.gif"
+    )
+)
+val allTrickRecords = listOf(
+    TrickRecord(
+        id = "1",
+        userID = "KwUsU9tNz8PN6EdPPuthj5ItrJy2",
+        trickID = "5",
+        date = "2021-01-01",
+        userDescription = "My first Drop In!",
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
+        isFavorite = true
+    ),
+    TrickRecord(
+        id = "2",
+        userID = "KwUsU9tNz8PN6EdPPuthj5ItrJy2",
+        trickID = "1",
+        date = "2021-01-01",
+        userDescription = "My first Ollie!",
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
+        isFavorite = true
+    ),
+    TrickRecord(
+        id = "3",
+        userID = "KwUsU9tNz8PN6EdPPuthj5ItrJy2",
+        trickID = "2",
+        date = "2021-01-01",
+        userDescription = "My first Kickflip!",
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
+        isFavorite = true
+    ),
+    TrickRecord(
+        id = "4",
+        userID = "KwUsU9tNz8PN6EdPPuthj5ItrJy2",
+        trickID = "3",
+        date = "2021-01-01",
+        userDescription = "My first Heelflip!",
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
+        isFavorite = true
+    ),
+    TrickRecord(
+        id = "5",
+        userID = "KwUsU9tNz8PN6EdPPuthj5ItrJy2",
+        trickID = "4",
+        date = "2021-01-01",
+        userDescription = "My first Pop Shove-it!",
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
+        isFavorite = true
     )
 )

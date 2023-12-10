@@ -242,7 +242,7 @@ class LoginActivity : ComponentActivity() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(GOOGLE_TAG, "signInWithCredential:success")
                     userLoggedBy = GOOGLE_TAG
-                    databaseService.getUserById(auth.currentUser?.uid!!, onSuccess = {
+                    databaseService.setLoggedUserById(auth.currentUser?.uid!!, onSuccess = {
                         updateUI()
                     }, onFail = {
                         loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
@@ -343,7 +343,7 @@ class LoginActivity : ComponentActivity() {
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
                     phoneAuthUserData.isVerificationCompleted = true
-                    databaseService.getUserById(task.result?.user?.uid!!, onSuccess = {
+                    databaseService.setLoggedUserById(task.result?.user?.uid!!, onSuccess = {
                         updateUI()
                     }, onFail = {
                         loggedUser = User.getUserFromFirebaseUser(auth.currentUser)
@@ -442,7 +442,7 @@ class LoginActivity : ComponentActivity() {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (currentUser.firebaseId.isNotEmpty()) {
-                databaseService.getUserById(currentUser.firebaseId)
+                databaseService.setLoggedUserById(currentUser.firebaseId)
                 Log.d("LoginActivity", "Before data check: isUserDataSet: $isUserDataSet")
                 if (!isUserDataSet) {
                     isUserDataSet = currentUser.checkRequiredData()

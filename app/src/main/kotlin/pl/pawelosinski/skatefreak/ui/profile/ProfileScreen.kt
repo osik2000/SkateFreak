@@ -28,6 +28,7 @@ import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
+
 @Composable
 fun ProfileScreen(navController: NavController) {
 

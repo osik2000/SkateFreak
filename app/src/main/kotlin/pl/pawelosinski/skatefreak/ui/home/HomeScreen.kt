@@ -19,8 +19,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
+import pl.pawelosinski.skatefreak.ui.tricks.TrickRecordComposable
+import pl.pawelosinski.skatefreak.ui.tricks.TrickRecordsScreen
 
 
 @Composable
@@ -30,29 +33,34 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize().padding(15.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxWidth()
-                        .height(200.dp)
-                        .padding(horizontal = 15.dp, vertical = 10.dp)
-                        .clip(MaterialTheme.shapes.large)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "home_screen_bg",
-                        modifier = Modifier.fillMaxSize()
-                    )
-                }
-                Text(
-                    "Home Screen",
-                    style = MaterialTheme.typography.titleLarge,
-                    modifier = Modifier.padding(vertical = 20.dp)
-                )
-            }
+//            Column(
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .padding(15.dp),
+//                horizontalAlignment = Alignment.CenterHorizontally,
+//                verticalArrangement = Arrangement.Center
+//            ) {
+//                Box(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(200.dp)
+//                        .padding(horizontal = 15.dp, vertical = 10.dp)
+//                        .clip(MaterialTheme.shapes.large)
+//                ) {
+//                    Icon(
+//                        imageVector = Icons.Default.Home,
+//                        contentDescription = "home_screen_bg",
+//                        modifier = Modifier.fillMaxSize()
+//                    )
+//                }
+//                Text(
+//                    "Home Screen",
+//                    style = MaterialTheme.typography.titleLarge,
+//                    modifier = Modifier.padding(vertical = 20.dp)
+//                )
+//                TrickRecordComposable(trickRecord = allTrickRecords[0])
+                TrickRecordsScreen()
+            //}
         }
     }
 }

@@ -22,6 +22,7 @@ import pl.pawelosinski.skatefreak.local.LocalDataInit
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.service.DatabaseService
+import pl.pawelosinski.skatefreak.service.databaseService
 import pl.pawelosinski.skatefreak.ui.auth.LoginActivity
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.menu.MainMenuActivity
@@ -30,13 +31,16 @@ import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 class MainActivity : ComponentActivity() {
 
-    private var isUserLoggedIn = checkIfUserIsLoggedIn()
+    private var isUserLoggedIn = false
     private lateinit var localDataInit: LocalDataInit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        databaseService = DatabaseService()
+        isUserLoggedIn = checkIfUserIsLoggedIn()
         localDataInit = LocalDataInit(this)
         localDataInit.loadData()
+
         setContent {
             SkateFreakTheme (darkTheme = isDarkMode) {
                 // A surface container using the 'background' color from the theme
@@ -53,7 +57,7 @@ class MainActivity : ComponentActivity() {
     private fun checkIfUserIsLoggedIn() : Boolean {
         var isUserLoggedIn = true
         val currentUser = Firebase.auth.currentUser ?: return false
-        DatabaseService().getUserById(currentUser.uid, onSuccess = {
+        databaseService.setLoggedUserById(currentUser.uid, onSuccess = {
             isUserLoggedIn = true
             if (loggedUser.checkRequiredData()) {
                 val intent = Intent(this, MainMenuActivity::class.java)
@@ -71,6 +75,10 @@ class MainActivity : ComponentActivity() {
             startActivity(intent)
             finish()
         })
+        //databaseService.setDefaultTrickInfo()
+//        databaseService.getUrlOfStorageFile("trickRecord/video/3 git.mov")
+//        databaseService.setDefaultTrickRecord()
+
         return isUserLoggedIn
     }
 
@@ -104,7 +112,6 @@ class MainActivity : ComponentActivity() {
             )
         }
     }
-
 
 }
 

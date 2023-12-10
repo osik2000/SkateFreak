@@ -57,7 +57,6 @@ dependencies {
 
 // Import the Compose BOM
     implementation(platform("androidx.compose:compose-bom:2023.10.01"))
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
 //
     implementation("androidx.core:core-ktx:1.12.0")
@@ -81,11 +80,25 @@ dependencies {
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics-ktx")
     implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // Coil - e.g. Photos from URL
     implementation("io.coil-kt:coil-compose:2.5.0")
+    implementation("io.coil-kt:coil-gif:2.5.0")
+
+    // ExoPlayer
+    implementation("androidx.media3:media3-exoplayer:1.2.0")
+    implementation("androidx.media3:media3-exoplayer-dash:1.2.0")
+    implementation("androidx.media3:media3-ui:1.2.0")
+
+//    // DailyMotion Player
+//    implementation ("com.dailymotion.player.android:sdk:1.0.8")
+//    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+//    implementation ("com.dailymotion.player.android:ads:1.0.8")
+//    implementation ("com.google.ads.interactivemedia.v3:interactivemedia:3.31.0")
+//
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

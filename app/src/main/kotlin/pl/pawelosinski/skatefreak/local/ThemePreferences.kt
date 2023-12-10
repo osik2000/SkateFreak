@@ -10,6 +10,6 @@ class ThemePreferences(context: Context) {
     }
 
     fun getThemeSelection(): String {
-        return sharedPreferences.getString("SelectedTheme", "Light") ?: "Dark"
+        return sharedPreferences.getString("SelectedTheme", "Dark") ?: "Light"
     }
 }
