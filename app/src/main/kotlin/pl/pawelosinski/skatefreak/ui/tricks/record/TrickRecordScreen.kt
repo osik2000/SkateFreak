@@ -1,66 +1,72 @@
 package pl.pawelosinski.skatefreak.ui.tricks.record
 
-import androidx.annotation.OptIn
-import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.FlingBehavior
+import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
-import androidx.media3.common.util.UnstableApi
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import pl.pawelosinski.skatefreak.local.allTrickRecords
-import pl.pawelosinski.skatefreak.model.TrickRecord
-import pl.pawelosinski.skatefreak.service.LocalDataService
 import pl.pawelosinski.skatefreak.ui.common.VideoPlayer
+import kotlin.math.abs
 
-@OptIn(UnstableApi::class) @Composable
-fun TrickRecordComposable(trickRecord: TrickRecord) {
-    val trickInfo = LocalDataService.getTrickInfo(trickRecord.trickID)
-
-
-    Column {
-        Text(text = "ID: ${trickRecord.id}")
-        Text(text = "Name: ${trickInfo.name}")
-        Text(text = "Description: ${trickRecord.userDescription}")
-        Text(text = "Difficulty: ${trickInfo.difficulty}")
-        VideoPlayer(videoUrl = trickRecord.videoUrl)
-    }
-}
-
-
-
-val horizontalPadding = 10.dp
 @Composable
 fun TrickRecordsScreen() {
     val trickRecords = allTrickRecords
-    Box(
-        Modifier
-            .clip(RoundedCornerShape(bottomEnd = 10.dp, bottomStart = 10.dp))
-            .background(color = Color.Black)
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    LazyColumn(
+        state = listState,
+        flingBehavior = snapFlingBehavior(listState, coroutineScope),
+        modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn {
-            items(trickRecords.size) { index ->
-                Box(
-                    modifier = Modifier
-                        .fillParentMaxSize()
-                ) {
-                    VideoPlayer(videoUrl = trickRecords[index].videoUrl)
-//                    VideoPlayer2(uri = Uri.parse(trickRecords[index].videoUrl))
-                    Column(Modifier.align(Alignment.BottomStart)) {
-                        TrickRecordsFooter(trickRecords[index])
-                        Divider()
-                    }
+        items(trickRecords) { trickRecord ->
+            Box(
+                modifier = Modifier
+                    .fillParentMaxSize()
+            ) {
+                VideoPlayer(videoUrl = trickRecord.videoUrl)
+                Column(Modifier.align(Alignment.BottomStart)) {
+                    TrickRecordsFooter(trickRecord)
+                    Divider()
                 }
             }
         }
     }
 }
 
+fun snapFlingBehavior(listState: LazyListState, coroutineScope: CoroutineScope) = object : FlingBehavior {
+    override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
+        val layoutInfo = listState.layoutInfo
+        val visibleItemsInfo = layoutInfo.visibleItemsInfo
 
+        val visibleItemClosestToCenter = visibleItemsInfo.minByOrNull {
+            abs(it.offset + it.size / 2 - layoutInfo.viewportEndOffset / 2)
+        } ?: return initialVelocity
+
+        val targetIndex = visibleItemClosestToCenter.index
+        coroutineScope.launch {
+            listState.animateScrollToItem(index = targetIndex)
+        }
+
+        return initialVelocity
+    }
+}

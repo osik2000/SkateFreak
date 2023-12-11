@@ -43,14 +43,14 @@ class DatabaseService {
         }
     }
 
-    fun getUserById(id: String, onSuccess : () -> Unit = {}, onFail : () -> Unit = {}) : User {
+    fun getUserById(id: String, onSuccess : (User) -> Unit = {User()}, onFail : () -> Unit = {}) : User {
         Log.d("DataService", "getUserById: $id")
 
         var user = User()
         database.getReference("users").child(id).get().addOnSuccessListener {
             user = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
             Log.d("DataService", "Got value $loggedUser")
-            onSuccess()
+            onSuccess(user)
         }.addOnFailureListener{
             Log.e("DataService", "Error getting data", it)
             user = User.getUserFromFirebaseUser(Firebase.auth.currentUser)

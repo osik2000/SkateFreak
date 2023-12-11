@@ -84,6 +84,9 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
+    // Tiktok-like scrolling
+    implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha")
+
     // Coil - e.g. Photos from URL
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("io.coil-kt:coil-gif:2.5.0")

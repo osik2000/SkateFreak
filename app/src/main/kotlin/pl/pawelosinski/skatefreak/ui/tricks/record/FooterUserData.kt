@@ -16,6 +16,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +31,7 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import pl.pawelosinski.skatefreak.R
 import pl.pawelosinski.skatefreak.model.TrickRecord
+import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.service.databaseService
 
 /**
@@ -37,11 +42,15 @@ import pl.pawelosinski.skatefreak.service.databaseService
  */
 @Composable
 fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
+    val horizontalPadding = 10.dp
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center
     ) {
-        val trickCreator = databaseService.getUserById(trickRecord.userID)
+        var trickCreator by remember { mutableStateOf(User()) }
+            databaseService.getUserById(trickRecord.userID, onSuccess = {
+                trickCreator = it
+            })
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -75,17 +84,17 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
                 style = MaterialTheme.typography.labelMedium
             )
 
-            Spacer(modifier = Modifier.width(horizontalPadding))
-            Icon(
-                modifier = Modifier.size(20.dp),
-                imageVector = Icons.Outlined.Favorite,
-                contentDescription = "Bookmark"
-            )
-            Icon(
-                modifier = Modifier.size(15.dp),
-                imageVector = Icons.Outlined.Add,
-                contentDescription = ""
-            )
+//            Spacer(modifier = Modifier.width(horizontalPadding))
+//            Icon(
+//                modifier = Modifier.size(20.dp),
+//                imageVector = Icons.Outlined.Favorite,
+//                contentDescription = "Bookmark"
+//            )
+//            Icon(
+//                modifier = Modifier.size(15.dp),
+//                imageVector = Icons.Outlined.Add,
+//                contentDescription = ""
+//            )
         }
         Spacer(modifier = Modifier.height(horizontalPadding))
 
