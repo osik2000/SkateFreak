@@ -9,11 +9,13 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -43,6 +45,7 @@ import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import pl.pawelosinski.skatefreak.R
 import pl.pawelosinski.skatefreak.auth.PhoneAuthUserData
+import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.PHONE_TAG
@@ -56,6 +59,7 @@ import pl.pawelosinski.skatefreak.ui.auth.LoginActivity
 import pl.pawelosinski.skatefreak.ui.auth.UserSetDataActivity
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.menu.MainMenuActivity
+import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import java.util.concurrent.TimeUnit
 
 class FirebaseAuthService(val activity: ComponentActivity) {
@@ -375,72 +379,82 @@ fun LoginScreen(firebaseAuthService: FirebaseAuthService) {
     val loggedUser by remember {
         mutableStateOf(loggedUser)
     }
-    Column(
-        modifier = Modifier
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (loggedUser.firebaseId.isNotEmpty()) {
-            databaseService.setLoggedUserById(loggedUser.firebaseId)
-            Log.d("LoginActivity", "Before data check: isUserDataSet: $isUserDataSet")
-            if (!isUserDataSet) {
-                isUserDataSet = loggedUser.checkRequiredData()
-                Log.d("LoginActivity", "After data check: isUserDataSet: $isUserDataSet")
-            }
+    SkateFreakTheme(darkTheme = isDarkMode) {
+        // A surface container using the 'background' color from the theme
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background,
 
-            Log.d(
-                userLoggedBy, "[###signInWithCredential### - success]\n" +
-                        "isUserLoggedIn: $isUserLoggedIn\n" +
-                        "user: $loggedUser\n" +
-                        "user.email: ${loggedUser.email}\n" +
-                        "user.photoUrl: ${loggedUser.photoUrl}\n" +
-                        "user.uid: ${loggedUser.firebaseId}\n" +
-                        "user.phoneNumber: ${loggedUser.phoneNumber}\n" +
-                        "user.displayName: ${loggedUser.name}\n" +
-                        "user.nickname: ${loggedUser.nickname}\n" +
-                        "user.city: ${loggedUser.city}\n" +
-                        "isUserDataSet: $isUserDataSet\n"
-            )
-            // Text with auth.displayName when its not empty or auth.phoneNumber
-            Text(
-                text = if (!isUserDataSet) {
-                    "Aby kontynuować, proszę uzupełnić dane profilu"
-                } else if (loggedUser.name.isNotEmpty()) {
-                    "Witaj ${loggedUser.name}"
+            ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                if (loggedUser.firebaseId.isNotEmpty()) {
+                    databaseService.setLoggedUserById(loggedUser.firebaseId)
+                    Log.d("LoginActivity", "Before data check: isUserDataSet: $isUserDataSet")
+                    if (!isUserDataSet) {
+                        isUserDataSet = loggedUser.checkRequiredData()
+                        Log.d("LoginActivity", "After data check: isUserDataSet: $isUserDataSet")
+                    }
+
+                    Log.d(
+                        userLoggedBy, "[###signInWithCredential### - success]\n" +
+                                "isUserLoggedIn: $isUserLoggedIn\n" +
+                                "user: $loggedUser\n" +
+                                "user.email: ${loggedUser.email}\n" +
+                                "user.photoUrl: ${loggedUser.photoUrl}\n" +
+                                "user.uid: ${loggedUser.firebaseId}\n" +
+                                "user.phoneNumber: ${loggedUser.phoneNumber}\n" +
+                                "user.displayName: ${loggedUser.name}\n" +
+                                "user.nickname: ${loggedUser.nickname}\n" +
+                                "user.city: ${loggedUser.city}\n" +
+                                "isUserDataSet: $isUserDataSet\n"
+                    )
+                    // Text with auth.displayName when its not empty or auth.phoneNumber
+                    Text(
+                        text = if (!isUserDataSet) {
+                            "Aby kontynuować, proszę uzupełnić dane profilu"
+                        } else if (loggedUser.name.isNotEmpty()) {
+                            "Witaj ${loggedUser.name}"
+                        } else {
+                            "Witaj ${loggedUser.phoneNumber}"
+                        },
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+
+                    if (isUserDataSet) {
+                        // Button to go to LoggedUserMenuActivity
+                        MainMenuButton(firebaseAuthService)
+                    } else {
+                        // Button to go to UserDataActivity
+                        Button(
+                            onClick = {
+                                val intent = Intent(firebaseAuthService.activity, UserSetDataActivity::class.java)
+                                firebaseAuthService.activity.startActivity(intent)
+                                firebaseAuthService.activity.finish()
+                            },
+                            modifier = myCommonModifier,
+                            shape = MaterialTheme.shapes.small
+                        ) {
+                            Text("Uzupełnij dane użytkownika")
+                        }
+                    }
+                    SignOutButton(signOut = { firebaseAuthService.signOut() })
                 } else {
-                    "Witaj ${loggedUser.phoneNumber}"
-                },
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            if (isUserDataSet) {
-                // Button to go to LoggedUserMenuActivity
-                MainMenuButton(firebaseAuthService)
-            } else {
-                // Button to go to UserDataActivity
-                Button(
-                    onClick = {
-                        val intent = Intent(firebaseAuthService.activity, UserSetDataActivity::class.java)
-                        firebaseAuthService.activity.startActivity(intent)
-                        firebaseAuthService.activity.finish()
-                    },
-                    modifier = myCommonModifier,
-                    shape = MaterialTheme.shapes.small
-                ) {
-                    Text("Uzupełnij dane użytkownika")
+                    Text(
+                        text = "Zaloguj się",
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                    PhoneLoginForm(firebaseAuthService)
+                    GoogleSignInButton(firebaseAuthService)
                 }
             }
-            SignOutButton(signOut = { firebaseAuthService.signOut() })
-        } else {
-            Text(
-                text = "Zaloguj się",
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-            PhoneLoginForm(firebaseAuthService)
-            GoogleSignInButton(firebaseAuthService)
         }
     }
+
 }
 
 

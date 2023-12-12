@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -23,10 +25,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
+import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.service.LoginScreen
 import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
 import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
+import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import pl.pawelosinski.skatefreak.ui.tricks.info.TricksScreen
 
 @Composable
@@ -97,19 +101,15 @@ fun BottomNavigationBar() {
             startDestination = Screens.Home.route,
             modifier = Modifier.padding(paddingValues = paddingValues)) {
             composable(Screens.Home.route) {
-                //call our composable screens here
                 HomeScreen(navController = navController)
             }
             composable(Screens.Tricks.route) {
-                //call our composable screens here
                 TricksScreen(navController = navController)
             }
             composable(Screens.Profile.route) {
-                //call our composable screens here
                 ProfileScreen(navController = navController)
             }
             composable(Screens.Settings.route) {
-                //call our composable screens here
                 SettingsScreen(navController = navController)
             }
             composable(Screens.Login.route) {
