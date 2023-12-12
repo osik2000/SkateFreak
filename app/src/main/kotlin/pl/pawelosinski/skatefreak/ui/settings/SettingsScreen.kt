@@ -1,5 +1,7 @@
 package pl.pawelosinski.skatefreak.ui.settings
 
+import android.content.Intent
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -22,15 +24,20 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import pl.pawelosinski.skatefreak.ui.auth.SignOutButton
 import pl.pawelosinski.skatefreak.local.ThemePreferences
+import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.isDarkMode
+import pl.pawelosinski.skatefreak.service.FirebaseAuthService
+import pl.pawelosinski.skatefreak.service.SignOutButton
+import pl.pawelosinski.skatefreak.ui.auth.LoginActivity
+import pl.pawelosinski.skatefreak.ui.common.Screens
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
+    val context = LocalContext.current
 
     // Notifications
     var notificationsEnabled by remember { mutableStateOf(true) }
@@ -77,8 +84,10 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 SignOutButton(signOut = {
-                    Firebase.auth.signOut()
-                }) // TODO repair sign out
+                    firebaseAuthService.signOut(onComplete = {
+                        navController.navigate(Screens.Login.route)
+                    })
+                })
             }
         }
     }

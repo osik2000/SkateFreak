@@ -22,6 +22,8 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import pl.pawelosinski.skatefreak.local.firebaseAuthService
+import pl.pawelosinski.skatefreak.service.LoginScreen
 import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
 import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
@@ -109,6 +111,9 @@ fun BottomNavigationBar() {
             composable(Screens.Settings.route) {
                 //call our composable screens here
                 SettingsScreen(navController = navController)
+            }
+            composable(Screens.Login.route) {
+                LoginScreen(firebaseAuthService = firebaseAuthService)
             }
         }
     }

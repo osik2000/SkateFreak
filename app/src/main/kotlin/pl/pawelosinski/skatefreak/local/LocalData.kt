@@ -3,9 +3,11 @@ package pl.pawelosinski.skatefreak.local
 import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.model.User
+import pl.pawelosinski.skatefreak.service.FirebaseAuthService
 
 var loggedUser: User = User()
 var isDarkMode = true
+lateinit var firebaseAuthService: FirebaseAuthService
 val tricksCategories = listOf("Zwykłe", "Flip", "Grind", "Grab", "Slide", "Old School", "Other")
 val tricksDifficulties = listOf("Easy", "Medium", "Hard", "Pro")
 val allTricks: List<TrickInfo> = listOf(
