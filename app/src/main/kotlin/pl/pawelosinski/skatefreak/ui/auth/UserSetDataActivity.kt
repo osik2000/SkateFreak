@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.service.DatabaseService
@@ -35,9 +36,11 @@ import pl.pawelosinski.skatefreak.ui.menu.MainMenuActivity
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 class UserSetDataActivity : ComponentActivity() {
+
     private val databaseService = DatabaseService()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        firebaseAuthService.currentActivity.value = this
         setContent {
             SkateFreakTheme(darkTheme = isDarkMode) {
                 // A surface container using the 'background' color from the theme
@@ -98,14 +101,14 @@ class UserSetDataActivity : ComponentActivity() {
         val context = LocalContext.current
         Button(
             onClick = {
-                if(!loggedUser.checkRequiredData()) {
+                if(!loggedUser.value.checkRequiredData()) {
                     Log.d("UserSetDataActivity", "User data is incomplete:\n$loggedUser")
                     Toast.makeText(context, "Uzupełnij wszystkie dane", Toast.LENGTH_SHORT).show()
                     return@Button
                 }
                 else {
                     Log.d("UserSetDataActivity", "User data is complete:\n$loggedUser")
-                    databaseService.changeUserData()
+                    databaseService.updateUserData()
                     Toast.makeText(context, "Dane użytkownika zaaktualizowane", Toast.LENGTH_SHORT).show()
                     //Navigate to MainMenuActivity
                     val intent = Intent(context, MainMenuActivity::class.java)
@@ -121,15 +124,15 @@ class UserSetDataActivity : ComponentActivity() {
 
         @Composable
         fun ChangeNumber() { // TODO add validation and check if number is unique
-            var phoneNumber by remember { mutableStateOf(loggedUser.phoneNumber) }
-            var isInEditMode by remember { mutableStateOf(loggedUser.phoneNumber.isEmpty()) }
+            var phoneNumber by remember { mutableStateOf(loggedUser.value.phoneNumber) }
+            var isInEditMode by remember { mutableStateOf(loggedUser.value.phoneNumber.isEmpty()) }
             val pattern = remember { Regex("^\\+48\\d\\d\\d\\d\\d\\d\\d\\d\\d$") }
             // log loggedUser data
-            if (loggedUser.phoneNumber.isEmpty()) {
+            if (loggedUser.value.phoneNumber.isEmpty()) {
                 Log.d("ChangeNumber", "loggedUser is empty")
-                loggedUser.phoneNumber = "+48"
+                loggedUser.value.phoneNumber = "+48"
             }
-            Log.d("ChangeNumber", "loggedUser: $loggedUser")
+            Log.d("ChangeNumber", "loggedUser: ${loggedUser.value}")
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -153,7 +156,7 @@ class UserSetDataActivity : ComponentActivity() {
                             return@SaveButton
                         }
                         isInEditMode = false
-                        loggedUser.phoneNumber = phoneNumber
+                        loggedUser.value.phoneNumber = phoneNumber
                     }
                 } else {
                     EditButton(onClick = { isInEditMode = true })
@@ -163,8 +166,8 @@ class UserSetDataActivity : ComponentActivity() {
 
         @Composable
         fun ChangeEmail() { // TODO is email required? if yes -> add validation and check if email is unique
-            var email by remember { mutableStateOf(loggedUser.email) }
-            var isInEditMode by remember { mutableStateOf(loggedUser.email.isEmpty()) }
+            var email by remember { mutableStateOf(loggedUser.value.email) }
+            var isInEditMode by remember { mutableStateOf(loggedUser.value.email.isEmpty()) }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -187,7 +190,7 @@ class UserSetDataActivity : ComponentActivity() {
                             return@SaveButton
                         }
                         isInEditMode = false
-                        loggedUser.email = email
+                        loggedUser.value.email = email
                     }
                 } else {
                     EditButton(onClick = { isInEditMode = true })
@@ -197,8 +200,8 @@ class UserSetDataActivity : ComponentActivity() {
 
         @Composable
         fun ChangeName() {
-            var name by remember { mutableStateOf(loggedUser.name) }
-            var isInEditMode by remember { mutableStateOf(loggedUser.name.isEmpty()) }
+            var name by remember { mutableStateOf(loggedUser.value.name) }
+            var isInEditMode by remember { mutableStateOf(loggedUser.value.name.isEmpty()) }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -221,7 +224,7 @@ class UserSetDataActivity : ComponentActivity() {
                             return@SaveButton
                         }
                         isInEditMode = false
-                        loggedUser.name = name
+                        loggedUser.value.name = name
                     }
                 } else {
                     EditButton(onClick = { isInEditMode = true })
@@ -231,8 +234,8 @@ class UserSetDataActivity : ComponentActivity() {
 
         @Composable
         fun ChangeNickname() {
-            var nickname by remember { mutableStateOf(loggedUser.nickname) }
-            var isInEditMode by remember { mutableStateOf(loggedUser.nickname.isEmpty()) }
+            var nickname by remember { mutableStateOf(loggedUser.value.nickname) }
+            var isInEditMode by remember { mutableStateOf(loggedUser.value.nickname.isEmpty()) }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -255,7 +258,7 @@ class UserSetDataActivity : ComponentActivity() {
                             return@SaveButton
                         }
                         isInEditMode = false
-                        loggedUser.nickname = nickname
+                        loggedUser.value.nickname = nickname
                     }
                 }
             }
@@ -263,8 +266,8 @@ class UserSetDataActivity : ComponentActivity() {
 
         @Composable
         fun ChangeCity() {
-            var city by remember { mutableStateOf(loggedUser.city) }
-            var isInEditMode by remember { mutableStateOf(loggedUser.city.isEmpty()) }
+            var city by remember { mutableStateOf(loggedUser.value.city) }
+            var isInEditMode by remember { mutableStateOf(loggedUser.value.city.isEmpty()) }
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -287,7 +290,7 @@ class UserSetDataActivity : ComponentActivity() {
                             return@SaveButton
                         }
                         isInEditMode = false
-                        loggedUser.city = city
+                        loggedUser.value.city = city
                     }
                 } else {
                     EditButton(onClick = { isInEditMode = true })

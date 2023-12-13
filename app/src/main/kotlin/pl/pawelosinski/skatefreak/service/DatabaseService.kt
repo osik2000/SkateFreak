@@ -19,10 +19,10 @@ class DatabaseService {
     private val storage = Firebase.storage
 
 
-    fun changeUserData() {
+    fun updateUserData() {
         // Write a message to the database
-        val myRef = database.getReference("users/${loggedUser.firebaseId}")
-        myRef.setValue(loggedUser).addOnSuccessListener {
+        val myRef = database.getReference("users/${loggedUser.value.firebaseId}")
+        myRef.setValue(loggedUser.value).addOnSuccessListener {
             Log.d("DataService", "User Data saved successfully.")
         }.addOnFailureListener {
             Log.e("DataService", "Error writing data", it)
@@ -33,12 +33,12 @@ class DatabaseService {
         Log.d("DataService", "getUserById: $id")
 
         database.getReference("users").child(id).get().addOnSuccessListener {
-            loggedUser = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
-            Log.d("DataService", "Got value $loggedUser")
+            loggedUser.value = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
+            Log.d("DataService", "Got value ${loggedUser.value}")
             onSuccess()
         }.addOnFailureListener{
             Log.e("DataService", "Error getting data", it)
-            loggedUser = User.getUserFromFirebaseUser(Firebase.auth.currentUser)
+            loggedUser.value = User.getUserFromFirebaseUser(Firebase.auth.currentUser)
             onFail()
         }
     }
@@ -49,7 +49,7 @@ class DatabaseService {
         var user = User()
         database.getReference("users").child(id).get().addOnSuccessListener {
             user = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
-            Log.d("DataService", "Got value $loggedUser")
+            Log.d("DataService", "Got value ${loggedUser.value}")
             onSuccess(user)
         }.addOnFailureListener{
             Log.e("DataService", "Error getting data", it)

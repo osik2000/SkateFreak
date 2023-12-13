@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
         val currentUser = Firebase.auth.currentUser ?: return false
         databaseService.setLoggedUserById(currentUser.uid, onSuccess = {
             isUserLoggedIn = true
-            if (loggedUser.checkRequiredData()) {
+            if (loggedUser.value.checkRequiredData()) {
                 val intent = Intent(this, MainMenuActivity::class.java)
                 startActivity(intent)
                 finish()

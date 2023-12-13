@@ -5,8 +5,9 @@ data class TrickRecord(
     val userID: String = "",
     val trickID: String = "",
     val date: String = "",
+    val title: String = "",
     val userDescription: String = "",
     val videoUrl: String = "",
-    val isFavorite: Boolean = false, //TODO chyba nie
+    val usernamesWhoLiked: MutableList<String> = mutableListOf(),
 ) {
 }

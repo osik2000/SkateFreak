@@ -20,23 +20,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
-import pl.pawelosinski.skatefreak.ui.auth.SignOutButton
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import pl.pawelosinski.skatefreak.local.ThemePreferences
+import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.isDarkMode
+import pl.pawelosinski.skatefreak.service.SignOutButton
+import pl.pawelosinski.skatefreak.ui.common.Screens
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
+    val context = LocalContext.current
 
     // Notifications
     var notificationsEnabled by remember { mutableStateOf(true) }
 
     // Theme
-    val themePreferences = ThemePreferences(LocalContext.current)
+    val themePreferences = ThemePreferences(context)
     val currentTheme = if (isDarkMode) "Dark" else "Light"
     var selectedTheme by remember { mutableStateOf(currentTheme) }
     val themes = listOf("Light", "Dark")
@@ -77,8 +79,17 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 SignOutButton(signOut = {
-                    Firebase.auth.signOut()
-                }) // TODO repair sign out
+                    firebaseAuthService.signOut(onComplete = {
+                        //navigate by navController to Screens.Login.route without backstack
+                        navController.navigate(Screens.Login.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    })
+                })
             }
         }
     }
