@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.service.databaseService
 import pl.pawelosinski.skatefreak.ui.common.myToast
@@ -30,7 +31,7 @@ import pl.pawelosinski.skatefreak.ui.common.myToast
 fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
     val context = LocalContext.current
 
-    var isFavorite by remember { mutableStateOf(trickRecord.isFavorite) }
+    var isFavorite by remember { mutableStateOf(loggedUser.value.favoriteTrickRecords.contains(trickRecord.id)) }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -40,11 +41,14 @@ fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
             name = "FavoriteTrickRecord",
             icon = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
             onClick = {
-                isFavorite = !isFavorite
+
                 databaseService.addTrickRecordToFavorites( // TODO zrobić po stronie apki wysylanie zaktualizowanego usera do bazy danych
                     userID = trickRecord.userID,
                     trickRecordID = trickRecord.id,
-                    onSuccess = { myToast(context = context, message = it) }
+                    onSuccess = {
+                        myToast(context = context, message = it)
+                        isFavorite = !isFavorite
+                    }
                 )
             }
         )

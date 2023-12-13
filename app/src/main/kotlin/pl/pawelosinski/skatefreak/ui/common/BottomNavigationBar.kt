@@ -1,7 +1,10 @@
 package pl.pawelosinski.skatefreak.ui.common
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
@@ -20,6 +23,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -32,6 +37,7 @@ import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
 import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import pl.pawelosinski.skatefreak.ui.tricks.info.TricksScreen
+import pl.pawelosinski.skatefreak.ui.tricks.record.add.AddRecordScreen
 
 @Composable
 fun BottomNavigationBar() {
@@ -48,8 +54,9 @@ fun BottomNavigationBar() {
             navigationSelectedItem = when (destination.route) {
                 Screens.Home.route -> 0
                 Screens.Tricks.route -> 1
-                Screens.Profile.route -> 2
-                Screens.Settings.route -> 3
+                Screens.AddRecord.route -> 2
+                Screens.Profile.route -> 3
+                Screens.Settings.route -> 4
                 else -> navigationSelectedItem
             }
         }
@@ -63,34 +70,83 @@ fun BottomNavigationBar() {
                 //getting the list of bottom navigation items for our data class
                 BottomNavigationItem().bottomNavigationItems().forEachIndexed {index,navigationItem ->
 
-                    //iterating all items with their respective indexes
-                    NavigationBarItem(
-                        selected = index == navigationSelectedItem,
-                        label = {
-                            Text(navigationItem.title)
-                        },
-                        icon = {
-                            if (navigationItem.icon != Icons.Default.Warning)
-                                Icon(
-                                    imageVector = navigationItem.icon,
-                                    contentDescription = navigationItem.title)
-                            else
-                                Icon(
-                                    imageVector = ImageVector.vectorResource(navigationItem.resource),
-                                    contentDescription = navigationItem.title)
-                        },
-                        // used to handle click events of navigation items
-                        onClick = {
-                            navigationSelectedItem = index
-                            navController.navigate(navigationItem.route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                    if(navigationItem.route == "addRecord"){
+                        Surface(
+                            modifier = Modifier
+                                .weight(1f)
+                                .wrapContentSize(),
+//                                .border(1.dp, MaterialTheme.colorScheme.background),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            NavigationBarItem(
+                                selected = false,
+                                label = {
+                                    Text(navigationItem.title)
+                                },
+                                icon = {
+                                    if (navigationItem.icon != Icons.Default.Warning)
+                                        Icon(
+                                            imageVector = navigationItem.icon,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            contentDescription = navigationItem.title,
+                                            modifier = Modifier
+                                                .size(36.dp)
+                                                .align(alignment = androidx.compose.ui.Alignment.CenterVertically)
+                                                // thickness of the icon
+                                                .border(1.dp, MaterialTheme.colorScheme.primary)
+                                        )
+                                    else
+                                        Icon(
+                                            imageVector = ImageVector.vectorResource(navigationItem.resource),
+                                            contentDescription = navigationItem.title)
+                                },
+                                // used to handle click events of navigation items
+                                onClick = {
+                                    navigationSelectedItem = index
+                                    navController.navigate(navigationItem.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                },
+                                modifier = Modifier
+                                    .wrapContentSize()
+                            )
                         }
-                    )
+                    }
+                    else {
+                        //iterating all items with their respective indexes
+                        NavigationBarItem(
+                            selected = index == navigationSelectedItem,
+                            label = {
+                                Text(navigationItem.title)
+                            },
+                            icon = {
+                                if (navigationItem.icon != Icons.Default.Warning)
+                                    Icon(
+                                        imageVector = navigationItem.icon,
+                                        contentDescription = navigationItem.title)
+                                else
+                                    Icon(
+                                        imageVector = ImageVector.vectorResource(navigationItem.resource),
+                                        contentDescription = navigationItem.title)
+                            },
+                            // used to handle click events of navigation items
+                            onClick = {
+                                navigationSelectedItem = index
+                                navController.navigate(navigationItem.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
+                                    }
+                                    launchSingleTop = true
+                                    restoreState = true
+                                }
+                            }
+                        )
+
+                    }
                 }
             }
         }
@@ -105,6 +161,9 @@ fun BottomNavigationBar() {
             }
             composable(Screens.Tricks.route) {
                 TricksScreen(navController = navController)
+            }
+            composable(Screens.AddRecord.route) {
+                AddRecordScreen(navController = navController)
             }
             composable(Screens.Profile.route) {
                 ProfileScreen(navController = navController)

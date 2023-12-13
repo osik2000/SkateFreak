@@ -1,8 +1,11 @@
 package pl.pawelosinski.skatefreak.ui.common
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -20,13 +23,17 @@ data class BottomNavigationItem(
         return listOf(
             BottomNavigationItem(
                 route = "home",
-                title = "Menu",
-                icon = Icons.Default.Home
+                title = "Klipy",
+                icon = Icons.Default.PlayArrow
             ),
             BottomNavigationItem(
                 route = "tricks",
-                title = "Tricki",
-                resource = R.drawable.baseline_skateboarding_24
+                title = "Triki",
+                icon = Icons.Default.Info
+            ),
+            BottomNavigationItem(
+                route = "addRecord",
+                icon = Icons.Default.Add
             ),
             BottomNavigationItem(
                 route = "profile",
@@ -35,7 +42,7 @@ data class BottomNavigationItem(
             ),
             BottomNavigationItem(
                 route = "settings",
-                title = "Ustawienia",
+                title = "Opcje",
                 icon = Icons.Default.Settings
             ),
         )
