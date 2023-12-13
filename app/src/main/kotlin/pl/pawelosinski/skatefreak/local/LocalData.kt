@@ -1,15 +1,16 @@
 package pl.pawelosinski.skatefreak.local
 
+import androidx.compose.runtime.mutableStateOf
 import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService
 
-var loggedUser: User = User()
+var loggedUser = mutableStateOf(User())
 var isDarkMode = true
 lateinit var firebaseAuthService: FirebaseAuthService
-val tricksCategories = listOf("Zwykłe", "Flip", "Grind", "Grab", "Slide", "Old School", "Other")
-val tricksDifficulties = listOf("Easy", "Medium", "Hard", "Pro")
+//val tricksCategories = listOf("Zwykłe", "Flip", "Grind", "Grab", "Slide", "Old School", "Other")
+//val tricksDifficulties = listOf("Easy", "Medium", "Hard", "Pro")
 val allTricks: List<TrickInfo> = listOf(
     TrickInfo(
         "1",
@@ -59,8 +60,7 @@ val allTrickRecords = listOf(
         trickID = "5",
         date = "2021-01-01",
         userDescription = "My first Drop In!",
-        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
-        isFavorite = true
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26"
     ),
     TrickRecord(
         id = "2",
@@ -68,8 +68,7 @@ val allTrickRecords = listOf(
         trickID = "1",
         date = "2021-01-01",
         userDescription = "My first Ollie!",
-        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
-        isFavorite = true
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26"
     ),
     TrickRecord(
         id = "3",
@@ -77,8 +76,7 @@ val allTrickRecords = listOf(
         trickID = "2",
         date = "2021-01-01",
         userDescription = "My first Kickflip!",
-        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
-        isFavorite = true
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26"
     ),
     TrickRecord(
         id = "4",
@@ -86,8 +84,7 @@ val allTrickRecords = listOf(
         trickID = "3",
         date = "2021-01-01",
         userDescription = "My first Heelflip!",
-        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
-        isFavorite = true
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26"
     ),
     TrickRecord(
         id = "5",
@@ -95,7 +92,6 @@ val allTrickRecords = listOf(
         trickID = "4",
         date = "2021-01-01",
         userDescription = "My first Pop Shove-it!",
-        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26",
-        isFavorite = true
+        videoUrl = "https://firebasestorage.googleapis.com/v0/b/skatefreak-3b665.appspot.com/o/trickRecord%2Fvideo%2F3%20git.mov?alt=media&token=0c9c8abc-adcd-45e7-84af-6061375d1a26"
     )
 )

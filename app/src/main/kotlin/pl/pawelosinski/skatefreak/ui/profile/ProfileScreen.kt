@@ -48,11 +48,11 @@ fun ProfileScreen(navController: NavController) {
             ) {
                 ScreenTitle(text = "Mój Profil")
                 UserAvatar()
-                UserDataTextRow("Imię i nazwisko", loggedUser.name)
-                UserDataTextRow("Nick", loggedUser.nickname)
-                UserDataTextRow("Email", loggedUser.email)
-                UserDataTextRow("Numer Telefonu", loggedUser.phoneNumber)
-                UserDataTextRow("Miasto", loggedUser.city)
+                UserDataTextRow("Imię i nazwisko", loggedUser.value.name)
+                UserDataTextRow("Nick", loggedUser.value.nickname)
+                UserDataTextRow("Email", loggedUser.value.email)
+                UserDataTextRow("Numer Telefonu", loggedUser.value.phoneNumber)
+                UserDataTextRow("Miasto", loggedUser.value.city)
             }
         }
     }
@@ -62,7 +62,7 @@ fun ProfileScreen(navController: NavController) {
 fun UserAvatar() {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current)
-            .data(loggedUser.photoUrl)
+            .data(loggedUser.value.photoUrl)
             .crossfade(true)
             .build(), // Ładujemy obraz z URL
         placeholder = painterResource(R.drawable.baseline_skateboarding_24), // Placeholder

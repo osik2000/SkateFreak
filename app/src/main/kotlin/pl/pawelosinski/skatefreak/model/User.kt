@@ -11,7 +11,7 @@ data class User(
     var photoUrl: String = "",
     var nickname: String = "",
     var city: String = "",
-    var favoriteTrickRecords: List<String> = listOf(),
+    var favoriteTrickRecords: MutableList<String> = mutableListOf(),
 ) {
 
     override fun toString(): String {
@@ -39,7 +39,7 @@ data class User(
     }
 
     companion object {
-        fun getUserFromFirebaseUser(firebaseUser: FirebaseUser?): User {
+        fun getUserFromFirebaseUser(firebaseUser: FirebaseUser?, phoneNumber: String = ""): User {
             if (firebaseUser == null || firebaseUser.uid.isEmpty()) {
                 Log.d("User", "getUserFromFirebaseUser: firebaseUser is null")
             }
@@ -51,7 +51,7 @@ data class User(
                 name = firebaseUser?.displayName ?: "",
                 phoneNumber = firebaseUser?.phoneNumber ?: "",
                 city = "",
-                favoriteTrickRecords = listOf()
+                favoriteTrickRecords = mutableListOf(),
             )
         }
     }
