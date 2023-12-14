@@ -6,8 +6,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,7 +46,7 @@ fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
             onClick = {
 
                 databaseService.addTrickRecordToFavorites( // TODO zrobić po stronie apki wysylanie zaktualizowanego usera do bazy danych
-                    userID = trickRecord.userID,
+                    userID = loggedUser.value.firebaseId,
                     trickRecordID = trickRecord.id,
                     onSuccess = {
                         myToast(context = context, message = it)
@@ -54,11 +57,11 @@ fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
         )
         Spacer(modifier = Modifier.height(10.dp))
         UserAction(
-            icon = Icons.Default.Send,
+            icon = Icons.Default.KeyboardArrowUp,
         )
         Spacer(modifier = Modifier.height(10.dp))
         UserAction(
-            icon = Icons.Default.MoreVert,
+            icon = Icons.Default.KeyboardArrowDown,
         )
     }
 }
