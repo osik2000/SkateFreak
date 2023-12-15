@@ -61,15 +61,17 @@ dependencies {
 //
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.8.1")
+    implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
-    implementation("androidx.navigation:navigation-compose:2.7.5")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
 
     // When using the BoM, don't specify versions in compose dependencies
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-core") // TODO check usability
+    implementation("androidx.compose.material:material-icons-extended") // TODO check usability
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
@@ -84,8 +86,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
-    // Tiktok-like scrolling
-    implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha")
+    // Tiktok-like scrolling // TODO Check usability
+    implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha") // TODO Check usability
 
     // Coil - e.g. Photos from URL
     implementation("io.coil-kt:coil-compose:2.5.0")
