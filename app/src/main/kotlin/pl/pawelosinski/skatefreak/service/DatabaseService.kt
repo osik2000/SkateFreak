@@ -125,7 +125,7 @@ class DatabaseService {
     fun addTrickRecordToFavorites(trickRecord: TrickRecord, onSuccess: (String) -> Unit = {}): String {
         val userID = loggedUser.value.firebaseId
         val userFavoritesRef = database.getReference("users/$userID/favoriteTrickRecords")
-        val trickRecordUsernamesWhoLikedRef = database.getReference("tricks/records/${trickRecord.id}/usernamesWhoLiked")
+        val trickRecordusersWhoSetAsFavoriteRef = database.getReference("tricks/records/${trickRecord.id}/usersWhoSetAsFavorite")
         var result = trickRecord.usersWhoSetAsFavorite.size.toString()
 
         if (trickRecord.usersWhoSetAsFavorite.contains(userID) && loggedUser.value.favoriteTrickRecords.contains(trickRecord.id)) {
@@ -135,11 +135,11 @@ class DatabaseService {
                 Log.d("DataService", "Trick record removed from favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.remove(userID)
                 result = trickRecord.usersWhoSetAsFavorite.size.toString()
-                trickRecordUsernamesWhoLikedRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
-                    Log.d("DataService", "Trick record removed from favorites. (trickRecordUsernamesWhoLikedRef)")
+                trickRecordusersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
+                    Log.d("DataService", "Trick record removed from favorites. (trickRecordusersWhoSetAsFavoriteRef)")
                     onSuccess("Usunięto z ulubionych.")
                 }.addOnFailureListener {
-                    Log.e("DataService", "Trick has not been removed from favorites (trickRecordUsernamesWhoLikedRef)", it)
+                    Log.e("DataService", "Trick has not been removed from favorites (trickRecordusersWhoSetAsFavoriteRef)", it)
                 }
             }.addOnFailureListener {
                 Log.e("DataService", "Trick has not been removed from favorites (userFavoritesRef)", it)
@@ -153,11 +153,11 @@ class DatabaseService {
                 Log.d("DataService", "Trick record added to favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.add(userID)
                 result = trickRecord.usersWhoSetAsFavorite.size.toString()
-                trickRecordUsernamesWhoLikedRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
-                    Log.d("DataService", "Trick record added to favorites. (trickRecordUsernamesWhoLikedRef)")
+                trickRecordusersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
+                    Log.d("DataService", "Trick record added to favorites. (trickRecordusersWhoSetAsFavoriteRef)")
                     onSuccess("Dodano do ulubionych.")
                 }.addOnFailureListener {
-                    Log.e("DataService", "Trick has not been added to favorites (trickRecordUsernamesWhoLikedRef)", it)
+                    Log.e("DataService", "Trick has not been added to favorites (trickRecordusersWhoSetAsFavoriteRef)", it)
                 }
             }.addOnFailureListener {
                 Log.e("DataService", "Trick has not been added to favorites (userFavoritesRef)", it)
