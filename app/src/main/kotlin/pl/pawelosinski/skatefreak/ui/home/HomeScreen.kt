@@ -6,6 +6,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import pl.pawelosinski.skatefreak.local.LocalDataInit
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import pl.pawelosinski.skatefreak.ui.tricks.record.TrickRecordsScreen
@@ -18,33 +19,8 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(15.dp),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center
-//            ) {
-//                Box(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(200.dp)
-//                        .padding(horizontal = 15.dp, vertical = 10.dp)
-//                        .clip(MaterialTheme.shapes.large)
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.Home,
-//                        contentDescription = "home_screen_bg",
-//                        modifier = Modifier.fillMaxSize()
-//                    )
-//                }
-//                Text(
-//                    "Home Screen",
-//                    style = MaterialTheme.typography.titleLarge,
-//                    modifier = Modifier.padding(vertical = 20.dp)
-//                )
-//                TrickRecordComposable(trickRecord = allTrickRecords[0])
-                TrickRecordsScreen()
+            LocalDataInit.loadCurrentRecordData() //TODO crashes when no data
+            TrickRecordsScreen()
             //}
         }
     }
