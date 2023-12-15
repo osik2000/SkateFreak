@@ -17,11 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import pl.pawelosinski.skatefreak.local.isDarkMode
-import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.ui.profile.ScreenTitle
-import pl.pawelosinski.skatefreak.ui.profile.UserAvatar
-import pl.pawelosinski.skatefreak.ui.profile.UserDataTextRow
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 @Composable

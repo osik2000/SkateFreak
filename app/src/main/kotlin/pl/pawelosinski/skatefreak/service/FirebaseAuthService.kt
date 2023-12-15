@@ -67,7 +67,7 @@ class FirebaseAuthService(val activity: ComponentActivity) {
     var auth: FirebaseAuth = FirebaseAuth.getInstance()
 
     // Initialize the Activity Result Launcher
-    val signInResultLauncher = currentActivity.value.registerForActivityResult(
+    private val signInResultLauncher = currentActivity.value.registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
@@ -359,7 +359,7 @@ class FirebaseAuthService(val activity: ComponentActivity) {
         const val PHONE_TAG = "PhoneAuthActivity"
 
         // PHONE AUTH VARIABLES
-        var phoneAuthUserData = mutableStateOf<PhoneAuthUserData>(PhoneAuthUserData())
+        var phoneAuthUserData = mutableStateOf(PhoneAuthUserData())
 
         var storedVerificationId= mutableStateOf("")
         var resendToken = mutableStateOf<PhoneAuthProvider.ForceResendingToken?>(null)
@@ -576,7 +576,7 @@ fun PhoneLoginForm(firebaseAuthService: FirebaseAuthService) {
             label = { Text("Phone (+48XXXXXXXXX)") },
             singleLine = true
         )
-        Log.d(PHONE_TAG, "isAuthInProgress: ${isAuthInProgress}")
+        Log.d(PHONE_TAG, "isAuthInProgress: $isAuthInProgress")
         if (isAuthInProgress) {
             val pattern = remember { Regex("^\\d?\\d?\\d?\\d?\\d?\\d?$") }
             OutlinedTextField(
