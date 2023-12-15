@@ -92,37 +92,3 @@ fun ScreenTitle(text: String) {
         modifier = Modifier.padding(vertical = 20.dp)
     )
 }
-
-//@Composable
-//fun ProfileScreen(navController: NavController) {
-//    SkateFreakTheme (darkTheme = isDarkMode){
-//        Surface(
-//            modifier = Modifier.fillMaxSize(),
-//            color = MaterialTheme.colorScheme.background
-//        ) {
-//            Column(
-//                modifier = Modifier.fillMaxSize().padding(15.dp),
-//                horizontalAlignment = Alignment.CenterHorizontally,
-//                verticalArrangement = Arrangement.Center
-//            ) {
-//                Box(
-//                    modifier = Modifier.fillMaxWidth()
-//                        .height(200.dp)
-//                        .padding(horizontal = 15.dp, vertical = 10.dp)
-//                        .clip(MaterialTheme.shapes.large)
-//                ) {
-//                    Icon(
-//                        imageVector = Icons.Default.Person,
-//                        contentDescription = "profile_screen_bg",
-//                        modifier = Modifier.fillMaxSize()
-//                    )
-//                }
-//                Text(
-//                    "Profile Screen",
-//                    style = MaterialTheme.typography.titleLarge,
-//                    modifier = Modifier.padding(vertical = 20.dp)
-//                )
-//            }
-//        }
-//    }
-//}

@@ -9,5 +9,4 @@ data class TrickRecord(
     val userDescription: String = "",
     val videoUrl: String = "",
     val usersWhoSetAsFavorite: MutableList<String> = mutableListOf(),
-) {
-}
+)
