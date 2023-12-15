@@ -88,7 +88,7 @@ class DatabaseService {
     fun setDefaultTrickInfo() {
         // Write a message to the database
 
-        val tricksMap = allTricks.associateBy { it.id }
+        val tricksMap = allTrickInfo.associateBy { it.id }
 
         val myRef = database.getReference("tricks/info/")
         myRef.setValue(tricksMap).addOnSuccessListener {

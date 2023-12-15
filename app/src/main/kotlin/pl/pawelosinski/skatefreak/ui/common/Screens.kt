@@ -7,5 +7,8 @@ sealed class Screens(val route : String) {
     object Profile : Screens("profile")
     object Settings : Screens("settings")
     object Login : Screens("login")
+    object TrickInfo : Screens("trickInfo/{trickId}") {
+        fun createRoute(trickId: String) = "trickInfo/$trickId"
+    }
 
 }
