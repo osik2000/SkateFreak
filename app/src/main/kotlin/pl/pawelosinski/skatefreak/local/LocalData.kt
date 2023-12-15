@@ -9,6 +9,8 @@ import pl.pawelosinski.skatefreak.service.FirebaseAuthService
 var loggedUser = mutableStateOf(User())
 var isDarkMode = true
 lateinit var firebaseAuthService: FirebaseAuthService
+var currentRecordLikes = mutableStateOf("...")
+var currentRecordCreator = mutableStateOf(User())
 //val tricksCategories = listOf("Zwykłe", "Flip", "Grind", "Grab", "Slide", "Old School", "Other")
 //val tricksDifficulties = listOf("Easy", "Medium", "Hard", "Pro")
 val allTricks: List<TrickInfo> = listOf(

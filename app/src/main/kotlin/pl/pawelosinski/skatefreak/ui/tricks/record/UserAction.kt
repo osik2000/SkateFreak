@@ -24,11 +24,13 @@ import androidx.compose.ui.unit.dp
 fun UserAction(
     name: String = "UserAction",
     icon: ImageVector,
+    colored: Boolean = false,
+    color: Color = Color.White,
     onClick: () -> Unit = {}
 ) {
     Icon(
         imageVector = icon,
-        tint = Color.White,
+        tint = if(colored) color else Color.White,
         modifier = Modifier
             .clip(CircleShape)
             .background(color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f))

@@ -7,14 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,9 +25,9 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import pl.pawelosinski.skatefreak.R
+import pl.pawelosinski.skatefreak.local.currentRecordCreator
+import pl.pawelosinski.skatefreak.local.currentRecordLikes
 import pl.pawelosinski.skatefreak.model.TrickRecord
-import pl.pawelosinski.skatefreak.model.User
-import pl.pawelosinski.skatefreak.service.databaseService
 
 /**
  * Footer user data
@@ -42,10 +42,7 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
         modifier = modifier,
         verticalArrangement = Arrangement.Center
     ) {
-        var trickCreator by remember { mutableStateOf(User()) }
-            databaseService.getUserById(trickRecord.userID, onSuccess = {
-                trickCreator = it
-            })
+        currentRecordLikes.value = trickRecord.usersWhoSetAsFavorite.size.toString()
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -59,7 +56,7 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
             ) {
                 val painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
-                        .data(data = trickCreator.photoUrl.let { it.ifEmpty { R.drawable.rounded_person_24 } })
+                        .data(data = currentRecordCreator.value.photoUrl.let { it.ifEmpty { R.drawable.rounded_person_24 } })
                         .apply(block = fun ImageRequest.Builder.() {
                             transformations(
                                 CircleCropTransformation()
@@ -73,18 +70,19 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
             }
             Spacer(modifier = Modifier.width(horizontalPadding))
             Text(
-                text = "@${trickCreator.nickname}",
+                text = "@${currentRecordCreator.value.nickname}",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.labelMedium
             )
 
-//            Spacer(modifier = Modifier.width(horizontalPadding))
-//            Icon(
-//                modifier = Modifier.size(20.dp),
-//                imageVector = Icons.Outlined.Favorite,
-//                contentDescription = "Bookmark"
-//            )
+            Spacer(modifier = Modifier.width(horizontalPadding))
+            Icon(
+                modifier = Modifier.size(20.dp),
+                imageVector = Icons.Outlined.Favorite,
+                contentDescription = "Favorites counter"
+            )
+            Text(text = " ${currentRecordLikes.value}", color = Color.White, style = MaterialTheme.typography.labelMedium)
 //            Icon(
 //                modifier = Modifier.size(15.dp),
 //                imageVector = Icons.Outlined.Add,
