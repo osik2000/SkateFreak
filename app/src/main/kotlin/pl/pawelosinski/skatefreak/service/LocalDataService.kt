@@ -1,7 +1,7 @@
 package pl.pawelosinski.skatefreak.service
 
 import pl.pawelosinski.skatefreak.local.allTrickRecords
-import pl.pawelosinski.skatefreak.local.allTricks
+import pl.pawelosinski.skatefreak.local.allTrickInfo
 import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
 
@@ -12,7 +12,7 @@ class LocalDataService {
         }
 
         fun getTrickInfo(id: String) : TrickInfo {
-            return allTricks.find { it.id == id } ?: TrickInfo()
+            return allTrickInfo.find { it.id == id } ?: TrickInfo()
         }
     }
 }
