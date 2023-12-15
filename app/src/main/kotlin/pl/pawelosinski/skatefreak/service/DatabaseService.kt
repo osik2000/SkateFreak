@@ -6,7 +6,7 @@ import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
 import pl.pawelosinski.skatefreak.local.allTrickRecords
-import pl.pawelosinski.skatefreak.local.allTricks
+import pl.pawelosinski.skatefreak.local.allTrickInfo
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
@@ -63,6 +63,46 @@ class DatabaseService {
             onFail()
         }
         return user
+    }
+
+    fun getAllTrickRecords(onSuccess : (MutableList<TrickRecord>) -> Unit = {}, onFail : () -> Unit = {}) {
+        Log.d("DataService", "getAllTrickRecords")
+        val trickRecordsRef = database.getReference("tricks/records")
+        val trickRecordList = mutableListOf<TrickRecord>()
+
+        trickRecordsRef.get().addOnSuccessListener {
+            for (postSnapshot in it.children) {
+                val trickRecord = postSnapshot.getValue(TrickRecord::class.java)
+
+                if (trickRecord != null) {
+                    trickRecordList.add(trickRecord)
+                }
+            }
+            onSuccess(trickRecordList)
+        }.addOnFailureListener{
+            Log.e("DataService", "Error getting data", it)
+            onFail()
+        }
+    }
+
+    fun getAllTrickInfo(onSuccess : (MutableList<TrickInfo>) -> Unit = {}, onFail : () -> Unit = {}) {
+        Log.d("DataService", "getAllTrickRecords")
+        val trickInfoRef = database.getReference("tricks/info")
+        val trickInfoList = mutableListOf<TrickInfo>()
+
+        trickInfoRef.get().addOnSuccessListener {
+            for (postSnapshot in it.children) {
+                val trickInfo = postSnapshot.getValue(TrickInfo::class.java)
+
+                if (trickInfo != null) {
+                    trickInfoList.add(trickInfo)
+                }
+            }
+            onSuccess(trickInfoList)
+        }.addOnFailureListener{
+            Log.e("DataService", "Error getting data", it)
+            onFail()
+        }
     }
 
     fun getTrickInfo(
@@ -125,7 +165,7 @@ class DatabaseService {
     fun addTrickRecordToFavorites(trickRecord: TrickRecord, onSuccess: (String) -> Unit = {}): String {
         val userID = loggedUser.value.firebaseId
         val userFavoritesRef = database.getReference("users/$userID/favoriteTrickRecords")
-        val trickRecordusersWhoSetAsFavoriteRef = database.getReference("tricks/records/${trickRecord.id}/usersWhoSetAsFavorite")
+        val trickRecordUsersWhoSetAsFavoriteRef = database.getReference("tricks/records/${trickRecord.id}/usersWhoSetAsFavorite")
         var result = trickRecord.usersWhoSetAsFavorite.size.toString()
 
         if (trickRecord.usersWhoSetAsFavorite.contains(userID) && loggedUser.value.favoriteTrickRecords.contains(trickRecord.id)) {
@@ -135,7 +175,7 @@ class DatabaseService {
                 Log.d("DataService", "Trick record removed from favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.remove(userID)
                 result = trickRecord.usersWhoSetAsFavorite.size.toString()
-                trickRecordusersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
+                trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
                     Log.d("DataService", "Trick record removed from favorites. (trickRecordusersWhoSetAsFavoriteRef)")
                     onSuccess("Usunięto z ulubionych.")
                 }.addOnFailureListener {
@@ -153,7 +193,7 @@ class DatabaseService {
                 Log.d("DataService", "Trick record added to favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.add(userID)
                 result = trickRecord.usersWhoSetAsFavorite.size.toString()
-                trickRecordusersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
+                trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
                     Log.d("DataService", "Trick record added to favorites. (trickRecordusersWhoSetAsFavoriteRef)")
                     onSuccess("Dodano do ulubionych.")
                 }.addOnFailureListener {
