@@ -26,9 +26,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.service.LoginScreen
@@ -36,6 +38,7 @@ import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
 import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
+import pl.pawelosinski.skatefreak.ui.tricks.info.TrickInfoComposable
 import pl.pawelosinski.skatefreak.ui.tricks.info.TricksScreen
 import pl.pawelosinski.skatefreak.ui.tricks.record.add.AddRecordScreen
 
@@ -161,6 +164,13 @@ fun BottomNavigationBar() {
             }
             composable(Screens.Tricks.route) {
                 TricksScreen(navController = navController)
+            }
+            composable(
+                route = Screens.TrickInfo.route,
+                arguments = listOf(navArgument("trickId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val trickId = backStackEntry.arguments?.getString("trickId")
+                TrickInfoComposable(trickId = trickId ?: "", navController = navController)
             }
             composable(Screens.AddRecord.route) {
                 AddRecordScreen(navController = navController)
