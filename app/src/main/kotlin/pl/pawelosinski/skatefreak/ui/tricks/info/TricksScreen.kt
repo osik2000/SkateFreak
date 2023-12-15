@@ -39,10 +39,10 @@ fun TricksScreen(navController: NavController, trickList: MutableList<TrickInfo>
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(onClick = { sortByCategory = true }) {
-                Text("Sort by Category")
+                Text("Grupuj według kategorii")
             }
             Button(onClick = { sortByCategory = false }) {
-                Text("Sort by Difficulty")
+                Text("Grupuj według poziomu trudności")
             }
         }
 

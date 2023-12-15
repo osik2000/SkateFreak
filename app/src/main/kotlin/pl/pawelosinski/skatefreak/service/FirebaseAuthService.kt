@@ -505,7 +505,7 @@ fun SignOutButton(signOut : () -> Unit = {
         },
         shape = MaterialTheme.shapes.small
     ) {
-        Text(text = "Sign Out")
+        Text(text = "Wyloguj się")
     }
 }
 

@@ -49,25 +49,25 @@ fun SettingsScreen(navController: NavController) {
         Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(
-                    title = { Text("Settings") }
+                    title = { Text("Opcje") }
                 )
             }
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
                 // Przełącznik
                 RowSettingsItem(
-                    title = "Enable Notifications",
-                    description = "Turn on or off notifications"
+                    title = "Ustaw powiadomienia",
+                    description = "Włącz lub wyłącz powiadomienia"
                 ) {
                     Switch(checked = notificationsEnabled, onCheckedChange = { notificationsEnabled = it })
                 }
 
                 // Przyciski radio
-                Text("Select Theme", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
+                Text("Wybierz motyw", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
                 themes.forEach { theme ->
                     RowSettingsItem(
                         title = theme,
-                        description = "Set application theme to $theme"
+                        description = "Ustaw motyw aplikacji na  ${if(theme == "Dark") "ciemny" else "jasny"}"
                     ) {
                         RadioButton(
                             selected = theme == selectedTheme,
