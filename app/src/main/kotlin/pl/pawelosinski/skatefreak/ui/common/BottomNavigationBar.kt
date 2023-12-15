@@ -1,5 +1,6 @@
 package pl.pawelosinski.skatefreak.ui.common
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,7 +24,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -32,12 +32,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
-import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.service.LoginScreen
 import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
 import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
-import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import pl.pawelosinski.skatefreak.ui.tricks.info.TrickInfoComposable
 import pl.pawelosinski.skatefreak.ui.tricks.info.TricksScreen
 import pl.pawelosinski.skatefreak.ui.tricks.record.add.AddRecordScreen
@@ -138,13 +136,21 @@ fun BottomNavigationBar() {
                             },
                             // used to handle click events of navigation items
                             onClick = {
-                                navigationSelectedItem = index
-                                navController.navigate(navigationItem.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+                                Log.d("BottomNavigationBar", "currentDestination: ${navController.currentDestination?.route}")
+                                if(navigationItem.route == Screens.Tricks.route &&
+                                    navController.currentDestination?.route?.contains("trickInfo") == true
+                                ){
+                                        navController.navigateUp()
+                                }
+                                else {
+                                    navigationSelectedItem = index
+                                    navController.navigate(navigationItem.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
                                 }
                             }
                         )
