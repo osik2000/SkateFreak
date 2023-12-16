@@ -11,7 +11,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Skateboarding
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -19,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -31,6 +35,8 @@ import coil.request.ImageRequest
 import pl.pawelosinski.skatefreak.R
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
+import pl.pawelosinski.skatefreak.ui.common.Screens
+import pl.pawelosinski.skatefreak.ui.common.avatarModifier
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 @Composable
@@ -59,20 +65,30 @@ fun ProfileScreen(navController: NavController) {
 
 @Composable
 fun UserAvatar() {
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(loggedUser.value.photoUrl)
-            .crossfade(true)
-            .build(),
-        placeholder = painterResource(R.drawable.rounded_person_24),
-        contentDescription = "Profile Picture",
-        modifier = Modifier
-            .size(125.dp)
-            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-            .padding(3.dp)
-            .clip(CircleShape),
-        contentScale = ContentScale.Crop
-    )
+    val isDefaultAvatar = loggedUser.value.photoUrl == "null" || loggedUser.value.photoUrl.isEmpty()
+
+
+    if (isDefaultAvatar) {
+        // Używamy Icon dla domyślnego awatara
+        Icon(
+            imageVector = Icons.Filled.Skateboarding,
+            contentDescription = "Profile Picture",
+            tint = MaterialTheme.colorScheme.onBackground,
+            modifier = avatarModifier(borderColor = MaterialTheme.colorScheme.primary)
+        )
+    } else {
+        // Używamy AsyncImage dla awatara użytkownika
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(loggedUser.value.photoUrl)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.rounded_person_24),
+            contentDescription = "Profile Picture",
+            modifier = avatarModifier(borderColor = MaterialTheme.colorScheme.primary),
+            contentScale = ContentScale.Crop
+        )
+    }
 }
 
 @Composable
@@ -111,7 +127,7 @@ fun UserDataTextRow(label: String, value: String) {
 @Composable
 fun EditProfileButton(navController: NavController) {
     Button(
-        onClick = { /* TODO: Navigate to Edit Profile Screen */ },
+        onClick = { navController.navigate(Screens.EditProfile.route) },
         modifier = Modifier.fillMaxWidth()
     ) {
         Text("Edytuj Profil", fontSize = 18.sp)
