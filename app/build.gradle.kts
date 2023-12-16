@@ -87,7 +87,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
     // Tiktok-like scrolling // TODO Check usability
-    implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha") // TODO Check usability
+    //implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha") // TODO Check usability
 
     // Coil - e.g. Photos from URL
     implementation("io.coil-kt:coil-compose:2.5.0")
