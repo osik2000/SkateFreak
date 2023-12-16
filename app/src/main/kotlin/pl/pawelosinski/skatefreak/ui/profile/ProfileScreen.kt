@@ -1,13 +1,17 @@
 package pl.pawelosinski.skatefreak.ui.profile
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,7 +22,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -27,32 +33,25 @@ import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
-
-
 @Composable
 fun ProfileScreen(navController: NavController) {
-
-    SkateFreakTheme (darkTheme = isDarkMode){
+    SkateFreakTheme(darkTheme = isDarkMode) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .padding(16.dp),
             color = MaterialTheme.colorScheme.background
         ) {
             Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Top
             ) {
                 ScreenTitle(text = "Mój Profil")
                 UserAvatar()
-                UserDataTextRow("Imię i nazwisko", loggedUser.value.name)
-                UserDataTextRow("Nick", loggedUser.value.nickname)
-                UserDataTextRow("Email", loggedUser.value.email)
-                UserDataTextRow("Numer Telefonu", loggedUser.value.phoneNumber)
-                UserDataTextRow("Miasto", loggedUser.value.city)
+                Spacer(Modifier.height(16.dp))
+                UserDataSection()
+                Spacer(Modifier.height(16.dp))
+                EditProfileButton(navController)
             }
         }
     }
@@ -64,31 +63,66 @@ fun UserAvatar() {
         model = ImageRequest.Builder(LocalContext.current)
             .data(loggedUser.value.photoUrl)
             .crossfade(true)
-            .build(), // Ładujemy obraz z URL
-        placeholder = painterResource(R.drawable.baseline_skateboarding_24), // Placeholder
+            .build(),
+        placeholder = painterResource(R.drawable.rounded_person_24),
         contentDescription = "Profile Picture",
         modifier = Modifier
-            .width(200.dp)
-            .height(200.dp)
-            .clip(MaterialTheme.shapes.large),
-        contentScale = ContentScale.Fit
+            .size(125.dp)
+            .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+            .padding(3.dp)
+            .clip(CircleShape),
+        contentScale = ContentScale.Crop
     )
 }
 
 @Composable
-fun UserDataTextRow(name: String = "", value: String = "") {
-    Text(
-        "${name}: ${value}",
-        style = MaterialTheme.typography.bodyLarge,
-        modifier = Modifier.padding(vertical = 20.dp)
-    )
+fun UserDataSection() {
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        UserDataTextRow("Imię i nazwisko", loggedUser.value.name)
+        UserDataTextRow("Nick", loggedUser.value.nickname)
+        UserDataTextRow("Email", loggedUser.value.email)
+        UserDataTextRow("Numer Telefonu", loggedUser.value.phoneNumber)
+        UserDataTextRow("Miasto", loggedUser.value.city)
+    }
+}
+
+@Composable
+fun UserDataTextRow(label: String, value: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
+}
+
+@Composable
+fun EditProfileButton(navController: NavController) {
+    Button(
+        onClick = { /* TODO: Navigate to Edit Profile Screen */ },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text("Edytuj Profil", fontSize = 18.sp)
+    }
 }
 
 @Composable
 fun ScreenTitle(text: String) {
     Text(
         text = text,
-        style = MaterialTheme.typography.titleLarge,
+        style = MaterialTheme.typography.headlineMedium,
         modifier = Modifier.padding(vertical = 20.dp)
     )
 }
