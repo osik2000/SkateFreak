@@ -63,7 +63,7 @@ fun TricksScreen(navController: NavController, trickList: MutableList<TrickInfo>
                 }
                 items(tricks) { trick ->
                     TrickTile(trick = trick) {
-                        navController.navigate("trickInfo/${trick.id}")
+                        navController.navigate("tricks/${trick.id}")
                     }
                 }
             }
