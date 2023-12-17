@@ -20,3 +20,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn com.yalantis.ucrop** #TODO check if this is needed
+-keep class com.yalantis.ucrop** { *; } #TODO check if this is needed
+-keep interface com.yalantis.ucrop** { *; } #TODO check if this is needed

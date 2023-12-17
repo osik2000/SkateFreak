@@ -30,6 +30,22 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import pl.pawelosinski.skatefreak.local.loggedUser
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.yalantis.ucrop.UCrop
+import pl.pawelosinski.skatefreak.R
+import pl.pawelosinski.skatefreak.service.databaseService
+import pl.pawelosinski.skatefreak.ui.common.myToast
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,15 +101,47 @@ fun EditProfile(navController: NavController) {
 
 @Composable
 fun ProfileAvatarEditor() {
-    val avatarUrl = loggedUser.value.photoUrl
-    val imagePainter = rememberAsyncImagePainter(avatarUrl)
+    var imageUri by remember { mutableStateOf<Uri?>(Uri.parse(loggedUser.value.photoUrl)) }
+    val context = LocalContext.current
+
+    // Launcher do wyboru obrazu
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Pobieramy URI wybranego obrazu
+            val sourceUri = result.data?.data
+            sourceUri?.let {
+                val destinationUri = Uri.fromFile(File(context.cacheDir, "cropped"))
+                UCrop.of(it, destinationUri)
+                    .withAspectRatio(1f, 1f)
+                    .start(context as Activity)
+                imageUri = destinationUri
+                databaseService.uploadUserAvatar(userID = loggedUser.value.firebaseId, file = destinationUri, onComplete = {
+                    Log.d("EditProfile", "Avatar uploaded")
+                    myToast(context, "Zdjęcie profilowe zostało zmienione")
+                    imageUri = Uri.parse(loggedUser.value.photoUrl)
+                }, onFail = {
+                    Log.d("EditProfile", "Avatar upload failed")
+                    myToast(context, "Zdjęcie profilowe nie zostało zmienione.\n Spróbuj ponownie później.")
+                })
+            }
+        }
+    }
+
 
     Box(
         contentAlignment = Alignment.BottomEnd,
         modifier = Modifier.size(150.dp)
     ) {
+        val painter = if (imageUri != null) {
+            rememberAsyncImagePainter(imageUri)
+        } else {
+            rememberAsyncImagePainter(R.drawable.baseline_skateboarding_24) // placeholder to domyślny obraz
+        }
+
         Image(
-            painter = imagePainter,
+            painter = painter,
             contentDescription = "Profile Picture",
             modifier = Modifier
                 .size(150.dp)
@@ -110,8 +158,12 @@ fun ProfileAvatarEditor() {
                     shape = CircleShape
                 )
                 .clickable {
-                    // TODO: Implement avatar change logic
+                    val pickImageIntent = Intent(Intent.ACTION_PICK)
+                    pickImageIntent.type = "image/*"
+                    imagePickerLauncher.launch(pickImageIntent)
                 }
         )
     }
 }
+
+

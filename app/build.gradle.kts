@@ -86,8 +86,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
-    // Tiktok-like scrolling // TODO Check usability
-    //implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha") // TODO Check usability
+    // image cropping library
+    implementation ("com.github.yalantis:ucrop:2.2.8")
 
     // Coil - e.g. Photos from URL
     implementation("io.coil-kt:coil-compose:2.5.0")

@@ -1,5 +1,6 @@
 package pl.pawelosinski.skatefreak.service
 
+import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
@@ -203,6 +204,34 @@ class DatabaseService {
                 Log.e("DataService", "Trick has not been added to favorites (userFavoritesRef)", it)
             }
             return result
+        }
+    }
+
+
+    fun uploadUserAvatar(userID: String, file: Uri, onComplete: (String) -> Unit = {}, onFail: () -> Unit = {}) {
+        val storageRef = storage.reference
+        val fileExtension = file.toString().substring(file.toString().lastIndexOf("."))
+        val avatarRef = storageRef.child("userAvatar/$userID$fileExtension")
+
+        val uploadTask = avatarRef.putFile(file)
+        val urlTask = uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            avatarRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d("DataService", "Avatar URL: ${task.result}")
+                val downloadUri = task.result
+                onComplete(downloadUri.toString())
+                loggedUser.value.photoUrl = downloadUri.toString()
+                updateUserData()
+            } else {
+                Log.d("DataService", "Avatar URL failed: ${task.exception}")
+                onFail()
+            }
         }
     }
 

@@ -10,6 +10,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven { url = uri("https://jitpack.io") }
 //        maven {
 //            name = "DailymotionMavenRelease"
 //            url = uri("https://mvn.dailymotion.com/repository/releases/")
