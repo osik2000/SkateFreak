@@ -56,6 +56,7 @@ val allTrickInfo: MutableList<TrickInfo> = mutableListOf(
     )
 )
 var allTrickRecords = mutableListOf<TrickRecord>()
+var allTrickRecordsCreators = mutableListOf<User>()
 //val allTrickRecords = listOf(
 //    TrickRecord(
 //        id = "1",

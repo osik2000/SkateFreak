@@ -19,7 +19,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-            LocalDataInit.loadCurrentRecordData() //TODO crashes when no data
+
             TrickRecordsScreen()
             //}
         }
