@@ -22,17 +22,19 @@ class DatabaseService {
     private val storage = Firebase.storage
 
 
-    fun updateUserData() {
+    fun updateUserData(onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
         // Write a message to the database
         val myRef = database.getReference("users/${loggedUser.value.firebaseId}")
         myRef.setValue(loggedUser.value).addOnSuccessListener {
             Log.d("DataService", "User Data saved successfully.")
+            onSuccess()
         }.addOnFailureListener {
             Log.e("DataService", "Error writing data", it)
+            onFail()
         }
     }
 
-    fun setLoggedUserById(id: String, onSuccess : () -> Unit = {}, onFail : () -> Unit = {}) {
+    fun setLoggedUserById(id: String, onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
         Log.d("DataService", "getUserById: $id")
 
         database.getReference("users").child(id).get().addOnSuccessListener {
@@ -43,7 +45,7 @@ class DatabaseService {
             )
             Log.d("DataService", "Got value ${loggedUser.value}")
             onSuccess()
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             Log.e("DataService", "Error getting data", it)
             loggedUser.value = User.getUserFromFirebaseUser(
                 Firebase.auth.currentUser,
@@ -53,10 +55,10 @@ class DatabaseService {
         }
     }
 
-    fun getUserById(id: String, onSuccess : (User) -> Unit = {User()}, onFail : () -> Unit = {}) : User {
+    fun getUserById(id: String, onSuccess: (User) -> Unit = { User() }, onFail: () -> Unit = {}) {
         Log.d("DataService", "getUserById: $id")
 
-        var user = User()
+        var user: User
         database.getReference("users").child(id).get().addOnSuccessListener {
             Log.d("DataService", "loggedUserBeforeSet: $loggedUser")
             Log.d("DataService", "Got value ${it.getValue(User::class.java)}")
@@ -66,7 +68,7 @@ class DatabaseService {
             )
             Log.d("DataService", "Got value ${loggedUser.value}")
             onSuccess(user)
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             Log.e("DataService", "Error getting data", it)
             user = User.getUserFromFirebaseUser(
                 Firebase.auth.currentUser,
@@ -74,10 +76,12 @@ class DatabaseService {
             )
             onFail()
         }
-        return user
     }
 
-    fun getAllTrickRecords(onSuccess : (MutableList<TrickRecord>) -> Unit = {}, onFail : () -> Unit = {}) {
+    fun getAllTrickRecords(
+        onSuccess: (MutableList<TrickRecord>) -> Unit = {},
+        onFail: () -> Unit = {}
+    ) {
         Log.d("DataService", "getAllTrickRecords")
         val trickRecordsRef = database.getReference("tricks/records")
         val trickRecordList = mutableListOf<TrickRecord>()
@@ -91,13 +95,13 @@ class DatabaseService {
                 }
             }
             onSuccess(trickRecordList)
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             Log.e("DataService", "Error getting data", it)
             onFail()
         }
     }
 
-    fun getAllTrickInfo(onSuccess : (MutableList<TrickInfo>) -> Unit = {}, onFail : () -> Unit = {}) {
+    fun getAllTrickInfo(onSuccess: (MutableList<TrickInfo>) -> Unit = {}, onFail: () -> Unit = {}) {
         Log.d("DataService", "getAllTrickRecords")
         val trickInfoRef = database.getReference("tricks/info")
         val trickInfoList = mutableListOf<TrickInfo>()
@@ -111,7 +115,7 @@ class DatabaseService {
                 }
             }
             onSuccess(trickInfoList)
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             Log.e("DataService", "Error getting data", it)
             onFail()
         }
@@ -119,9 +123,9 @@ class DatabaseService {
 
     fun getTrickInfo(
         id: String,
-        onSuccess : () -> Unit = {},
-        onFail : () -> Unit = {}
-    ) : TrickInfo {
+        onSuccess: () -> Unit = {},
+        onFail: () -> Unit = {}
+    ): TrickInfo {
         Log.d("DataService", "getTrickInfo: $id")
         var trickInfo = TrickInfo()
 
@@ -129,7 +133,7 @@ class DatabaseService {
             trickInfo = it.getValue(TrickInfo::class.java) ?: TrickInfo()
             Log.d("DataService", "Got value $trickInfo")
             onSuccess()
-        }.addOnFailureListener{
+        }.addOnFailureListener {
             Log.e("DataService", "Error getting data", it)
             onFail()
         }
@@ -149,6 +153,7 @@ class DatabaseService {
             Log.e("DataService", "Error writing template tricks", it)
         }
     }
+
     fun setDefaultTrickRecord() {
         // Write a message to the database
 
@@ -174,42 +179,71 @@ class DatabaseService {
         }
     }
 
-    fun addTrickRecordToFavorites(trickRecord: TrickRecord, onSuccess: (String) -> Unit = {}): String {
+    fun addTrickRecordToFavorites(
+        trickRecord: TrickRecord,
+        onSuccess: (String) -> Unit = {}
+    ): String {
         val userID = loggedUser.value.firebaseId
         val userFavoritesRef = database.getReference("users/$userID/favoriteTrickRecords")
-        val trickRecordUsersWhoSetAsFavoriteRef = database.getReference("tricks/records/${trickRecord.id}/usersWhoSetAsFavorite")
+        val trickRecordUsersWhoSetAsFavoriteRef =
+            database.getReference("tricks/records/${trickRecord.id}/usersWhoSetAsFavorite")
         var result = trickRecord.usersWhoSetAsFavorite.size.toString()
 
-        if (trickRecord.usersWhoSetAsFavorite.contains(userID) && loggedUser.value.favoriteTrickRecords.contains(trickRecord.id)) {
-            Log.d("DataService", "Trick record already in favorites. Removing this one from favorites")
+        if (trickRecord.usersWhoSetAsFavorite.contains(userID) && loggedUser.value.favoriteTrickRecords.contains(
+                trickRecord.id
+            )
+        ) {
+            Log.d(
+                "DataService",
+                "Trick record already in favorites. Removing this one from favorites"
+            )
             loggedUser.value.favoriteTrickRecords.remove(trickRecord.id)
             userFavoritesRef.setValue(loggedUser.value.favoriteTrickRecords).addOnSuccessListener {
                 Log.d("DataService", "Trick record removed from favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.remove(userID)
                 result = trickRecord.usersWhoSetAsFavorite.size.toString()
-                trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
-                    Log.d("DataService", "Trick record removed from favorites. (trickRecordusersWhoSetAsFavoriteRef)")
-                    onSuccess("Usunięto z ulubionych.")
-                }.addOnFailureListener {
-                    Log.e("DataService", "Trick has not been removed from favorites (trickRecordusersWhoSetAsFavoriteRef)", it)
+                trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite)
+                    .addOnSuccessListener {
+                        Log.d(
+                            "DataService",
+                            "Trick record removed from favorites. (trickRecordusersWhoSetAsFavoriteRef)"
+                        )
+                        onSuccess("Usunięto z ulubionych.")
+                    }.addOnFailureListener {
+                    Log.e(
+                        "DataService",
+                        "Trick has not been removed from favorites (trickRecordusersWhoSetAsFavoriteRef)",
+                        it
+                    )
                 }
             }.addOnFailureListener {
-                Log.e("DataService", "Trick has not been removed from favorites (userFavoritesRef)", it)
+                Log.e(
+                    "DataService",
+                    "Trick has not been removed from favorites (userFavoritesRef)",
+                    it
+                )
             }
             return result
-        }
-        else {
+        } else {
             Log.d("DataService", "Trick record not in favorites. Adding this one to favorites")
             loggedUser.value.favoriteTrickRecords.add(trickRecord.id)
             userFavoritesRef.setValue(loggedUser.value.favoriteTrickRecords).addOnSuccessListener {
                 Log.d("DataService", "Trick record added to favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.add(userID)
                 result = trickRecord.usersWhoSetAsFavorite.size.toString()
-                trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite).addOnSuccessListener {
-                    Log.d("DataService", "Trick record added to favorites. (trickRecordusersWhoSetAsFavoriteRef)")
-                    onSuccess("Dodano do ulubionych.")
-                }.addOnFailureListener {
-                    Log.e("DataService", "Trick has not been added to favorites (trickRecordusersWhoSetAsFavoriteRef)", it)
+                trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite)
+                    .addOnSuccessListener {
+                        Log.d(
+                            "DataService",
+                            "Trick record added to favorites. (trickRecordusersWhoSetAsFavoriteRef)"
+                        )
+                        onSuccess("Dodano do ulubionych.")
+                    }.addOnFailureListener {
+                    Log.e(
+                        "DataService",
+                        "Trick has not been added to favorites (trickRecordusersWhoSetAsFavoriteRef)",
+                        it
+                    )
                 }
             }.addOnFailureListener {
                 Log.e("DataService", "Trick has not been added to favorites (userFavoritesRef)", it)
@@ -219,7 +253,12 @@ class DatabaseService {
     }
 
 
-    fun uploadUserAvatar(userID: String, file: Uri, onComplete: (String) -> Unit = {}, onFail: () -> Unit = {}) {
+    fun uploadUserAvatar(
+        userID: String,
+        file: Uri,
+        onComplete: (String) -> Unit = {},
+        onFail: () -> Unit = {}
+    ) {
         val storageRef = storage.reference
         val fileExtension = file.toString().substring(file.toString().lastIndexOf("."))
         val avatarRef = storageRef.child("userAvatar/$userID$fileExtension")
@@ -236,8 +275,8 @@ class DatabaseService {
             if (task.isSuccessful) {
                 Log.d("DataService", "Avatar URL: ${task.result}")
                 val downloadUri = task.result
-                onComplete(downloadUri.toString())
                 loggedUser.value.photoUrl = downloadUri.toString()
+                onComplete(downloadUri.toString())
                 updateUserData()
             } else {
                 Log.d("DataService", "Avatar URL failed: ${task.exception}")
