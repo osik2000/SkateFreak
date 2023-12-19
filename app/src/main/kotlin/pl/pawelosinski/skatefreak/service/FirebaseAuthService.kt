@@ -48,6 +48,8 @@ import pl.pawelosinski.skatefreak.auth.PhoneAuthUserData
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.User
+import pl.pawelosinski.skatefreak.model.User.Companion.ACCOUNT_TYPE_GOOGLE
+import pl.pawelosinski.skatefreak.model.User.Companion.ACCOUNT_TYPE_PHONE
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.PHONE_TAG
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.isUserDataSet
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.isUserLoggedIn
@@ -283,7 +285,10 @@ class FirebaseAuthService(val activity: ComponentActivity) {
                     databaseService.setLoggedUserById(auth.currentUser?.uid!!, onSuccess = {
                         updateUI()
                     }, onFail = {
-                        loggedUser.value = User.getUserFromFirebaseUser(auth.currentUser)
+                        loggedUser.value = User.getUserFromFirebaseUser(
+                            auth.currentUser,
+                            accountType = ACCOUNT_TYPE_GOOGLE
+                        )
                         updateUI()
                     })
                 } else {
@@ -303,8 +308,11 @@ class FirebaseAuthService(val activity: ComponentActivity) {
                     "user: ${loggedUser.value}\n" +
                     "isUserLoggedIn: $isUserLoggedIn\n"
         )
-        if (loggedUser.value.firebaseId.isEmpty()) {
-            loggedUser.value = User.getUserFromFirebaseUser(auth.currentUser)
+        if (loggedUser.value.firebaseId.isEmpty() && auth.currentUser != null) {
+            loggedUser.value = User.getUserFromFirebaseUser(
+                auth.currentUser,
+                accountType = loggedUser.value.accountType
+            )
         }
         if (loggedUser.value.firebaseId.isNotEmpty() && !isUserLoggedIn.value) {
 
@@ -403,7 +411,10 @@ fun LoginScreen(firebaseAuthService: FirebaseAuthService) {
                         loggedUser = it
                         pl.pawelosinski.skatefreak.local.loggedUser.value = it
                     }, onFail = {
-                        loggedUser = User.getUserFromFirebaseUser(firebaseAuthService.auth.currentUser)
+                        loggedUser = User.getUserFromFirebaseUser(
+                            firebaseAuthService.auth.currentUser,
+                            accountType = loggedUser.accountType
+                        )
                     })
                     Log.d("LoginActivity", "Before data check: isUserDataSet: $isUserDataSet")
                     if (!isUserDataSet.value) {

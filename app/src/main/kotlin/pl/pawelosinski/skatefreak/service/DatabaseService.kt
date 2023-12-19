@@ -38,12 +38,17 @@ class DatabaseService {
         database.getReference("users").child(id).get().addOnSuccessListener {
             Log.d("DataService", "loggedUserBeforeSet: $loggedUser")
             Log.d("DataService", "Got value ${it.getValue(User::class.java)}")
-            loggedUser.value = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
+            loggedUser.value = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(
+                Firebase.auth.currentUser, loggedUser.value.accountType
+            )
             Log.d("DataService", "Got value ${loggedUser.value}")
             onSuccess()
         }.addOnFailureListener{
             Log.e("DataService", "Error getting data", it)
-            loggedUser.value = User.getUserFromFirebaseUser(Firebase.auth.currentUser)
+            loggedUser.value = User.getUserFromFirebaseUser(
+                Firebase.auth.currentUser,
+                loggedUser.value.accountType
+            )
             onFail()
         }
     }
@@ -55,12 +60,18 @@ class DatabaseService {
         database.getReference("users").child(id).get().addOnSuccessListener {
             Log.d("DataService", "loggedUserBeforeSet: $loggedUser")
             Log.d("DataService", "Got value ${it.getValue(User::class.java)}")
-            user = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
+            user = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(
+                Firebase.auth.currentUser,
+                loggedUser.value.accountType
+            )
             Log.d("DataService", "Got value ${loggedUser.value}")
             onSuccess(user)
         }.addOnFailureListener{
             Log.e("DataService", "Error getting data", it)
-            user = User.getUserFromFirebaseUser(Firebase.auth.currentUser)
+            user = User.getUserFromFirebaseUser(
+                Firebase.auth.currentUser,
+                loggedUser.value.accountType
+            )
             onFail()
         }
         return user

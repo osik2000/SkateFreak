@@ -16,6 +16,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import pl.pawelosinski.skatefreak.local.isDarkMode
+import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
@@ -27,7 +28,7 @@ class LoggedUserMenuActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         // Initialize Firebase Auth
         auth = Firebase.auth
-        user = User.getUserFromFirebaseUser(auth.currentUser)
+        user = User.getUserFromFirebaseUser(auth.currentUser, loggedUser.value.accountType)
 
         if (!user.checkRequiredData()) {
             Log.d("LoggedUserMenuActivity", "User data is incomplete:\n$user")

@@ -40,7 +40,9 @@ data class User(
     }
 
     companion object {
-        fun getUserFromFirebaseUser(firebaseUser: FirebaseUser?, phoneNumber: String = ""): User {
+        const val ACCOUNT_TYPE_GOOGLE = "Google"
+        const val ACCOUNT_TYPE_PHONE = "Phone"
+        fun getUserFromFirebaseUser(firebaseUser: FirebaseUser?, accountType: String?): User {
             if (firebaseUser == null || firebaseUser.uid.isEmpty()) {
                 Log.d("User", "getUserFromFirebaseUser: firebaseUser is null")
             }
@@ -53,6 +55,7 @@ data class User(
                 phoneNumber = firebaseUser?.phoneNumber ?: "",
                 city = "",
                 favoriteTrickRecords = mutableListOf(),
+                accountType = accountType ?: ""
             )
         }
     }
