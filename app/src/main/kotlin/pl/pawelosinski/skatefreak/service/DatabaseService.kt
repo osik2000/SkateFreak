@@ -37,20 +37,16 @@ class DatabaseService {
     fun setLoggedUserById(id: String, onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
         Log.d("DataService", "getUserById: $id")
 
-        database.getReference("users").child(id).get().addOnSuccessListener {
-            Log.d("DataService", "loggedUserBeforeSet: $loggedUser")
-            Log.d("DataService", "Got value ${it.getValue(User::class.java)}")
-            loggedUser.value = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(
-                Firebase.auth.currentUser, loggedUser.value.accountType
-            )
-            Log.d("DataService", "Got value ${loggedUser.value}")
-            onSuccess()
+        database.getReference("users").child(id).get().addOnSuccessListener { dataSnapshot ->
+            Log.d("DataService", "[setLoggedUserById] \nGot value ${dataSnapshot.getValue(User::class.java)}")
+            dataSnapshot.getValue(User::class.java)?.let {
+                loggedUser.value = it
+                onSuccess()
+                return@addOnSuccessListener
+            }
+            onFail()
         }.addOnFailureListener {
             Log.e("DataService", "Error getting data", it)
-            loggedUser.value = User.getUserFromFirebaseUser(
-                Firebase.auth.currentUser,
-                loggedUser.value.accountType
-            )
             onFail()
         }
     }
@@ -60,13 +56,11 @@ class DatabaseService {
 
         var user: User
         database.getReference("users").child(id).get().addOnSuccessListener {
-            Log.d("DataService", "loggedUserBeforeSet: $loggedUser")
-            Log.d("DataService", "Got value ${it.getValue(User::class.java)}")
+            Log.d("DataService", "[getUserById] \nGot value ${it.getValue(User::class.java)}")
             user = it.getValue(User::class.java) ?: User.getUserFromFirebaseUser(
                 Firebase.auth.currentUser,
                 loggedUser.value.accountType
             )
-            Log.d("DataService", "Got value ${loggedUser.value}")
             onSuccess(user)
         }.addOnFailureListener {
             Log.e("DataService", "Error getting data", it)
