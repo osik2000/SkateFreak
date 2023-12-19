@@ -6,7 +6,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
-import pl.pawelosinski.skatefreak.local.LocalDataInit
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 import pl.pawelosinski.skatefreak.ui.tricks.record.TrickRecordsScreen
