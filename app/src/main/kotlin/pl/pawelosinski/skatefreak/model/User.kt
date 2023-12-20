@@ -23,7 +23,8 @@ data class User(
                 "photoUrl='$photoUrl',\n" +
                 "nickname='$nickname',\n" +
                 "city='$city')\n" +
-                "favoriteTrickRecords=$favoriteTrickRecords"
+                "favoriteTrickRecords=$favoriteTrickRecords\n" +
+                "accountType=$accountType"
     }
 
     fun checkRequiredData() : Boolean {

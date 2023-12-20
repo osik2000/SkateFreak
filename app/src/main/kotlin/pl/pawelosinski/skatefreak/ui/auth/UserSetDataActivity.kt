@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
+import pl.pawelosinski.skatefreak.model.User.Companion.ACCOUNT_TYPE_PHONE
 import pl.pawelosinski.skatefreak.service.DatabaseService
 import pl.pawelosinski.skatefreak.ui.common.MyDivider
 import pl.pawelosinski.skatefreak.ui.common.myToast
@@ -135,12 +136,14 @@ class UserSetDataActivity : ComponentActivity() {
                 label = { Text(label) },
                 enabled = isInEditMode
             )
-            if (isInEditMode) {
-                SaveButton {
-                    isInEditMode = false
+            if(!(loggedUser.value.accountType == ACCOUNT_TYPE_PHONE && label == "Numer Telefonu")) {
+                if (isInEditMode) {
+                    SaveButton {
+                        isInEditMode = false
+                    }
+                } else {
+                    EditButton(onClick = { isInEditMode = true})
                 }
-            } else {
-                EditButton(onClick = { isInEditMode = true })
             }
         }
     }
@@ -158,8 +161,8 @@ class UserSetDataActivity : ComponentActivity() {
     }
 
     @Composable
-    fun EditButton(onClick: () -> Unit) {
-        IconButton(onClick = onClick) {
+    fun EditButton(onClick: () -> Unit, enabled: Boolean = true) {
+        IconButton(onClick = onClick, enabled = enabled) {
             Icon(imageVector = Icons.Default.Edit, contentDescription = null)
         }
     }
@@ -195,8 +198,15 @@ class UserSetDataActivity : ComponentActivity() {
             },
             modifier = Modifier.padding(16.dp)
         ) {
-            Icon(imageVector = Icons.Default.SaveAlt, contentDescription = null)
-            Text(text = "Zapisz wszystkie dane")
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                Icon(imageVector = Icons.Default.SaveAlt, contentDescription = null)
+                Text(text = "Zapisz wszystkie dane")
+            }
         }
     }
 }
