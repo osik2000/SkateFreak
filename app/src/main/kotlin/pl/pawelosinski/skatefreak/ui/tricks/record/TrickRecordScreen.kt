@@ -23,9 +23,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import pl.pawelosinski.skatefreak.local.LocalDataInit
 import pl.pawelosinski.skatefreak.local.allTrickRecords
-import pl.pawelosinski.skatefreak.local.currentRecordCreator
 import pl.pawelosinski.skatefreak.local.currentRecordLikes
-import pl.pawelosinski.skatefreak.service.databaseService
 import pl.pawelosinski.skatefreak.ui.common.VideoPlayer
 import kotlin.math.abs
 
