@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseUser
 data class User(
     val firebaseId: String = "",
     var name: String = "",
-    var email: String = "",
+    var email: String = "", // todo ???
     var phoneNumber: String = "",
     var photoUrl: String = "",
     var nickname: String = "",
