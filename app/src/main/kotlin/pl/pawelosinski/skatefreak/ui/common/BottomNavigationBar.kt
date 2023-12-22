@@ -32,6 +32,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
+import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.service.LoginScreen
 import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
@@ -41,6 +42,8 @@ import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
 import pl.pawelosinski.skatefreak.ui.tricks.info.TrickInfoComposable
 import pl.pawelosinski.skatefreak.ui.tricks.info.TricksScreen
 import pl.pawelosinski.skatefreak.ui.tricks.record.add.AddRecordScreen
+import pl.pawelosinski.skatefreak.ui.tricks.record.add.ChooseTrickInfoButton
+import pl.pawelosinski.skatefreak.ui.tricks.record.add.ChooseTrickInfoScreen
 
 @Composable
 fun BottomNavigationBar() {
@@ -180,6 +183,9 @@ fun BottomNavigationBar() {
             ) { backStackEntry ->
                 val trickId = backStackEntry.arguments?.getString("trickId")
                 TrickInfoComposable(trickId = trickId ?: "", navController = navController)
+            }
+            composable(Screens.ChooseTrickInfo.route) {
+                ChooseTrickInfoScreen(navController = navController)
             }
             composable(Screens.AddRecord.route) {
                 AddRecordScreen(navController = navController)
