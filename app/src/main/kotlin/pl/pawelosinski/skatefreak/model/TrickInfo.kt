@@ -1,5 +1,8 @@
 package pl.pawelosinski.skatefreak.model
 
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+
 data class TrickInfo (
     val id: String = "",
     val name: String = "",
@@ -7,4 +10,8 @@ data class TrickInfo (
     val difficulty: String = "",
     val category: String = "",
     val photoUrl: String = "",
-)
+) {
+    companion object {
+        var chosenOne = mutableStateOf(TrickInfo())
+    }
+}
