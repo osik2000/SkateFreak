@@ -36,6 +36,7 @@ import pl.pawelosinski.skatefreak.service.LoginScreen
 import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
 import pl.pawelosinski.skatefreak.ui.profile.edit.EditProfile
+import pl.pawelosinski.skatefreak.ui.profile.edit.PhoneChangeScreen
 import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
 import pl.pawelosinski.skatefreak.ui.tricks.info.TrickInfoComposable
 import pl.pawelosinski.skatefreak.ui.tricks.info.TricksScreen
@@ -139,7 +140,8 @@ fun BottomNavigationBar() {
                             onClick = {
                                 Log.d("BottomNavigationBar", "currentDestination: ${navController.currentDestination?.route}")
                                 if(navigationItem.route == Screens.Tricks.route &&
-                                    navController.currentDestination?.route?.contains(Screens.Tricks.route) == true
+                                    navController.currentDestination?.route?.contains(Screens.Tricks.route) == true &&
+                                    navController.currentDestination?.route?.equals(Screens.Tricks.route) == false
                                 ){
                                         navController.navigateUp()
                                 }
@@ -187,6 +189,9 @@ fun BottomNavigationBar() {
             }
             composable(Screens.EditProfile.route) {
                 EditProfile(navController = navController)
+            }
+            composable(Screens.EditPhone.route) {
+                PhoneChangeScreen(navController = navController)
             }
             composable(Screens.Settings.route) {
                 SettingsScreen(navController = navController)

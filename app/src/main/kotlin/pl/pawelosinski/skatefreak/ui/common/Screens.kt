@@ -10,6 +10,7 @@ sealed class Screens(val route : String) {
     data object AddRecord : Screens("addRecord")
     data object Profile : Screens("profile")
     data object EditProfile : Screens("profile/edit")
+    data object EditPhone : Screens("profile/edit/phone")
     data object Settings : Screens("settings")
     data object Login : Screens("login")
 
