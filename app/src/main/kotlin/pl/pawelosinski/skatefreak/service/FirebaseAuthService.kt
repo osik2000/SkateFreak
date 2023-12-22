@@ -1,6 +1,7 @@
 package pl.pawelosinski.skatefreak.service
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
@@ -207,6 +208,7 @@ class FirebaseAuthService(val activity: ComponentActivity) {
             optionsBuilder.setForceResendingToken(token) // callback's ForceResendingToken
         }
         PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
+        myToast(activity as Context, "Wysłano ponownie kod weryfikacyjny")
     }
     // [END resend_verification]
 
@@ -233,6 +235,26 @@ class FirebaseAuthService(val activity: ComponentActivity) {
                 loggedUser.value = User()
 //                activity.finish()
                 onComplete()
+            }
+        }
+    }
+
+    fun changePhoneNumberWithCode(verificationId: String?, code: String, onComplete: () -> Unit = {}, onFail: () -> Unit = {}) {
+        // [START verify_with_code]
+        val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
+        // [END verify_with_code]
+        auth.currentUser?.updatePhoneNumber(credential)?.addOnCompleteListener(currentActivity.value) { task ->
+            if (task.isSuccessful) {
+                Log.d(PHONE_TAG, "changePhoneNumberWithCode:success")
+                onComplete()
+            } else {
+                Log.w(PHONE_TAG, "changePhoneNumberWithCode:failure", task.exception)
+                if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                    // The verification code entered was invalid
+                    myToast(currentActivity.value, "Niepoprawny kod weryfikacyjny")
+                    Log.w(PHONE_TAG, "changePhoneNumberWithCode:WRONG CREDENTIALS", task.exception)
+                }
+                onFail()
             }
         }
     }
