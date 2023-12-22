@@ -86,8 +86,14 @@ fun ProfileAvatarEditor() {
     // Wyświetlanie avatara i ikony do zmiany
 
     Box(
-        contentAlignment = Alignment.BottomEnd,
-        modifier = Modifier.size(150.dp)
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(150.dp)
+            .clickable {
+                val pickImageIntent = Intent(Intent.ACTION_PICK)
+                pickImageIntent.type = "image/*"
+                imagePickerLauncher.launch(pickImageIntent)
+            }
     ) {
         val painter = if (imageUri != null) {
             rememberAsyncImagePainter(imageUri)
@@ -98,7 +104,8 @@ fun ProfileAvatarEditor() {
         Image(
             painter = painter,
             contentDescription = "Profile Picture",
-            modifier = avatarModifier(borderColor = MaterialTheme.colorScheme.primary)
+            modifier = avatarModifier(borderColor = MaterialTheme.colorScheme.primary),
+            alignment = Alignment.Center,
         )
         Icon(
             imageVector = Icons.Filled.CameraAlt,
@@ -110,11 +117,6 @@ fun ProfileAvatarEditor() {
                     color = Color.Black.copy(alpha = 0.5f),
                     shape = CircleShape
                 )
-                .clickable {
-                    val pickImageIntent = Intent(Intent.ACTION_PICK)
-                    pickImageIntent.type = "image/*"
-                    imagePickerLauncher.launch(pickImageIntent)
-                }
         )
     }
 }
