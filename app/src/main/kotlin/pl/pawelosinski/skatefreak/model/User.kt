@@ -6,7 +6,7 @@ import com.google.firebase.auth.FirebaseUser
 data class User(
     val firebaseId: String = "",
     var name: String = "",
-    var email: String = "",
+    var email: String = "", // todo ???
     var phoneNumber: String = "",
     var photoUrl: String = "",
     var nickname: String = "",
@@ -23,7 +23,8 @@ data class User(
                 "photoUrl='$photoUrl',\n" +
                 "nickname='$nickname',\n" +
                 "city='$city')\n" +
-                "favoriteTrickRecords=$favoriteTrickRecords"
+                "favoriteTrickRecords=$favoriteTrickRecords\n" +
+                "accountType=$accountType"
     }
 
     fun checkRequiredData() : Boolean {
@@ -40,7 +41,9 @@ data class User(
     }
 
     companion object {
-        fun getUserFromFirebaseUser(firebaseUser: FirebaseUser?, phoneNumber: String = ""): User {
+        const val ACCOUNT_TYPE_GOOGLE = "Google"
+        const val ACCOUNT_TYPE_PHONE = "Phone"
+        fun getUserFromFirebaseUser(firebaseUser: FirebaseUser?, accountType: String?): User {
             if (firebaseUser == null || firebaseUser.uid.isEmpty()) {
                 Log.d("User", "getUserFromFirebaseUser: firebaseUser is null")
             }
@@ -53,6 +56,7 @@ data class User(
                 phoneNumber = firebaseUser?.phoneNumber ?: "",
                 city = "",
                 favoriteTrickRecords = mutableListOf(),
+                accountType = accountType ?: ""
             )
         }
     }

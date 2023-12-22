@@ -1,27 +1,29 @@
-package pl.pawelosinski.skatefreak.ui.home
+package pl.pawelosinski.skatefreak.ui.profile.edit
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
-import pl.pawelosinski.skatefreak.ui.tricks.record.TrickRecordsScreen
-
 
 @Composable
-fun HomeScreen(navController: NavController) {
+fun PhoneChangeScreen(navController: NavController) {
     SkateFreakTheme (darkTheme = isDarkMode){
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
-
-            TrickRecordsScreen()
-            //}
+            PhoneChangeForm(
+                firebaseAuthService = firebaseAuthService
+            ) {
+                navController.navigateUp()
+            }
         }
     }
-}
 
+}

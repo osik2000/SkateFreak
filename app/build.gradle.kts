@@ -70,14 +70,14 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
-    implementation("androidx.compose.material:material-icons-core") // TODO check usability
-    implementation("androidx.compose.material:material-icons-extended") // TODO check usability
+    implementation("androidx.compose.material:material-icons-core")
+    implementation("androidx.compose.material:material-icons-extended")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
 
     // Import the Firebase BoM
-    implementation(platform("com.google.firebase:firebase-bom:32.5.0"))
+    implementation(platform("com.google.firebase:firebase-bom:32.7.0"))
 
     // When using the BoM, don't specify versions in Firebase dependencies
     implementation("com.google.firebase:firebase-analytics-ktx")
@@ -86,8 +86,8 @@ dependencies {
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.android.gms:play-services-auth:20.7.0")
 
-    // Tiktok-like scrolling // TODO Check usability
-    implementation("com.google.accompanist:accompanist-pager:0.33.2-alpha") // TODO Check usability
+    // image cropping library
+    implementation ("com.github.yalantis:ucrop:2.2.8")
 
     // Coil - e.g. Photos from URL
     implementation("io.coil-kt:coil-compose:2.5.0")
@@ -98,15 +98,8 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-dash:1.2.0")
     implementation("androidx.media3:media3-ui:1.2.0")
 
-//    // DailyMotion Player
-//    implementation ("com.dailymotion.player.android:sdk:1.0.8")
-//    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
-//    implementation ("com.dailymotion.player.android:ads:1.0.8")
-//    implementation ("com.google.ads.interactivemedia.v3:interactivemedia:3.31.0")
-//
-
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+//    testImplementation("junit:junit:4.13.2")
+//    androidTestImplementation("androidx.test.ext:junit:1.1.5")
+//    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
+//    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 }

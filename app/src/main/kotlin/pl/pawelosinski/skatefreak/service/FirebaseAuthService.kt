@@ -1,6 +1,7 @@
 package pl.pawelosinski.skatefreak.service
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.util.Log
 import android.widget.Toast
@@ -48,6 +49,8 @@ import pl.pawelosinski.skatefreak.auth.PhoneAuthUserData
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.User
+import pl.pawelosinski.skatefreak.model.User.Companion.ACCOUNT_TYPE_GOOGLE
+import pl.pawelosinski.skatefreak.model.User.Companion.ACCOUNT_TYPE_PHONE
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.PHONE_TAG
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.isUserDataSet
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.isUserLoggedIn
@@ -100,21 +103,27 @@ class FirebaseAuthService(val activity: ComponentActivity) {
             when (e) {
                 is FirebaseAuthInvalidCredentialsException -> {
                     // Invalid request
-                    myToast(currentActivity.value, "Niepoprawny numer telefonu" +
-                            "Wprowadź numer w formacie +48XXXXXXXXX")
+                    myToast(
+                        currentActivity.value, "Niepoprawny numer telefonu" +
+                                "Wprowadź numer w formacie +48XXXXXXXXX"
+                    )
                 }
 
                 is FirebaseTooManyRequestsException -> {
                     // The SMS quota for the project has been exceeded
-                    myToast(currentActivity.value,
+                    myToast(
+                        currentActivity.value,
                         "Przekroczono limit SMSów\n" +
-                                "Spróbuj ponownie później")
+                                "Spróbuj ponownie później"
+                    )
                 }
 
                 is FirebaseAuthMissingActivityForRecaptchaException -> {
                     // reCAPTCHA verification attempted with null Activity
-                    myToast(currentActivity.value, "Błąd weryfikacji\n" +
-                                "Spróbuj ponownie później...")
+                    myToast(
+                        currentActivity.value, "Błąd weryfikacji\n" +
+                                "Spróbuj ponownie później..."
+                    )
                 }
 
             }
@@ -131,9 +140,11 @@ class FirebaseAuthService(val activity: ComponentActivity) {
             // The SMS verification code has been sent to the provided phone number, we
             // now need to ask the user to enter the code and then construct a credential
             // by combining the code with a verification ID.                Log.d(PHONE_TAG, "onCodeSent:$verificationId")
-            myToast(currentActivity.value,
+            myToast(
+                currentActivity.value,
                 "Wysłano wiadomość z kodem weryfikacyjnym na numer:\n " +
-                        "\'${phoneAuthUserData.value.userPhoneNumber.value}\'")
+                        "\'${phoneAuthUserData.value.userPhoneNumber.value}\'"
+            )
 
 
             // Save verification ID and resending token so we can use them later
@@ -142,7 +153,7 @@ class FirebaseAuthService(val activity: ComponentActivity) {
             phoneAuthUserData.value.userVerificationNumber.value = token.toString()
             phoneAuthUserData.value.userVerificationId.value = verificationId
             phoneAuthUserData.value.isUserLoggedIn.value = false
-            phoneAuthUserData.value.isVerificationCompleted.value= false
+            phoneAuthUserData.value.isVerificationCompleted.value = false
             phoneAuthUserData.value.isAuthInProgress.value = true
             currentActivity.value.recreate()
             //updateUI()
@@ -197,6 +208,7 @@ class FirebaseAuthService(val activity: ComponentActivity) {
             optionsBuilder.setForceResendingToken(token) // callback's ForceResendingToken
         }
         PhoneAuthProvider.verifyPhoneNumber(optionsBuilder.build())
+        myToast(activity as Context, "Wysłano ponownie kod weryfikacyjny")
     }
     // [END resend_verification]
 
@@ -227,18 +239,41 @@ class FirebaseAuthService(val activity: ComponentActivity) {
         }
     }
 
+    fun changePhoneNumberWithCode(verificationId: String?, code: String, onComplete: () -> Unit = {}, onFail: () -> Unit = {}) {
+        // [START verify_with_code]
+        val credential = PhoneAuthProvider.getCredential(verificationId!!, code)
+        // [END verify_with_code]
+        auth.currentUser?.updatePhoneNumber(credential)?.addOnCompleteListener(currentActivity.value) { task ->
+            if (task.isSuccessful) {
+                Log.d(PHONE_TAG, "changePhoneNumberWithCode:success")
+                onComplete()
+            } else {
+                Log.w(PHONE_TAG, "changePhoneNumberWithCode:failure", task.exception)
+                if (task.exception is FirebaseAuthInvalidCredentialsException) {
+                    // The verification code entered was invalid
+                    myToast(currentActivity.value, "Niepoprawny kod weryfikacyjny")
+                    Log.w(PHONE_TAG, "changePhoneNumberWithCode:WRONG CREDENTIALS", task.exception)
+                }
+                onFail()
+            }
+        }
+    }
+
     // [START sign_in_with_phone]
     private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential)
             .addOnCompleteListener(currentActivity.value) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    phoneAuthUserData.value.isVerificationCompleted.value = true // TODO PHONE SEND TO DATABASE
-                    databaseService.getUserById(task.result?.user?.uid!!, onSuccess = {
-                        loggedUser.value = it
+                    phoneAuthUserData.value.isVerificationCompleted.value =
+                        true // TODO PHONE SEND TO DATABASE
+                    databaseService.setLoggedUserById(task.result?.user?.uid!!, onSuccess = {
                         updateUI()
                     }, onFail = {
-                        loggedUser.value = User.getUserFromFirebaseUser(auth.currentUser, phoneNumber = phoneAuthUserData.value.userPhoneNumber.value)
+                        loggedUser.value = User.getUserFromFirebaseUser(
+                            auth.currentUser,
+                            accountType = ACCOUNT_TYPE_PHONE
+                        )
                         updateUI()
                     })
                     userLoggedBy.value = PHONE_TAG
@@ -283,7 +318,10 @@ class FirebaseAuthService(val activity: ComponentActivity) {
                     databaseService.setLoggedUserById(auth.currentUser?.uid!!, onSuccess = {
                         updateUI()
                     }, onFail = {
-                        loggedUser.value = User.getUserFromFirebaseUser(auth.currentUser)
+                        loggedUser.value = User.getUserFromFirebaseUser(
+                            auth.currentUser,
+                            accountType = ACCOUNT_TYPE_GOOGLE
+                        )
                         updateUI()
                     })
                 } else {
@@ -296,16 +334,20 @@ class FirebaseAuthService(val activity: ComponentActivity) {
     }
 
     private fun updateUI() {
-        val userLoggedBy = if(userLoggedBy.value.isEmpty()) userLoggedBy.value else "UnknownLoginMethodActivity"
+        val userLoggedBy =
+            if (userLoggedBy.value.isEmpty()) userLoggedBy.value else "UpdateUI"
         Log.d(
             userLoggedBy,
             "[UPDATE-UI]\n" +
                     "user: ${loggedUser.value}\n" +
-                    "isUserLoggedIn: $isUserLoggedIn\n"
+                    "isUserLoggedIn: $isUserLoggedIn\n\n"
         )
-        if (loggedUser.value.firebaseId.isEmpty()) {
-            loggedUser.value = User.getUserFromFirebaseUser(auth.currentUser)
-        }
+//        if (loggedUser.value.firebaseId.isEmpty() && auth.currentUser != null) {
+//            loggedUser.value = User.getUserFromFirebaseUser(
+//                auth.currentUser,
+//                accountType = loggedUser.value.accountType
+//            )
+//        }
         if (loggedUser.value.firebaseId.isNotEmpty() && !isUserLoggedIn.value) {
 
             isUserLoggedIn.value = true
@@ -315,26 +357,15 @@ class FirebaseAuthService(val activity: ComponentActivity) {
             //
             Log.d(
                 userLoggedBy,
-                "signInWithCredential:success" +
-                        "FirebaseId: ${loggedUser.value.firebaseId}, \n" +
-                        "Nickname: ${loggedUser.value.nickname}, \n" +
-                        "Email: ${loggedUser.value.email}, \n" +
-                        "Name: ${loggedUser.value.name} \n" +
-                        "PhotoUrl: ${loggedUser.value.photoUrl} \n" +
-                        "PhoneNumber: ${loggedUser.value.phoneNumber} \n" +
-                        "City: ${loggedUser.value.city} \n"
+                "signInWithCredential:success\n\n" +
+                        loggedUser.value.toString() + "\n\n"
             )
-        }
-        else {
+        } else {
             Log.d(
                 userLoggedBy,
                 "user already logged in: $isUserLoggedIn"
             )
         }
-        Log.w(
-            userLoggedBy,
-            "signInWithCredential:RECREATING ACTIVITY"
-        )
 
 //        if (isUserLoggedIn.value && isUserDataSet.value) {
 //
@@ -342,8 +373,6 @@ class FirebaseAuthService(val activity: ComponentActivity) {
         // refresh activity
 //        activity.recreate()
     }
-
-
 
 
     companion object {
@@ -361,21 +390,17 @@ class FirebaseAuthService(val activity: ComponentActivity) {
         // PHONE AUTH VARIABLES
         var phoneAuthUserData = mutableStateOf(PhoneAuthUserData())
 
-        var storedVerificationId= mutableStateOf("")
+        var storedVerificationId = mutableStateOf("")
         var resendToken = mutableStateOf<PhoneAuthProvider.ForceResendingToken?>(null)
     }
-
-    // Dodatkowe metody związane z autoryzacją Firebase...
 }
+
 @Composable
 fun LoginScreen(firebaseAuthService: FirebaseAuthService) {
     val isUserDataSet by remember {
         mutableStateOf(isUserDataSet)
     }
 
-    var loggedUser by remember {
-        mutableStateOf(loggedUser.value)
-    }
     val isUserLoggedIn by remember {
         mutableStateOf(isUserLoggedIn)
     }
@@ -398,47 +423,28 @@ fun LoginScreen(firebaseAuthService: FirebaseAuthService) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                if (isUserLoggedIn.value) {
-                    databaseService.getUserById(loggedUser.firebaseId, onSuccess = {
-                        loggedUser = it
-                        pl.pawelosinski.skatefreak.local.loggedUser.value = it
-                    }, onFail = {
-                        loggedUser = User.getUserFromFirebaseUser(firebaseAuthService.auth.currentUser)
-                    })
+                if (isUserLoggedIn.value && loggedUser.value.firebaseId.isNotEmpty()) {
+                    databaseService.setLoggedUserById(loggedUser.value.firebaseId)
                     Log.d("LoginActivity", "Before data check: isUserDataSet: $isUserDataSet")
                     if (!isUserDataSet.value) {
-                        isUserDataSet.value = loggedUser.checkRequiredData()
+                        isUserDataSet.value = loggedUser.value.checkRequiredData()
                         Log.d("LoginActivity", "After data check: isUserDataSet: $isUserDataSet")
                     }
 
-                    Log.d(
-                        userLoggedBy.value, "[###signInWithCredential### - success]\n" +
-                                "isUserLoggedIn: $isUserLoggedIn\n" +
-                                "user: $loggedUser\n" +
-                                "user.email: ${loggedUser.email}\n" +
-                                "user.photoUrl: ${loggedUser.photoUrl}\n" +
-                                "user.uid: ${loggedUser.firebaseId}\n" +
-                                "user.phoneNumber: ${loggedUser.phoneNumber}\n" +
-                                "user.displayName: ${loggedUser.name}\n" +
-                                "user.nickname: ${loggedUser.nickname}\n" +
-                                "user.city: ${loggedUser.city}\n" +
-                                "isUserDataSet: $isUserDataSet\n"
-                    )
-                    // Text with auth.displayName when its not empty or auth.phoneNumber
                     if (!isUserDataSet.value) {
-                        Log.d("LoginActivity", "isUserDataSet: $isUserDataSet")
+                        Log.d("LoginActivity", "isUserDataSet: ${isUserDataSet.value}")
                         Text(
                             text = "Aby kontynuować, proszę uzupełnić dane profilu",
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
-                    } else if (loggedUser.name.isNotEmpty()) {
+                    } else if (loggedUser.value.name.isNotEmpty()) {
                         Text(
-                            text = "Witaj ${loggedUser.name}",
+                            text = "Witaj ${loggedUser.value.name}",
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                     } else {
                         Text(
-                            text = "Witaj ${loggedUser.phoneNumber}",
+                            text = "Witaj ${loggedUser.value.phoneNumber}",
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
@@ -450,7 +456,10 @@ fun LoginScreen(firebaseAuthService: FirebaseAuthService) {
                         // Button to go to UserDataActivity
                         Button(
                             onClick = {
-                                val intent = Intent(firebaseAuthService.currentActivity.value, UserSetDataActivity::class.java) //TODO
+                                val intent = Intent(
+                                    firebaseAuthService.currentActivity.value,
+                                    UserSetDataActivity::class.java
+                                ) //TODO
                                 firebaseAuthService.currentActivity.value.startActivity(intent)
                                 firebaseAuthService.currentActivity.value.finish()
                             },
@@ -476,7 +485,6 @@ fun LoginScreen(firebaseAuthService: FirebaseAuthService) {
 }
 
 
-
 @Composable
 fun MainMenuButton(firebaseAuthService: FirebaseAuthService) {
     val context = LocalContext.current
@@ -495,9 +503,11 @@ fun MainMenuButton(firebaseAuthService: FirebaseAuthService) {
 
 
 @Composable
-fun SignOutButton(signOut : () -> Unit = {
-    // Configure Google Sign In
-}) {
+fun SignOutButton(
+    signOut: () -> Unit = {
+        // Configure Google Sign In
+    }
+) {
     Button(
         modifier = myCommonModifier,
         onClick = {
@@ -530,8 +540,6 @@ fun GoogleSignInButton(firebaseAuthService: FirebaseAuthService) {
         }
     )
 }
-
-
 
 
 @Composable
@@ -610,8 +618,11 @@ fun PhoneLoginForm(firebaseAuthService: FirebaseAuthService) {
                 ) {
                     firebaseAuthService.startPhoneNumberVerification(userPhoneNumber)
                 } else if (!isVerificationCompleted.value) {
-                    if(verificationCode.matches(Regex("^\\d\\d\\d\\d\\d\\d$"))) {
-                        firebaseAuthService.verifyPhoneNumberWithCode(storedVerificationId, verificationCode)
+                    if (verificationCode.matches(Regex("^\\d\\d\\d\\d\\d\\d$"))) {
+                        firebaseAuthService.verifyPhoneNumberWithCode(
+                            storedVerificationId,
+                            verificationCode
+                        )
                     } else {
                         Toast.makeText(
                             firebaseAuthService.currentActivity.value,
