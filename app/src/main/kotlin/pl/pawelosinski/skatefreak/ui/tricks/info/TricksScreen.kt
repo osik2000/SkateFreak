@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -101,7 +102,7 @@ fun TrickTile(trick: TrickInfo, onClick: () -> Unit) {
 @Composable
 fun SortingOptions(onSortByCategorySelected: () -> Unit, onSortByDifficultySelected: () -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedIndex by remember { mutableStateOf(0) }
+    var selectedIndex by remember { mutableIntStateOf(0) }
 
     val options = listOf("Grupuj wg kategorii", "Grupuj wg trudności")
 
