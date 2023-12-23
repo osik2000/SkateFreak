@@ -129,6 +129,7 @@ fun AddRecordScreen(navController: NavController) {
                         myToast(context, "Wybierz konkretny trik!")
                         return@AddRecordButton
                     }
+                    myToast(context, "Dodawanie klipu...")
                     //todo loading
                     record = TrickRecord(
                         userID = loggedUser.value.firebaseId,

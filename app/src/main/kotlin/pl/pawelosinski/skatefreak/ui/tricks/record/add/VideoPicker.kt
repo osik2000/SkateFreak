@@ -60,11 +60,8 @@ fun VideoPickerButton() {
                 .setMinToMax(2, 10)  //seconds`
                 .setHideSeekBar(true)
                 .start(context as Activity, startForResult)
-
         }
     }
-
-
 
     Button(onClick = {
         pickMediaActivityResultLauncher.launch("video/*")
