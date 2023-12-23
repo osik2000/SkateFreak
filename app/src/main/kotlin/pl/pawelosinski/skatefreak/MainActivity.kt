@@ -31,8 +31,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        databaseService = DatabaseService()
-        isUserLoggedIn = checkIfUserIsLoggedIn()
+
         localDataInit = LocalDataInit(this)
         localDataInit.loadData()
 
@@ -50,68 +49,47 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-    private fun checkIfUserIsLoggedIn() : Boolean {
-        var isUserLoggedIn = true
-        val currentUser = Firebase.auth.currentUser ?: return false
-        databaseService.setLoggedUserById(currentUser.uid, onSuccess = {
-            databaseService.getAllTrickRecords(onSuccess = {
-                localDataInit.loadAllTrickRecords(it)
-            })
-            isUserLoggedIn = true
-            if (loggedUser.value.checkRequiredData()) {
-                val intent = Intent(this, MainMenuActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-            else {
-                val intent = Intent(this, LoginActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
+        loadDataForLoggedUser(onSuccess = {
+            val intent = Intent(this, MainMenuActivity::class.java)
+            startActivity(intent)
+            finish()
         }, onFail = {
-            isUserLoggedIn = false
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
             finish()
         })
-        //databaseService.setDefaultTrickInfo()
-//        databaseService.getUrlOfStorageFile("trickRecord/video/3 git.mov")
-//        databaseService.setDefaultTrickRecord()
-
-        return isUserLoggedIn
     }
 
-    @Composable
-    fun LoadingScreen() {
-        val loadingMessage by remember {
-            mutableStateOf("Ładowanie...\n" +
-                    "(Aplikacja wymaga połączenia z internetem)")
-        }
-
-        if(!isUserLoggedIn) {
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-            finish()
-        }
-
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-        ) {
-            Text(
-                text = "Skatefreak",
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.headlineLarge,
-                modifier = myCommonModifier
-            )
-            Text(
-                text = loadingMessage,
-                textAlign = TextAlign.Center,
-                modifier = myCommonModifier
-            )
-        }
+    private fun loadDataForLoggedUser(onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
+        val currentUser = Firebase.auth.currentUser ?: return
+        // set logged user as current user
+        databaseService.setLoggedUserById(currentUser.uid, onSuccess = {
+            // when logged user is set, load all trick records
+            databaseService.getAllTrickRecords(onSuccess = {
+                localDataInit.loadAllTrickRecords(it)
+                // when all trick records are loaded, assign all trickRecordCreators to allTrickRecordsCreators
+                UserRepository.getAllTrickRecordCreators(
+                    allTrickRecords = allTrickRecords,
+                    onSuccess = {
+                        if (loggedUser.value.checkRequiredData()) {
+                            onSuccess()
+                            return@getAllTrickRecordCreators
+                        }
+                        else {
+                            onFail()
+                            return@getAllTrickRecordCreators
+                        }
+                    }
+                )
+                return@getAllTrickRecords
+            })
+            return@setLoggedUserById
+        }, onFail = {
+            onFail()
+            return@setLoggedUserById
+        })
+        return
     }
-
 }
 
 

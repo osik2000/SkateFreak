@@ -12,18 +12,12 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import pl.pawelosinski.skatefreak.local.LocalDataInit
 import pl.pawelosinski.skatefreak.local.allTrickRecords
-import pl.pawelosinski.skatefreak.local.currentRecordLikes
 import pl.pawelosinski.skatefreak.ui.common.VideoPlayer
 import kotlin.math.abs
 
@@ -32,16 +26,16 @@ fun TrickRecordsScreen() {
     val trickRecords = allTrickRecords
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    var title by remember { if (trickRecords.size > 0) mutableStateOf(trickRecords[0].title) else mutableStateOf("...") }
+//    var title by remember { if (trickRecords.size > 0) mutableStateOf(trickRecords[0].title) else mutableStateOf("...") }
 
     LazyColumn(
         state = listState,
         flingBehavior = snapFlingBehavior(listState, coroutineScope) { index ->
             // Akcja do wykonania po przewinięciu na element o indeksie 'index';
-            title = trickRecords[index].title
-            currentRecordLikes.value = allTrickRecords[index].usersWhoSetAsFavorite.size.toString()
-            LocalDataInit.loadCurrentRecordData(index, trickRecords)
-            Log.d("TrickRecordsScreen", "title: $title, currentRecordLikes.value = ${currentRecordLikes.value}")
+//            title = trickRecords[index].title
+//            currentRecordLikes.value = allTrickRecords[index].usersWhoSetAsFavorite.size.toString()
+//            LocalDataInit.loadCurrentRecordData(index, trickRecords)
+            Log.d("TrickRecordsScreen", "snapFlingBehavior: index = '$index'")
         },
         modifier = Modifier.fillMaxSize(),
     ) {

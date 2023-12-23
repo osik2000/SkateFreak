@@ -1,5 +1,6 @@
 package pl.pawelosinski.skatefreak.ui.tricks.record
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,9 +30,11 @@ import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import pl.pawelosinski.skatefreak.R
-import pl.pawelosinski.skatefreak.local.currentRecordCreator
-import pl.pawelosinski.skatefreak.local.currentRecordLikes
+import pl.pawelosinski.skatefreak.local.allTrickRecordsCreators
 import pl.pawelosinski.skatefreak.model.TrickRecord
+import pl.pawelosinski.skatefreak.model.User
+import pl.pawelosinski.skatefreak.repository.UserRepository
+import pl.pawelosinski.skatefreak.service.databaseService
 
 /**
  * Footer user data
@@ -42,7 +49,18 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
         modifier = modifier,
         verticalArrangement = Arrangement.Center
     ) {
-        currentRecordLikes.value = trickRecord.usersWhoSetAsFavorite.size.toString()
+        var currentCreator by remember { mutableStateOf(User()) }
+        UserRepository.getCreatorById(
+            id = trickRecord.userID,
+            creatorsList = allTrickRecordsCreators,
+            databaseService = databaseService,
+            onSuccess = {
+                currentCreator = it
+            },
+            onFail = {
+                Log.d("TrickRecordsScreen", "getCreatorById: onFail")
+            }
+        )
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -56,7 +74,7 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
             ) {
                 val painter = rememberAsyncImagePainter(
                     ImageRequest.Builder(LocalContext.current)
-                        .data(data = currentRecordCreator.value.photoUrl.let { it.ifEmpty { R.drawable.rounded_person_24 } })
+                        .data(data = currentCreator.photoUrl.let { it.ifEmpty { R.drawable.rounded_person_24 } })
                         .apply(block = fun ImageRequest.Builder.() {
                             transformations(
                                 CircleCropTransformation()
@@ -69,20 +87,26 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
                 )
             }
             Spacer(modifier = Modifier.width(horizontalPadding))
+
             Text(
-                text = "@${currentRecordCreator.value.nickname}",
+                text = "@${currentCreator.nickname}",
                 color = Color.White,
                 fontWeight = FontWeight.Bold,
                 style = MaterialTheme.typography.labelMedium
             )
 
             Spacer(modifier = Modifier.width(horizontalPadding))
+
             Icon(
                 modifier = Modifier.size(20.dp),
                 imageVector = Icons.Outlined.Favorite,
                 contentDescription = "Favorites counter"
             )
-            Text(text = " ${currentRecordLikes.value}", color = Color.White, style = MaterialTheme.typography.labelMedium)
+            Text(
+                text = " ${trickRecord.favoriteCounter.intValue}",
+                color = Color.White,
+                style = MaterialTheme.typography.labelMedium
+            )
 //            Icon(
 //                modifier = Modifier.size(15.dp),
 //                imageVector = Icons.Outlined.Add,
