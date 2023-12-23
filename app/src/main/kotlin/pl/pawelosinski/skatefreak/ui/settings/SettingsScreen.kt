@@ -75,6 +75,8 @@ fun SettingsScreen(navController: NavController) {
                                 selectedTheme = theme
                                 isDarkMode = theme == "Dark"
                                 themePreferences.saveThemeSelection(theme)
+                                val activity = context as Activity
+                                activity.recreate()
                             }
                         )
                     }

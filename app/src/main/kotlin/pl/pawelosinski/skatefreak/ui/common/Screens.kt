@@ -7,6 +7,7 @@ sealed class Screens(val route : String) {
     data object TrickInfo : Screens("tricks/{trickId}") {
         fun createRoute(trickId: String) = "tricks/$trickId"
     }
+    data object ChooseTrickInfo : Screens("chooseTrickInfo")
     data object AddRecord : Screens("addRecord")
     data object Profile : Screens("profile")
     data object EditProfile : Screens("profile/edit")

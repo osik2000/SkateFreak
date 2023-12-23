@@ -1,12 +1,20 @@
 package pl.pawelosinski.skatefreak.model
 
+import androidx.compose.runtime.mutableStateOf
+
 data class TrickRecord(
-    val id: String = "",
+    var id: String = "",
     val userID: String = "",
     val trickID: String = "",
     val date: String = "",
     val title: String = "",
     val userDescription: String = "",
-    val videoUrl: String = "",
+    var videoUrl: String = "",
     val usersWhoSetAsFavorite: MutableList<String> = mutableListOf(),
-)
+) {
+    companion object {
+        val trimmedVideoPath = mutableStateOf("")
+        var localFileUri = mutableStateOf("")
+    }
+}
+

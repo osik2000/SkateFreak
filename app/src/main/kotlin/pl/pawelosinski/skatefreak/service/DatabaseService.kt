@@ -6,12 +6,14 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.local.allTrickInfo
+import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.model.User
+import pl.pawelosinski.skatefreak.ui.common.deleteTempFile
+import java.io.File
 
 
 lateinit var databaseService: DatabaseService
@@ -258,7 +260,7 @@ class DatabaseService {
         val avatarRef = storageRef.child("userAvatar/$userID$fileExtension")
 
         val uploadTask = avatarRef.putFile(file)
-        val urlTask = uploadTask.continueWithTask { task ->
+        uploadTask.continueWithTask { task ->
             if (!task.isSuccessful) {
                 task.exception?.let {
                     throw it
@@ -277,6 +279,71 @@ class DatabaseService {
                 onFail()
             }
         }
+    }
+
+    private fun uploadTrickRecordVideo(
+        userID: String,
+        trickRecordID: String,
+        file: Uri,
+        onComplete: (String) -> Unit = {},
+        onFail: () -> Unit = {}
+    ) {
+        val storageRef = storage.reference
+        val fileExtension = file.toString().substring(file.toString().lastIndexOf("."))
+        val videoRef = storageRef.child("trickRecord/video/$userID/$trickRecordID$fileExtension")
+
+        val uploadTask = videoRef.putFile(file)
+        uploadTask.continueWithTask { task ->
+            if (!task.isSuccessful) {
+                task.exception?.let {
+                    throw it
+                }
+            }
+            videoRef.downloadUrl
+        }.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d("DataService", "Video URL: ${task.result}")
+                val downloadUri = task.result
+                TrickRecord.localFileUri.value = ""
+                TrickRecord.trimmedVideoPath.value = ""
+                onComplete(downloadUri.toString())
+            } else {
+                Log.d("DataService", "Avatar URL failed: ${task.exception}")
+                onFail()
+            }
+        }
+    }
+
+    fun uploadTrickRecord(record: TrickRecord, onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
+        val localFile = record.videoUrl
+        val databaseReference = database.getReference("your_collection_name")
+        val uniqueId = databaseReference.push().key
+        if(uniqueId == null) {
+            Log.e("DataService", "Error writing data. Unique ID is null")
+            return
+        }
+        record.id = uniqueId
+        val myRef = database.getReference("tricks/records/${record.id}")
+
+
+        val fileUri = Uri.fromFile(File(record.videoUrl))
+
+        uploadTrickRecordVideo(record.userID, record.id, fileUri, onComplete = { videoUrl ->
+            deleteTempFile(localFile)
+            record.videoUrl = videoUrl
+            myRef.setValue(record).addOnSuccessListener {
+                Log.d("DataService", "Trick record saved successfully.")
+                onSuccess()
+            }.addOnFailureListener {
+                Log.e("DataService", "Error writing data", it)
+                onFail()
+            }
+        }, onFail = {
+            Log.e("DataService", "Error writing data")
+            onFail()
+        })
+
+
     }
 
 //    fun getUserByPhoneNumber(phoneNumber: String) : User {
