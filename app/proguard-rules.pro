@@ -24,3 +24,8 @@
 -dontwarn com.yalantis.ucrop**
 -keep class com.yalantis.ucrop** { *; }
 -keep interface com.yalantis.ucrop** { *; }
+
+
+-dontwarn com.gowtham.library**
+-keep class com.gowtham.library** { *; }
+-keep interface com.gowtham.library** { *; }

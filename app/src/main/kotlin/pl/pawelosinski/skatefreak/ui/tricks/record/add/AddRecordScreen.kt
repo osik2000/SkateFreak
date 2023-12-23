@@ -26,8 +26,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import pl.pawelosinski.skatefreak.local.isDarkMode
+import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
+import pl.pawelosinski.skatefreak.service.databaseService
 import pl.pawelosinski.skatefreak.ui.common.MyDivider
 import pl.pawelosinski.skatefreak.ui.common.Screens
 import pl.pawelosinski.skatefreak.ui.common.myToast
@@ -41,6 +43,7 @@ fun AddRecordScreen(navController: NavController) {
     var record = TrickRecord()
     val chosenTrickInfo by remember { mutableStateOf(TrickInfo.chosenOne)}
     val localFileUri by remember { mutableStateOf(TrickRecord.localFileUri)}
+    val trimmedVideoPath by remember { mutableStateOf(TrickRecord.trimmedVideoPath)}
     var title by remember { mutableStateOf("Mój klip")}
     var description by remember { mutableStateOf("Zobaczcie moje nagranie!")}
 
@@ -117,13 +120,30 @@ fun AddRecordScreen(navController: NavController) {
 
 
                 AddRecordButton(onClick = {
+                    trimmedVideoPath.value = TrickRecord.trimmedVideoPath.value
+                    if(trimmedVideoPath.value.isEmpty()) {
+                        myToast(context, "Przed zapisem wybierz plik!")
+                        return@AddRecordButton
+                    }
+                    if(chosenTrickInfo.value.id.isEmpty()) {
+                        myToast(context, "Wybierz konkretny trik!")
+                        return@AddRecordButton
+                    }
+                    //todo loading
                     record = TrickRecord(
-                        title = title,
-                        userDescription = description,
+                        userID = loggedUser.value.firebaseId,
                         trickID = chosenTrickInfo.value.id,
-                        videoUrl = localFileUri.value, // TODO CHANGE TO URL
-                        date = Date().toString()
+                        videoUrl = trimmedVideoPath.value,
+                        date = Date().toString(),
+                        title = title,
+                        userDescription = description
                     )
+                    databaseService.uploadTrickRecord(record, onSuccess = {
+                        myToast(context, "Dodano klip")
+                        navController.navigate(Screens.Home.route)
+                    }, onFail = {
+                        myToast(context, "Nie udało się dodać klipu")
+                    })
                 })
 
             }
