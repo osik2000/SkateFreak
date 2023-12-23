@@ -4,34 +4,29 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import pl.pawelosinski.skatefreak.local.LocalDataInit
+import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
+import pl.pawelosinski.skatefreak.repository.UserRepository
 import pl.pawelosinski.skatefreak.service.DatabaseService
 import pl.pawelosinski.skatefreak.service.databaseService
 import pl.pawelosinski.skatefreak.ui.auth.LoginActivity
-import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
+import pl.pawelosinski.skatefreak.ui.common.LoadingAnimation
 import pl.pawelosinski.skatefreak.ui.menu.MainMenuActivity
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
 class MainActivity : ComponentActivity() {
 
-    private var isUserLoggedIn = false
     private lateinit var localDataInit: LocalDataInit
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +36,8 @@ class MainActivity : ComponentActivity() {
         localDataInit = LocalDataInit(this)
         localDataInit.loadData()
 
+        databaseService = DatabaseService()
+
         setContent {
             SkateFreakTheme (darkTheme = isDarkMode) {
                 // A surface container using the 'background' color from the theme
@@ -48,11 +45,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    LoadingScreen()
+                    LoadingAnimation()
                 }
             }
         }
-    }
 
     private fun checkIfUserIsLoggedIn() : Boolean {
         var isUserLoggedIn = true
@@ -118,3 +114,11 @@ class MainActivity : ComponentActivity() {
 
 }
 
+
+@Preview(showBackground = true, apiLevel = 33, showSystemUi = true)
+@Composable
+fun LoadingScreenPreview() {
+    SkateFreakTheme (darkTheme = true) {
+        LoadingAnimation(loadingLabel = "Trwa ładowanie danych...\n(To może chwilę potrwać)")
+    }
+}
