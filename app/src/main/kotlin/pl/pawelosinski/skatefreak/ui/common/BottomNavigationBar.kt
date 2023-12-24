@@ -29,6 +29,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.loggedUser
+import pl.pawelosinski.skatefreak.model.TrickInfo
+import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.repository.UserRepository
 import pl.pawelosinski.skatefreak.service.LoginScreen
@@ -184,6 +186,14 @@ fun BottomNavigationBar() {
                 ChooseTrickInfoScreen(navController = navController)
             }
             composable(Screens.AddRecord.route) {
+                if(!TrickRecord.whileAdding.value){
+                    TrickRecord.whileAdding.value = false
+                    TrickRecord.chosenTitle.value = ""
+                    TrickRecord.chosenDescription.value = ""
+                    TrickRecord.localFileUri.value = ""
+                    TrickRecord.trimmedVideoPath.value = ""
+                    TrickRecord.chosenTrickInfo.value = TrickInfo()
+                }
                 AddRecordScreen(navController = navController)
             }
             composable(

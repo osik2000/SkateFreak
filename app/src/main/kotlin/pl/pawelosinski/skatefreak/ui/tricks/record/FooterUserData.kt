@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ThumbsUpDown
 import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,7 +47,7 @@ import pl.pawelosinski.skatefreak.service.databaseService
  */
 @Composable
 fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: NavController) {
-    val horizontalPadding = 10.dp
+    val padding = 10.dp
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center
@@ -64,7 +65,29 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: 
             }
         )
 
-        Row(
+        Row ( // Title
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ){
+            Text(
+                text = trickRecord.title,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
+        Row ( // Description
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ){
+            Text(
+                text = trickRecord.userDescription.ifEmpty { "Brak opisu" },
+                color = Color.White,
+                style = MaterialTheme.typography.labelMedium
+            )
+        }
+        Spacer(modifier = Modifier.height(padding))
+        Row( // creator and counters
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
@@ -96,7 +119,7 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: 
                         contentDescription = null,
                     )
                 }
-                Spacer(modifier = Modifier.width(horizontalPadding))
+                Spacer(modifier = Modifier.width(padding))
 
                 Text(
                     text = "@${currentCreator.nickname}",
@@ -106,7 +129,7 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: 
                 )
             }
 
-            Spacer(modifier = Modifier.width(horizontalPadding))
+            Spacer(modifier = Modifier.width(padding))
 
             Row (
                 verticalAlignment = Alignment.CenterVertically,
@@ -115,11 +138,42 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: 
                 Icon(
                     modifier = Modifier.size(20.dp),
                     imageVector = Icons.Outlined.Favorite,
+                    tint = if (trickRecord.favoriteCounter.intValue > 0) Color.Red else Color.White,
                     contentDescription = "Favorites counter"
                 )
                 Text(
                     text = " ${trickRecord.favoriteCounter.intValue}",
                     color = Color.White,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+
+
+            Spacer(modifier = Modifier.width(padding))
+
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    imageVector = Icons.Default.ThumbsUpDown,
+                    tint = if (trickRecord.likeCounter.intValue - trickRecord.dislikeCounter.intValue > 0)
+                        Color.Green else
+                            if (trickRecord.likeCounter.intValue - trickRecord.dislikeCounter.intValue == 0)
+                                Color.White
+                            else
+                                Color.Red,
+                    contentDescription = "Likes and DislikesCounter"
+                )
+                Text(
+                    text = " ${trickRecord.likeCounter.intValue - trickRecord.dislikeCounter.intValue}",
+                    color = if (trickRecord.likeCounter.intValue - trickRecord.dislikeCounter.intValue > 0)
+                        Color.Green else
+                        if (trickRecord.likeCounter.intValue - trickRecord.dislikeCounter.intValue == 0)
+                            Color.White
+                        else
+                            Color.Red,
                     style = MaterialTheme.typography.labelMedium
                 )
             }
@@ -130,7 +184,7 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: 
 //                contentDescription = ""
 //            )
         }
-        Spacer(modifier = Modifier.height(horizontalPadding))
+        Spacer(modifier = Modifier.height(padding))
 
         // autor
 //        Row(

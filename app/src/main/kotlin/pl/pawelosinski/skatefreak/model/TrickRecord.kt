@@ -16,7 +16,7 @@ data class TrickRecord(
     val favoriteCounter: MutableIntState = mutableIntStateOf(0),
     val usersWhoLiked: MutableList<String> = mutableListOf(),
     val likeCounter: MutableIntState = mutableIntStateOf(0),
-    val usersWhoDisiked: MutableList<String> = mutableListOf(),
+    val usersWhoDisliked: MutableList<String> = mutableListOf(),
     val dislikeCounter: MutableIntState = mutableIntStateOf(0),
 ) {
 
@@ -33,13 +33,17 @@ data class TrickRecord(
             favoriteCounter = trickRecord.favoriteCounter.intValue.toString(),
             usersWhoLiked = trickRecord.usersWhoLiked,
             likeCounter = trickRecord.likeCounter.intValue.toString(),
-            usersWhoDisiked = trickRecord.usersWhoDisiked,
+            usersWhoDisliked = trickRecord.usersWhoDisliked,
             dislikeCounter = trickRecord.dislikeCounter.intValue.toString(),
         )
     }
     companion object {
+        val whileAdding = mutableStateOf(false)
         val trimmedVideoPath = mutableStateOf("")
         var localFileUri = mutableStateOf("")
+        var chosenTitle = mutableStateOf("")
+        var chosenDescription = mutableStateOf("")
+        var chosenTrickInfo = mutableStateOf(TrickInfo())
     }
 }
 
@@ -54,9 +58,9 @@ data class TrickRecordDTO(
     val usersWhoSetAsFavorite: MutableList<String> = mutableListOf(),
     var favoriteCounter: String = "0",
     val usersWhoLiked: MutableList<String> = mutableListOf(),
-    val likeCounter: String = "0",
-    val usersWhoDisiked: MutableList<String> = mutableListOf(),
-    val dislikeCounter: String = "0",
+    var likeCounter: String = "0",
+    val usersWhoDisliked: MutableList<String> = mutableListOf(),
+    var dislikeCounter: String = "0",
 ) {
     fun toTrickRecord(trickRecordDTO: TrickRecordDTO = this): TrickRecord {
         return TrickRecord(
@@ -71,7 +75,7 @@ data class TrickRecordDTO(
             favoriteCounter = mutableIntStateOf(Integer.valueOf(trickRecordDTO.favoriteCounter)),
             usersWhoLiked = trickRecordDTO.usersWhoLiked,
             likeCounter = mutableIntStateOf(Integer.valueOf(trickRecordDTO.likeCounter)),
-            usersWhoDisiked = trickRecordDTO.usersWhoDisiked,
+            usersWhoDisliked = trickRecordDTO.usersWhoDisliked,
             dislikeCounter = mutableIntStateOf(Integer.valueOf(trickRecordDTO.dislikeCounter)),
         )
     }

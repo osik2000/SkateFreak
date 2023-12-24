@@ -35,6 +35,7 @@ fun VideoPickerButton() {
             myToast(context, "Trimmed path: $trimmedVideoPath")
             TrickRecord.localFileUri.value = trimmedVideoPath
             TrickRecord.trimmedVideoPath.value = trimmedVideoPath
+            TrickRecord.whileAdding.value = true
         } else {
             LogMessage.v("videoTrimResultLauncher data is null")
         }
