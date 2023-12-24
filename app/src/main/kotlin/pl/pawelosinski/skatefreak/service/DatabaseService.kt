@@ -178,12 +178,11 @@ class DatabaseService {
     fun addTrickRecordToFavorites(
         trickRecord: TrickRecord,
         onSuccess: (String) -> Unit = {}
-    ): String {
+    ) {
         val userID = loggedUser.value.firebaseId
         val userFavoritesRef = database.getReference("users/$userID/favoriteTrickRecords")
         val trickRecordUsersWhoSetAsFavoriteRef =
             database.getReference("tricks/records/${trickRecord.id}/usersWhoSetAsFavorite")
-        var result = trickRecord.usersWhoSetAsFavorite.size.toString()
 
         if (trickRecord.usersWhoSetAsFavorite.contains(userID) && loggedUser.value.favoriteTrickRecords.contains(
                 trickRecord.id
@@ -197,7 +196,7 @@ class DatabaseService {
             userFavoritesRef.setValue(loggedUser.value.favoriteTrickRecords).addOnSuccessListener {
                 Log.d("DataService", "Trick record removed from favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.remove(userID)
-                result = trickRecord.usersWhoSetAsFavorite.size.toString()
+                trickRecord.favoriteCounter.intValue--
                 trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite)
                     .addOnSuccessListener {
                         Log.d(
@@ -219,14 +218,13 @@ class DatabaseService {
                     it
                 )
             }
-            return result
         } else {
             Log.d("DataService", "Trick record not in favorites. Adding this one to favorites")
             loggedUser.value.favoriteTrickRecords.add(trickRecord.id)
             userFavoritesRef.setValue(loggedUser.value.favoriteTrickRecords).addOnSuccessListener {
                 Log.d("DataService", "Trick record added to favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.add(userID)
-                result = trickRecord.usersWhoSetAsFavorite.size.toString()
+                trickRecord.favoriteCounter.intValue++
                 trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite)
                     .addOnSuccessListener {
                         Log.d(
@@ -244,7 +242,6 @@ class DatabaseService {
             }.addOnFailureListener {
                 Log.e("DataService", "Trick has not been added to favorites (userFavoritesRef)", it)
             }
-            return result
         }
     }
 

@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.ThumbDownOffAlt
+import androidx.compose.material.icons.filled.ThumbUpOffAlt
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -19,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import pl.pawelosinski.skatefreak.local.currentRecordLikes
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.service.databaseService
@@ -55,7 +54,6 @@ fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
                         myToast(context = context, message = it)
                         isFavorite = !isFavorite
                         Log.d("FooterUserAction", "usernames who liked ${trickRecord.usersWhoSetAsFavorite}")
-                        currentRecordLikes.value = trickRecord.usersWhoSetAsFavorite.size.toString()
                     }
 
                 )
@@ -64,13 +62,17 @@ fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
                 Log.d("FooterUserAction", "TrickRecord.usernamesWhoLiked (${trickRecord.usersWhoSetAsFavorite.size}): ${trickRecord.usersWhoSetAsFavorite}")
             }
         )
+
         Spacer(modifier = Modifier.height(10.dp))
+
         UserAction(
-            icon = Icons.Default.KeyboardArrowUp,
+            icon = Icons.Default.ThumbUpOffAlt,
         )
+
         Spacer(modifier = Modifier.height(10.dp))
+
         UserAction(
-            icon = Icons.Default.KeyboardArrowDown,
+            icon = Icons.Default.ThumbDownOffAlt,
         )
     }
 }

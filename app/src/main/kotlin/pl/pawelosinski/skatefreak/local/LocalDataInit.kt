@@ -1,9 +1,7 @@
 package pl.pawelosinski.skatefreak.local
 
 import android.content.Context
-import android.util.Log
 import pl.pawelosinski.skatefreak.model.TrickRecord
-import pl.pawelosinski.skatefreak.service.databaseService
 
 class LocalDataInit (context : Context) {
     // Theme
@@ -27,25 +25,25 @@ class LocalDataInit (context : Context) {
 
     fun loadAllTrickRecords(trickRecordList: MutableList<TrickRecord>) {
         allTrickRecords = trickRecordList
-        loadCurrentRecordData() //TODO crashes when no data
+        //loadCurrentRecordData()
         //allTrickRecords.sortByDescending { it.usernamesWhoLiked.size }
     }
-
-    companion object{
-        fun loadCurrentRecordData(index: Int = 0, trickRecords: MutableList<TrickRecord> = allTrickRecords) {
-            Log.d("LocalDataInit", "loadCurrentRecordData: $index" +
-                    "allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty(): " +
-                    "${allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty()}")
-            if(allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty()) {
-                currentRecordCreator.value = allTrickRecordsCreators[index]
-            }
-            else {
-                databaseService.getUserById(allTrickRecords[index].userID, onSuccess = {
-                    allTrickRecordsCreators.add(index, it)
-                    currentRecordCreator.value = it
-                })
-            }
-            currentRecordLikes.value = trickRecords[index].usersWhoSetAsFavorite.size.toString()
-        }
-    }
+//
+//    companion object{
+//        fun loadCurrentRecordData(index: Int = 0, trickRecords: MutableList<TrickRecord> = allTrickRecords) {
+//            Log.d("LocalDataInit", "loadCurrentRecordData: $index" +
+//                    "allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty(): " +
+//                    "${allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty()}")
+//            if(allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty()) {
+//                currentRecordCreator.value = allTrickRecordsCreators[index]
+//            }
+//            else {
+//                databaseService.getUserById(allTrickRecords[index].userID, onSuccess = {
+//                    allTrickRecordsCreators.add(index, it)
+//                    currentRecordCreator.value = it
+//                })
+//            }
+//            currentRecordLikes.value = trickRecords[index].usersWhoSetAsFavorite.size.toString()
+//        }
+//    }
 }
