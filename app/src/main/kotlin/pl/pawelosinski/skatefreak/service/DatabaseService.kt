@@ -251,6 +251,160 @@ class DatabaseService {
         }
     }
 
+    fun setLikeStatusOnTrickRecord(
+        trickRecord: TrickRecordDTO,
+        onSuccess: (String) -> Unit = {}
+    ) {
+        val userID = loggedUser.value.firebaseId
+        val userLikeRef = database.getReference("users/$userID/likedTrickRecords")
+        val trickRecordRef =
+            database.getReference("tricks/records/${trickRecord.id}")
+
+        if (trickRecord.usersWhoLiked.contains(userID) && loggedUser.value.likedTrickRecords.contains(
+                trickRecord.id
+            )
+        ) {
+            Log.d(
+                "DataService",
+                "Trick record already liked. Removing this one from liked"
+            )
+            loggedUser.value.likedTrickRecords.remove(trickRecord.id)
+            userLikeRef.setValue(loggedUser.value.likedTrickRecords).addOnSuccessListener {
+                Log.d("DataService", "Trick record removed from liked. (userLikeRef)")
+                trickRecord.usersWhoLiked.remove(userID)
+                trickRecord.likeCounter = (Integer.valueOf(trickRecord.likeCounter) - 1).toString()
+                trickRecordRef.setValue(trickRecord)
+                    .addOnSuccessListener {
+                        Log.d(
+                            "DataService",
+                            "Trick record removed from liked. (trickRecordusersWhoLikedRef)"
+                        )
+                        onSuccess("Cofnięto Łapkę w górę.")
+                    }.addOnFailureListener {
+                        Log.e(
+                            "DataService",
+                            "Trick has not been removed from liked (trickRecordusersWhoLikedRef)",
+                            it
+                        )
+                    }
+            }.addOnFailureListener {
+                Log.e(
+                    "DataService",
+                    "Trick has not been removed from liked (userLikeRef)",
+                    it
+                )
+            }
+        } else {
+            Log.d(
+                "DataService",
+                "Adding Like to trick record. (trickRecordusersWhoLikedRef)"
+            )
+            loggedUser.value.likedTrickRecords.add(trickRecord.id)
+            userLikeRef.setValue(loggedUser.value.likedTrickRecords).addOnSuccessListener {
+                Log.d("DataService", "Added trick to like. (trickRecordusersWhoLikedRef)")
+                trickRecord.usersWhoLiked.add(userID)
+                trickRecord.likeCounter = (Integer.valueOf(trickRecord.likeCounter) + 1).toString()
+                trickRecordRef.setValue(trickRecord)
+                    .addOnSuccessListener {
+                        Log.d(
+                            "DataService",
+                            "Trick record added to liked. (trickRecordusersWhoLikedRef)"
+                        )
+                        onSuccess("Polubiono klip.")
+                    }.addOnFailureListener {
+                        Log.e(
+                            "DataService",
+                            "Trick has not been added to liked (trickRecordusersWhoLikedRef)",
+                            it
+                        )
+                    }
+            }.addOnFailureListener {
+                Log.e(
+                    "DataService",
+                    "Trick has not been added to liked (userLikeRef)",
+                    it
+                )
+            }
+        }
+    }
+
+    fun setDislikeStatusOnTrickRecord(
+        trickRecord: TrickRecordDTO,
+        onSuccess: (String) -> Unit = {}
+    ) {
+        val userID = loggedUser.value.firebaseId
+        val userDislikeRef = database.getReference("users/$userID/dislikedTrickRecords")
+        val trickRecordRef =
+            database.getReference("tricks/records/${trickRecord.id}")
+
+        if (trickRecord.usersWhoDisliked.contains(userID) && loggedUser.value.dislikedTrickRecords.contains(
+                trickRecord.id
+            )
+        ) {
+            Log.d(
+                "DataService",
+                "Trick record already disliked. Removing this one from disliked"
+            )
+            loggedUser.value.dislikedTrickRecords.remove(trickRecord.id)
+            userDislikeRef.setValue(loggedUser.value.dislikedTrickRecords).addOnSuccessListener {
+                Log.d("DataService", "Trick record removed from disliked. (userDislikeRef)")
+                trickRecord.usersWhoDisliked.remove(userID)
+                trickRecord.dislikeCounter = (Integer.valueOf(trickRecord.dislikeCounter) - 1).toString()
+                trickRecordRef.setValue(trickRecord)
+                    .addOnSuccessListener {
+                        Log.d(
+                            "DataService",
+                            "Trick record removed from disliked. (trickRecordusersWhoDislikedRef)"
+                        )
+                        onSuccess("Cofnięto Łapkę w dół.")
+                    }.addOnFailureListener {
+                        Log.e(
+                            "DataService",
+                            "Trick has not been removed from disliked (trickRecordusersWhoDislikedRef)",
+                            it
+                        )
+                    }
+            }.addOnFailureListener {
+                Log.e(
+                    "DataService",
+                    "Trick has not been removed from disliked (userDislikeRef)",
+                    it
+                )
+            }
+        } else {
+            Log.d(
+                "DataService",
+                "Adding dislike to trick record. (trickRecordusersWhoDislikedRef)"
+            )
+            loggedUser.value.dislikedTrickRecords.add(trickRecord.id)
+            userDislikeRef.setValue(loggedUser.value.dislikedTrickRecords).addOnSuccessListener {
+                Log.d("DataService", "Added trick to like. (trickRecordusersWhoDislikedRef)")
+                trickRecord.usersWhoDisliked.add(userID)
+                trickRecord.dislikeCounter = (Integer.valueOf(trickRecord.dislikeCounter) + 1).toString()
+                trickRecordRef.setValue(trickRecord)
+                    .addOnSuccessListener {
+                        Log.d(
+                            "DataService",
+                            "Trick record added to disliked. (trickRecordusersWhoDislikedRef)"
+                        )
+                        onSuccess("Oddano łapke w dół.")
+                    }.addOnFailureListener {
+                        Log.e(
+                            "DataService",
+                            "Trick has not been added to disliked (trickRecordusersWhoDislikedRef)",
+                            it
+                        )
+                    }
+            }.addOnFailureListener {
+                Log.e(
+                    "DataService",
+                    "Trick has not been added to disliked (userDislikeRef)",
+                    it
+                )
+            }
+        }
+    }
+
 
     fun uploadUserAvatar(
         userID: String,

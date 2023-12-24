@@ -12,6 +12,8 @@ data class User(
     var nickname: String = "",
     var city: String = "",
     var favoriteTrickRecords: MutableList<String> = mutableListOf(),
+    var likedTrickRecords: MutableList<String> = mutableListOf(),
+    var dislikedTrickRecords: MutableList<String> = mutableListOf(),
     var accountType: String = "",
     var isPublic: Boolean = true
 ) {
