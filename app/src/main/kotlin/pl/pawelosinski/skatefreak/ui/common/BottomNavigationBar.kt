@@ -6,8 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -22,8 +20,6 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
@@ -32,7 +28,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
-import pl.pawelosinski.skatefreak.model.TrickInfo
+import pl.pawelosinski.skatefreak.local.loggedUser
+import pl.pawelosinski.skatefreak.model.User
+import pl.pawelosinski.skatefreak.repository.UserRepository
 import pl.pawelosinski.skatefreak.service.LoginScreen
 import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
@@ -42,7 +40,6 @@ import pl.pawelosinski.skatefreak.ui.settings.SettingsScreen
 import pl.pawelosinski.skatefreak.ui.tricks.info.TrickInfoComposable
 import pl.pawelosinski.skatefreak.ui.tricks.info.TricksScreen
 import pl.pawelosinski.skatefreak.ui.tricks.record.add.AddRecordScreen
-import pl.pawelosinski.skatefreak.ui.tricks.record.add.ChooseTrickInfoButton
 import pl.pawelosinski.skatefreak.ui.tricks.record.add.ChooseTrickInfoScreen
 
 @Composable
@@ -70,18 +67,18 @@ fun BottomNavigationBar() {
 
 //scaffold to hold our bottom navigation Bar
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize(),
         bottomBar = {
             NavigationBar {
                 //getting the list of bottom navigation items for our data class
                 BottomNavigationItem().bottomNavigationItems().forEachIndexed {index,navigationItem ->
 
-                    if(navigationItem.route == "addRecord"){
+                    if(navigationItem.route == Screens.AddRecord.route){
                         Surface(
                             modifier = Modifier
                                 .weight(1f)
                                 .wrapContentSize(),
-//                                .border(1.dp, MaterialTheme.colorScheme.background),
                             color = MaterialTheme.colorScheme.background
                         ) {
                             NavigationBarItem(
@@ -90,7 +87,6 @@ fun BottomNavigationBar() {
                                     Text(navigationItem.title)
                                 },
                                 icon = {
-                                    if (navigationItem.icon != Icons.Default.Warning)
                                         Icon(
                                             imageVector = navigationItem.icon,
                                             tint = MaterialTheme.colorScheme.primary,
@@ -101,10 +97,6 @@ fun BottomNavigationBar() {
                                                 // thickness of the icon
                                                 .border(1.dp, MaterialTheme.colorScheme.primary)
                                         )
-                                    else
-                                        Icon(
-                                            imageVector = ImageVector.vectorResource(navigationItem.resource),
-                                            contentDescription = navigationItem.title)
                                 },
                                 // used to handle click events of navigation items
                                 onClick = {
@@ -130,22 +122,28 @@ fun BottomNavigationBar() {
                                 Text(navigationItem.title)
                             },
                             icon = {
-                                if (navigationItem.icon != Icons.Default.Warning)
                                     Icon(
                                         imageVector = navigationItem.icon,
-                                        contentDescription = navigationItem.title)
-                                else
-                                    Icon(
-                                        imageVector = ImageVector.vectorResource(navigationItem.resource),
-                                        contentDescription = navigationItem.title)
+                                        contentDescription = navigationItem.title
+                                    )
                             },
                             // used to handle click events of navigation items
                             onClick = {
-                                Log.d("BottomNavigationBar", "currentDestination: ${navController.currentDestination?.route}")
-                                if(navigationItem.route == Screens.Tricks.route &&
+                                val tricksFix = (
+                                    navigationItem.route == Screens.Tricks.route &&
                                     navController.currentDestination?.route?.contains(Screens.Tricks.route) == true &&
-                                    navController.currentDestination?.route?.equals(Screens.Tricks.route) == false
-                                ){
+                                    navController.currentDestination?.route?.equals(Screens.Tricks.route) == false)
+                                val profileEditFix = (
+                                    navigationItem.route.contains("profile/") &&
+                                    navController.currentDestination?.route?.equals(Screens.EditProfile.route) == true)
+                                val clipFix = (
+                                    navigationItem.route == Screens.Home.route &&
+                                    navController.currentDestination?.route?.equals(Screens.Profile.route) == true)
+
+                                Log.d("BottomNavigationBar", "currentDestination: ${navController.currentDestination?.route}")
+                                Log.d("BottomNavigationBar", "navigationItem.route = ${navigationItem.route}")
+                                Log.d("BottomNavigationBar", "tricksFix = $tricksFix  clipFix = $clipFix")
+                                if(tricksFix || clipFix || profileEditFix) {
                                         navController.navigateUp()
                                 }
                                 else {
@@ -160,13 +158,11 @@ fun BottomNavigationBar() {
                                 }
                             }
                         )
-
                     }
                 }
             }
         }
     ) { paddingValues ->
-        //We need to setup our NavHost in here
         NavHost(
             navController = navController,
             startDestination = Screens.Home.route,
@@ -190,8 +186,20 @@ fun BottomNavigationBar() {
             composable(Screens.AddRecord.route) {
                 AddRecordScreen(navController = navController)
             }
-            composable(Screens.Profile.route) {
-                ProfileScreen(navController = navController)
+            composable(
+                route = Screens.Profile.route,
+                arguments = listOf(navArgument("userId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getString("userId")
+                val isMyProfile = userId == loggedUser.value.firebaseId
+                var user = User()
+                if (userId != null) {
+                    user = if(isMyProfile) loggedUser.value else UserRepository.getUserById(userId)
+                }
+                ProfileScreen(navController = navController, user = user)
+            }
+            composable(Screens.MyProfile.route) {
+                ProfileScreen(navController = navController, user = loggedUser.value)
             }
             composable(Screens.EditProfile.route) {
                 EditProfile(navController = navController)

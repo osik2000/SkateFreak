@@ -19,7 +19,7 @@ fun HomeScreen(navController: NavController) {
             color = MaterialTheme.colorScheme.background
         ) {
 
-            TrickRecordsScreen()
+            TrickRecordsScreen(navController = navController)
             //}
         }
     }

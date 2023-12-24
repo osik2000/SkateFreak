@@ -25,7 +25,9 @@ import androidx.navigation.NavController
 import pl.pawelosinski.skatefreak.local.ThemePreferences
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.isDarkMode
+import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.service.SignOutButton
+import pl.pawelosinski.skatefreak.service.UserService
 import pl.pawelosinski.skatefreak.ui.auth.LoginActivity
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
@@ -35,8 +37,8 @@ import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
 
-    // Notifications
-    var notificationsEnabled by remember { mutableStateOf(true) }
+    // Public Profile state
+    var profilePublic by remember { mutableStateOf(loggedUser.value.isPublic) }
 
     // Theme
     val themePreferences = ThemePreferences(context)
@@ -56,10 +58,13 @@ fun SettingsScreen(navController: NavController) {
             Column(modifier = Modifier.padding(innerPadding)) {
                 // Przełącznik
                 RowSettingsItem(
-                    title = "Ustaw powiadomienia",
-                    description = "Włącz lub wyłącz powiadomienia"
+                    title = "Widoczność profilu",
+                    description = "Pozwól innym użytkownikom na\nprzeglądanie Twojego profilu"
                 ) {
-                    Switch(checked = notificationsEnabled, onCheckedChange = { notificationsEnabled = it })
+                    Switch(checked = profilePublic, onCheckedChange = {
+                        profilePublic = it
+                        UserService.setUserPublicProfile(it)
+                    })
                 }
 
                 // Przyciski radio

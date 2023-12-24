@@ -12,7 +12,8 @@ data class User(
     var nickname: String = "",
     var city: String = "",
     var favoriteTrickRecords: MutableList<String> = mutableListOf(),
-    var accountType: String = ""
+    var accountType: String = "",
+    var isPublic: Boolean = true
 ) {
 
     override fun toString(): String {

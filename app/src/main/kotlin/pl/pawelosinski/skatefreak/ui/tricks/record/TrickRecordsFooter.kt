@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import pl.pawelosinski.skatefreak.model.TrickRecord
 
 /**
@@ -15,7 +16,7 @@ import pl.pawelosinski.skatefreak.model.TrickRecord
  * @param trickRecord
  */
 @Composable
-fun TrickRecordsFooter(trickRecord: TrickRecord) {
+fun TrickRecordsFooter(navController: NavController, trickRecord: TrickRecord) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -23,6 +24,7 @@ fun TrickRecordsFooter(trickRecord: TrickRecord) {
         verticalAlignment = Alignment.Bottom
     ) {
         FooterUserData(
+            navController = navController,
             trickRecord = trickRecord,
             modifier = Modifier.weight(8f)
         )
