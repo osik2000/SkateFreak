@@ -10,8 +10,4 @@ data class TrickInfo (
     val difficulty: String = "",
     val category: String = "",
     val photoUrl: String = "",
-) {
-    companion object {
-        var chosenOne = mutableStateOf(TrickInfo())
-    }
-}
+)

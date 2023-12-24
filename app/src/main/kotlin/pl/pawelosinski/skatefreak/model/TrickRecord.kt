@@ -38,8 +38,12 @@ data class TrickRecord(
         )
     }
     companion object {
+        val whileAdding = mutableStateOf(false)
         val trimmedVideoPath = mutableStateOf("")
         var localFileUri = mutableStateOf("")
+        var chosenTitle = mutableStateOf("")
+        var chosenDescription = mutableStateOf("")
+        var chosenTrickInfo = mutableStateOf(TrickInfo())
     }
 }
 

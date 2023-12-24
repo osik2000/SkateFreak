@@ -25,9 +25,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
-import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.service.databaseService
 import pl.pawelosinski.skatefreak.ui.common.MyDivider
@@ -40,12 +40,16 @@ import java.util.Date
 @Composable
 fun AddRecordScreen(navController: NavController) {
     val context = LocalContext.current
-    var record = TrickRecord()
-    val chosenTrickInfo by remember { mutableStateOf(TrickInfo.chosenOne)}
+    var record: TrickRecord
+    val chosenTrickInfo by remember { mutableStateOf(TrickRecord.chosenTrickInfo)}
     val localFileUri by remember { mutableStateOf(TrickRecord.localFileUri)}
     val trimmedVideoPath by remember { mutableStateOf(TrickRecord.trimmedVideoPath)}
-    var title by remember { mutableStateOf("Mój klip")}
-    var description by remember { mutableStateOf("Zobaczcie moje nagranie!")}
+    var title by remember {
+            mutableStateOf(TrickRecord.chosenTitle.value)
+    }
+    var description by remember {
+            mutableStateOf(TrickRecord.chosenDescription.value)
+    }
 
     SkateFreakTheme (darkTheme = isDarkMode){
         Surface(
@@ -56,17 +60,14 @@ fun AddRecordScreen(navController: NavController) {
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
                     .padding(15.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
                 ScreenTitle(text = "Dodaj Klip")
-
-                RecordColumn {
-                    UploadFileComposable()
-                }
-
+                Spacer(modifier = Modifier.padding(10.dp))
+                MyDivider()
+                Spacer(modifier = Modifier.padding(10.dp))
 
                 RecordColumn {
                     OutlinedTextField(
@@ -79,7 +80,11 @@ fun AddRecordScreen(navController: NavController) {
                                 myToast(context, "Tytuł nie może przekraczać 30 znaków")
                             }
                             else {
+                                if (!TrickRecord.whileAdding.value) {
+                                    TrickRecord.whileAdding.value = true
+                                }
                                 title = it
+                                TrickRecord.chosenTitle.value = it
                             }
                         },
                         label = { Text("Tytuł") }
@@ -90,7 +95,7 @@ fun AddRecordScreen(navController: NavController) {
                 // Pole do wprowadzania opisu
                 RecordColumn {
                     OutlinedTextField(
-                        value = record.userDescription,
+                        value = description,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
@@ -99,7 +104,11 @@ fun AddRecordScreen(navController: NavController) {
                                 myToast(context, "Opis nie może przekraczać 30 znaków")
                             }
                             else {
+                                if (!TrickRecord.whileAdding.value) {
+                                    TrickRecord.whileAdding.value = true
+                                }
                                 description = it
+                                TrickRecord.chosenDescription.value = it
                             }
                         },
                         label = { Text("Opis") }
@@ -117,8 +126,6 @@ fun AddRecordScreen(navController: NavController) {
                     VideoPickerButton()
                 }
 
-
-
                 AddRecordButton(onClick = {
                     trimmedVideoPath.value = TrickRecord.trimmedVideoPath.value
                     if(trimmedVideoPath.value.isEmpty()) {
@@ -130,6 +137,7 @@ fun AddRecordScreen(navController: NavController) {
                         return@AddRecordButton
                     }
                     myToast(context, "Dodawanie klipu...")
+
                     //todo loading
                     record = TrickRecord(
                         userID = loggedUser.value.firebaseId,
@@ -141,7 +149,9 @@ fun AddRecordScreen(navController: NavController) {
                     )
                     databaseService.uploadTrickRecord(record, onSuccess = {
                         myToast(context, "Dodano klip")
+                        allTrickRecords.add(0, it)
                         navController.navigate(Screens.Home.route)
+                        TrickRecord.whileAdding.value = false
                     }, onFail = {
                         myToast(context, "Nie udało się dodać klipu")
                     })
@@ -187,11 +197,6 @@ fun ChooseTrickInfoButton(navController: NavController) {
         Text("Wybierz Trik")
     }
 
-}
-
-@Composable
-fun UploadFileComposable() {
-    // todo
 }
 
 @Composable

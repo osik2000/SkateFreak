@@ -317,7 +317,7 @@ class DatabaseService {
         }
     }
 
-    fun uploadTrickRecord(record: TrickRecord, onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
+    fun uploadTrickRecord(record: TrickRecord, onSuccess: (TrickRecord) -> Unit = {}, onFail: () -> Unit = {}) {
         val recordDTO = record.toDTO()
         val localFile = recordDTO.videoUrl
         val databaseReference = database.getReference("your_collection_name")
@@ -336,7 +336,7 @@ class DatabaseService {
             recordDTO.videoUrl = videoUrl
             myRef.setValue(recordDTO).addOnSuccessListener {
                 Log.d("DataService", "Trick record saved successfully.")
-                onSuccess()
+                onSuccess(recordDTO.toTrickRecord())
             }.addOnFailureListener {
                 Log.e("DataService", "Error writing data", it)
                 onFail()
