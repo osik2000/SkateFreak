@@ -8,39 +8,37 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.ui.graphics.vector.ImageVector
-import pl.pawelosinski.skatefreak.R
 
 
 data class BottomNavigationItem(
     val route: String = "",
     val title: String = "",
-    val icon: ImageVector = Icons.Default.Warning,
-    val resource: Int = R.drawable.baseline_skateboarding_24
+    val icon: ImageVector = Icons.Default.Warning
 ) {
 
     fun bottomNavigationItems() : List<BottomNavigationItem> {
         return listOf(
             BottomNavigationItem(
-                route = "home",
+                route = Screens.Home.route,
                 title = "Klipy",
                 icon = Icons.Default.PlayArrow
             ),
             BottomNavigationItem(
-                route = "tricks",
+                route = Screens.Tricks.route,
                 title = "Triki",
                 icon = Icons.Default.Info
             ),
             BottomNavigationItem(
-                route = "addRecord",
+                route = Screens.AddRecord.route,
                 icon = Icons.Default.Add
             ),
             BottomNavigationItem(
-                route = "profile",
+                route = Screens.MyProfile.route,
                 title = "Profil",
                 icon = Icons.Default.Person
             ),
             BottomNavigationItem(
-                route = "settings",
+                route = Screens.Settings.route,
                 title = "Opcje",
                 icon = Icons.Default.Settings
             ),

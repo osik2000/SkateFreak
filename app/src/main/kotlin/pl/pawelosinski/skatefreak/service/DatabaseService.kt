@@ -39,6 +39,11 @@ class DatabaseService {
     fun setLoggedUserById(id: String, onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
         Log.d("DataService", "getUserById: $id")
 
+        if(id.isEmpty()) {
+            onFail()
+            return
+        }
+
         database.getReference("users").child(id).get().addOnSuccessListener { dataSnapshot ->
             Log.d("DataService", "[setLoggedUserById] \nGot value ${dataSnapshot.getValue(User::class.java)}")
             dataSnapshot.getValue(User::class.java)?.let {

@@ -97,6 +97,16 @@ fun PhoneChangeForm(firebaseAuthService: FirebaseAuthService, onComplete: () -> 
             SaveButton(
                 enabled = enabled,
                 onClick = {
+                    if(loggedUser.value.phoneNumber == userPhoneNumber){
+                        Toast.makeText(
+                            firebaseAuthService.currentActivity.value,
+                            "Zachowano aktualny numer telefonu",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        phoneInputEnabled = false
+                        enabled = false
+                        return@SaveButton
+                    }
                     Log.d(
                         "PhoneUpdateForm",
                         "isAuthInProgress: $isAuthInProgress" +

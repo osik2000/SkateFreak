@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import pl.pawelosinski.skatefreak.local.allTrickRecords
@@ -22,7 +23,7 @@ import pl.pawelosinski.skatefreak.ui.common.VideoPlayer
 import kotlin.math.abs
 
 @Composable
-fun TrickRecordsScreen() {
+fun TrickRecordsScreen(navController: NavController) {
     val trickRecords = allTrickRecords
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -46,7 +47,10 @@ fun TrickRecordsScreen() {
             ) {
                 VideoPlayer(videoUrl = trickRecord.videoUrl)
                 Column(Modifier.align(Alignment.BottomStart)) {
-                    TrickRecordsFooter(trickRecord)
+                    TrickRecordsFooter(
+                        navController = navController,
+                        trickRecord = trickRecord
+                    )
                     Divider()
                 }
             }

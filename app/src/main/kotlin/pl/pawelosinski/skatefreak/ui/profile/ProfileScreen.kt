@@ -30,12 +30,17 @@ import coil.request.ImageRequest
 import pl.pawelosinski.skatefreak.R
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
+import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.ui.common.Screens
 import pl.pawelosinski.skatefreak.ui.common.avatarModifier
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 @Composable
-fun ProfileScreen(navController: NavController) {
+fun ProfileScreen(user: User = loggedUser.value, navController: NavController) {
+    val isMyProfile = user.firebaseId == loggedUser.value.firebaseId
+
+    val isPrivateOrEmpty = (!user.isPublic && !isMyProfile) || user == User()
+
     SkateFreakTheme(darkTheme = isDarkMode) {
         Surface(
             modifier = Modifier
@@ -47,20 +52,32 @@ fun ProfileScreen(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top
             ) {
-                ScreenTitle(text = "Mój Profil")
-                UserAvatar()
+                ScreenTitle(text = if(isMyProfile) "Mój Profil" else "Profil użytkownika")
                 Spacer(Modifier.height(16.dp))
-                UserDataSection()
+                UserAvatar(user = user)
                 Spacer(Modifier.height(16.dp))
-                EditProfileButton(navController)
+                if (isPrivateOrEmpty) {
+                    Text(
+                        text = "Profil prywatny lub nie istnieje",
+                        style = MaterialTheme.typography.bodyLarge,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                }
+                else {
+                    UserDataSection(user = user)
+                    Spacer(Modifier.height(16.dp))
+                    if (isMyProfile){
+                        EditProfileButton(navController)
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun UserAvatar() {
-    val isDefaultAvatar = loggedUser.value.photoUrl == "null" || loggedUser.value.photoUrl.isEmpty()
+fun UserAvatar(user: User = loggedUser.value) {
+    val isDefaultAvatar = user.photoUrl == "null" || user.photoUrl.isEmpty()
 
 
     if (isDefaultAvatar) {
@@ -75,7 +92,7 @@ fun UserAvatar() {
         // Używamy AsyncImage dla awatara użytkownika
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(loggedUser.value.photoUrl)
+                .data(user.photoUrl)
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.rounded_person_24),
@@ -87,16 +104,20 @@ fun UserAvatar() {
 }
 
 @Composable
-fun UserDataSection() {
+fun UserDataSection(user: User = loggedUser.value) {
     Column(
         horizontalAlignment = Alignment.Start,
         modifier = Modifier.fillMaxWidth()
     ) {
-        UserDataTextRow("Imię i nazwisko", loggedUser.value.name)
-        UserDataTextRow("Nick", loggedUser.value.nickname)
-        UserDataTextRow("Email", loggedUser.value.email)
-        UserDataTextRow("Numer Telefonu", loggedUser.value.phoneNumber)
-        UserDataTextRow("Miasto", loggedUser.value.city)
+        UserDataTextRow("Nick", user.nickname)
+        UserDataTextRow("Imię i nazwisko", user.name)
+        UserDataTextRow("Email", user.email)
+        UserDataTextRow("Numer Telefonu", user.phoneNumber)
+        UserDataTextRow("Miasto", user.city)
+        UserDataTextRow(
+            "Profil:",
+            if(user.isPublic) "Publiczny" else "Prywatny"
+        )
     }
 }
 

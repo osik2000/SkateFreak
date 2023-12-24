@@ -2,6 +2,7 @@ package pl.pawelosinski.skatefreak.ui.tricks.record
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
@@ -43,7 +45,7 @@ import pl.pawelosinski.skatefreak.service.databaseService
  * @param modifier
  */
 @Composable
-fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
+fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: NavController) {
     val horizontalPadding = 10.dp
     Column(
         modifier = modifier,
@@ -66,47 +68,62 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Box(
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .height(28.dp)
-                    .width(28.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                val painter = rememberAsyncImagePainter(
-                    ImageRequest.Builder(LocalContext.current)
-                        .data(data = currentCreator.photoUrl.let { it.ifEmpty { R.drawable.rounded_person_24 } })
-                        .apply(block = fun ImageRequest.Builder.() {
-                            transformations(
-                                CircleCropTransformation()
-                            )
-                        }).build()
-                )
-                Image(
-                    painter = painter,
-                    contentDescription = null,
+                    .clickable {
+                        navController.navigate("profile/${currentCreator.firebaseId}")
+                    }
+            ){
+                Box(
+                    modifier = Modifier
+                        .height(28.dp)
+                        .width(28.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    val painter = rememberAsyncImagePainter(
+                        ImageRequest.Builder(LocalContext.current)
+                            .data(data = currentCreator.photoUrl.let { it.ifEmpty { R.drawable.rounded_person_24 } })
+                            .apply(block = fun ImageRequest.Builder.() {
+                                transformations(
+                                    CircleCropTransformation()
+                                )
+                            }).build()
+                    )
+                    Image(
+                        painter = painter,
+                        contentDescription = null,
+                    )
+                }
+                Spacer(modifier = Modifier.width(horizontalPadding))
+
+                Text(
+                    text = "@${currentCreator.nickname}",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
-            Spacer(modifier = Modifier.width(horizontalPadding))
-
-            Text(
-                text = "@${currentCreator.nickname}",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                style = MaterialTheme.typography.labelMedium
-            )
 
             Spacer(modifier = Modifier.width(horizontalPadding))
 
-            Icon(
-                modifier = Modifier.size(20.dp),
-                imageVector = Icons.Outlined.Favorite,
-                contentDescription = "Favorites counter"
-            )
-            Text(
-                text = " ${trickRecord.favoriteCounter.intValue}",
-                color = Color.White,
-                style = MaterialTheme.typography.labelMedium
-            )
+            Row (
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    modifier = Modifier.size(20.dp),
+                    imageVector = Icons.Outlined.Favorite,
+                    contentDescription = "Favorites counter"
+                )
+                Text(
+                    text = " ${trickRecord.favoriteCounter.intValue}",
+                    color = Color.White,
+                    style = MaterialTheme.typography.labelMedium
+                )
+            }
+
 //            Icon(
 //                modifier = Modifier.size(15.dp),
 //                imageVector = Icons.Outlined.Add,

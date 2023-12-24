@@ -54,5 +54,10 @@ class UserRepository {
                 })
             }
         }
+
+        fun getUserById(userId: String): User {
+            val existingCreator = allTrickRecordsCreators.find { it.firebaseId == userId }
+            return existingCreator ?: User()
+        }
     }
 }
