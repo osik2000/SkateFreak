@@ -61,9 +61,9 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun loadDataForLoggedUser(onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
-        val currentUser = Firebase.auth.currentUser ?: return
+        val currentUserID = Firebase.auth.currentUser?.uid ?: ""
         // set logged user as current user
-        databaseService.setLoggedUserById(currentUser.uid, onSuccess = {
+        databaseService.setLoggedUserById(currentUserID, onSuccess = {
             // when logged user is set, load all trick records
             databaseService.getAllTrickRecords(onSuccess = {
                 localDataInit.loadAllTrickRecords(it)
@@ -85,7 +85,19 @@ class MainActivity : ComponentActivity() {
             })
             return@setLoggedUserById
         }, onFail = {
-            onFail()
+            // when logged user is set, load all trick records
+            databaseService.getAllTrickRecords(onSuccess = {
+                localDataInit.loadAllTrickRecords(it)
+                // when all trick records are loaded, assign all trickRecordCreators to allTrickRecordsCreators
+                UserRepository.getAllTrickRecordCreators(
+                    allTrickRecords = allTrickRecords,
+                    onSuccess = {
+                            onFail()
+                            return@getAllTrickRecordCreators
+                    }
+                )
+                return@getAllTrickRecords
+            })
             return@setLoggedUserById
         })
         return

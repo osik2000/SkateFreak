@@ -57,7 +57,6 @@ import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.isUserLo
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.phoneAuthUserData
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.resendToken
 import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.storedVerificationId
-import pl.pawelosinski.skatefreak.service.FirebaseAuthService.Companion.userLoggedBy
 import pl.pawelosinski.skatefreak.ui.auth.UserSetDataActivity
 import pl.pawelosinski.skatefreak.ui.common.myCommonModifier
 import pl.pawelosinski.skatefreak.ui.common.myToast
@@ -456,10 +455,11 @@ fun LoginScreen(firebaseAuthService: FirebaseAuthService) {
                         // Button to go to UserDataActivity
                         Button(
                             onClick = {
+                                phoneAuthUserData.value = PhoneAuthUserData()
                                 val intent = Intent(
                                     firebaseAuthService.currentActivity.value,
                                     UserSetDataActivity::class.java
-                                ) //TODO
+                                )
                                 firebaseAuthService.currentActivity.value.startActivity(intent)
                                 firebaseAuthService.currentActivity.value.finish()
                             },
