@@ -11,6 +11,7 @@ import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
+import pl.pawelosinski.skatefreak.model.TrickRecordDTO
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.ui.common.deleteTempFile
 import java.io.File
@@ -89,10 +90,10 @@ class DatabaseService {
 
         trickRecordsRef.get().addOnSuccessListener {
             for (postSnapshot in it.children) {
-                val trickRecord = postSnapshot.getValue(TrickRecord::class.java)
+                val trickRecord = postSnapshot.getValue(TrickRecordDTO::class.java)
 
                 if (trickRecord != null) {
-                    trickRecordList.add(trickRecord)
+                    trickRecordList.add(trickRecord.toTrickRecord())
                 }
             }
             onSuccess(trickRecordList)
@@ -181,13 +182,13 @@ class DatabaseService {
     }
 
     fun addTrickRecordToFavorites(
-        trickRecord: TrickRecord,
+        trickRecord: TrickRecordDTO,
         onSuccess: (String) -> Unit = {}
     ) {
         val userID = loggedUser.value.firebaseId
         val userFavoritesRef = database.getReference("users/$userID/favoriteTrickRecords")
-        val trickRecordUsersWhoSetAsFavoriteRef =
-            database.getReference("tricks/records/${trickRecord.id}/usersWhoSetAsFavorite")
+        val trickRecordRef =
+            database.getReference("tricks/records/${trickRecord.id}")
 
         if (trickRecord.usersWhoSetAsFavorite.contains(userID) && loggedUser.value.favoriteTrickRecords.contains(
                 trickRecord.id
@@ -201,8 +202,8 @@ class DatabaseService {
             userFavoritesRef.setValue(loggedUser.value.favoriteTrickRecords).addOnSuccessListener {
                 Log.d("DataService", "Trick record removed from favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.remove(userID)
-                trickRecord.favoriteCounter.intValue--
-                trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite)
+                trickRecord.favoriteCounter = (Integer.valueOf(trickRecord.favoriteCounter) - 1).toString()
+                trickRecordRef.setValue(trickRecord)
                     .addOnSuccessListener {
                         Log.d(
                             "DataService",
@@ -229,8 +230,8 @@ class DatabaseService {
             userFavoritesRef.setValue(loggedUser.value.favoriteTrickRecords).addOnSuccessListener {
                 Log.d("DataService", "Trick record added to favorites. (userFavoritesRef)")
                 trickRecord.usersWhoSetAsFavorite.add(userID)
-                trickRecord.favoriteCounter.intValue++
-                trickRecordUsersWhoSetAsFavoriteRef.setValue(trickRecord.usersWhoSetAsFavorite)
+                trickRecord.favoriteCounter = (Integer.valueOf(trickRecord.favoriteCounter) + 1).toString()
+                trickRecordRef.setValue(trickRecord)
                     .addOnSuccessListener {
                         Log.d(
                             "DataService",
@@ -317,23 +318,23 @@ class DatabaseService {
     }
 
     fun uploadTrickRecord(record: TrickRecord, onSuccess: () -> Unit = {}, onFail: () -> Unit = {}) {
-        val localFile = record.videoUrl
+        val recordDTO = record.toDTO()
+        val localFile = recordDTO.videoUrl
         val databaseReference = database.getReference("your_collection_name")
         val uniqueId = databaseReference.push().key
         if(uniqueId == null) {
             Log.e("DataService", "Error writing data. Unique ID is null")
             return
         }
-        record.id = uniqueId
-        val myRef = database.getReference("tricks/records/${record.id}")
+        recordDTO.id = uniqueId
+        val myRef = database.getReference("tricks/records/${recordDTO.id}")
 
+        val fileUri = Uri.fromFile(File(recordDTO.videoUrl))
 
-        val fileUri = Uri.fromFile(File(record.videoUrl))
-
-        uploadTrickRecordVideo(record.userID, record.id, fileUri, onComplete = { videoUrl ->
+        uploadTrickRecordVideo(recordDTO.userID, recordDTO.id, fileUri, onComplete = { videoUrl ->
             deleteTempFile(localFile)
-            record.videoUrl = videoUrl
-            myRef.setValue(record).addOnSuccessListener {
+            recordDTO.videoUrl = videoUrl
+            myRef.setValue(recordDTO).addOnSuccessListener {
                 Log.d("DataService", "Trick record saved successfully.")
                 onSuccess()
             }.addOnFailureListener {
@@ -344,8 +345,6 @@ class DatabaseService {
             Log.e("DataService", "Error writing data")
             onFail()
         })
-
-
     }
 
 //    fun getUserByPhoneNumber(phoneNumber: String) : User {
