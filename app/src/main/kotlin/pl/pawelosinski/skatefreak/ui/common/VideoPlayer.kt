@@ -32,7 +32,7 @@ fun VideoPlayer(videoUrl: String) {
             setMediaItem(MediaItem.fromUri(videoUrl))
             prepare()
             playWhenReady = false
-            repeatMode = Player.REPEAT_MODE_OFF
+            repeatMode = Player.REPEAT_MODE_ONE
         }
     }
 
