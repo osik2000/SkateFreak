@@ -30,7 +30,6 @@ fun VideoPlayer(videoUrl: String) {
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(videoUrl))
-            prepare()
             playWhenReady = false
             repeatMode = Player.REPEAT_MODE_ONE
         }
@@ -59,6 +58,7 @@ fun VideoPlayer(videoUrl: String) {
                     indication = null, // brak wizualnego wskaźnika kliknięcia
                     onClick = {
                         isPlaying = !isPlaying
+                        if(isPlaying) exoPlayer.prepare()
                         exoPlayer.playWhenReady = !exoPlayer.playWhenReady
                     }
                 ),
