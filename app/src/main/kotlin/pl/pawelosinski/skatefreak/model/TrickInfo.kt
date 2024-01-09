@@ -1,7 +1,5 @@
 package pl.pawelosinski.skatefreak.model
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import pl.pawelosinski.skatefreak.local.allTrickInfo
 
 data class TrickInfo (
