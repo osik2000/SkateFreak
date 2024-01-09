@@ -23,8 +23,9 @@ class LocalDataInit (context : Context) {
         }
     }
 
-    fun loadAllTrickRecords(trickRecordList: MutableList<TrickRecord>) {
+    fun loadAllTrickRecords(trickRecordList: MutableList<TrickRecord>, context: Context, onSuccess: () -> Unit = {}) {
         allTrickRecords = trickRecordList
+        ThumbnailCacheManager.preloadTrickRecordImages(allTrickRecords, context, onSuccess)
         //loadCurrentRecordData()
         //allTrickRecords.sortByDescending { it.usernamesWhoLiked.size }
     }

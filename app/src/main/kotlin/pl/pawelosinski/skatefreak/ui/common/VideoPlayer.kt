@@ -2,6 +2,7 @@ package pl.pawelosinski.skatefreak.ui.common
 
 import android.annotation.SuppressLint
 import androidx.annotation.OptIn
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -13,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -21,11 +23,13 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
+import pl.pawelosinski.skatefreak.local.ThumbnailCacheManager.Companion.getVideoThumbnail
 
 @OptIn(UnstableApi::class)
 @SuppressLint("OpaqueUnitKey")
 @Composable
-fun VideoPlayer(videoUrl: String) {
+fun VideoPlayer(videoUrl: String, id: String) {
+    var isEverPlayed by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
@@ -57,8 +61,11 @@ fun VideoPlayer(videoUrl: String) {
                     interactionSource = interactionSource,
                     indication = null, // brak wizualnego wskaźnika kliknięcia
                     onClick = {
+                        if (!isEverPlayed) {
+                            isEverPlayed = true
+                            exoPlayer.prepare()
+                        }
                         isPlaying = !isPlaying
-                        if(isPlaying) exoPlayer.prepare()
                         exoPlayer.playWhenReady = !exoPlayer.playWhenReady
                     }
                 ),
@@ -73,19 +80,37 @@ fun VideoPlayer(videoUrl: String) {
             }
         )
         if (!isPlaying) {
-            IconButton(
-                onClick = {
-                    isPlaying = true
-                    exoPlayer.playWhenReady = true
-                },
-                modifier = Modifier.align(Alignment.Center)
+            Box(modifier = Modifier
+                .fillMaxSize(),
+                contentAlignment = Alignment.Center
             ) {
-                Icon(
-                    imageVector = Icons.Default.PlayArrow,
-                    contentDescription = "Play",
-                    modifier = Modifier.size(48.dp),
-                    tint = Color.White
-                )
+                if(!isEverPlayed) {
+                    val thumbnail = getVideoThumbnail(trickId = id)
+                    thumbnail?.asImageBitmap()?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = "Thumbnail",
+                            modifier = Modifier
+//                            .size(48.dp)
+                                .fillMaxSize()
+                                .align(Alignment.Center)
+                        )
+                    }
+                }
+                IconButton(
+                    onClick = {
+                        isPlaying = true
+                        exoPlayer.playWhenReady = true
+                    },
+                    modifier = Modifier.align(Alignment.Center)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.PlayArrow,
+                        contentDescription = "Play",
+                        modifier = Modifier.size(48.dp),
+                        tint = Color.White
+                    )
+                }
             }
         }
         DisposableEffect(Unit) {

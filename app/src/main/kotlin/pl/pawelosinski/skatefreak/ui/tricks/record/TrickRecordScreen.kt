@@ -45,7 +45,7 @@ fun TrickRecordsScreen(navController: NavController) {
                 modifier = Modifier
                     .fillParentMaxSize()
             ) {
-                VideoPlayer(videoUrl = trickRecord.videoUrl)
+                VideoPlayer(videoUrl = trickRecord.videoUrl, id = trickRecord.id)
                 Column(Modifier.align(Alignment.BottomStart)) {
                     TrickRecordsFooter(
                         navController = navController,

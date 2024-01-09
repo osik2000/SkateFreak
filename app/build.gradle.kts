@@ -101,6 +101,9 @@ dependencies {
 
     // Trim video
     implementation("com.github.a914-gowtham:android-video-trimmer:1.7.17")
+
+    // thumbnails
+    implementation("com.github.bumptech.glide:glide:4.16.0")
 //    testImplementation("junit:junit:4.13.2")
 //    androidTestImplementation("androidx.test.ext:junit:1.1.5")
 //    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
