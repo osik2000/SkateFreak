@@ -2,6 +2,7 @@ package pl.pawelosinski.skatefreak.ui.tricks.record.add
 
 import android.app.Activity
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.provider.OpenableColumns
 import android.util.Log
@@ -18,6 +19,7 @@ import com.gowtham.library.utils.TrimType
 import com.gowtham.library.utils.TrimVideo
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.ui.common.myToast
+
 
 @Composable
 fun VideoPickerButton() {
@@ -48,17 +50,30 @@ fun VideoPickerButton() {
         Log.d("VideoPicker", "Uri: $uri")
         if (uri == null) {
             myToast(context, "Nie wybrano pliku")
-        }
-        else {
+        } else {
             val fileName = getFileNameFromUri(context, uri)
+
             myToast(context, "Wybrano plik: $fileName")
             Log.d("VideoPicker", "file chosen: $fileName")
+
+            // Uzyskaj szerokość i wysokość pliku wideo
+            val mediaMetadataRetriever = MediaMetadataRetriever()
+            mediaMetadataRetriever.setDataSource(context, uri)
+            val fileWidth = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)?.toInt()
+            val fileHeight = mediaMetadataRetriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)?.toInt()
+
+            val width = fileWidth ?: 720
+            val height = fileHeight ?: 1280
+
+            Log.d("VideoPicker", "fileWidth: $width")
+            Log.d("VideoPicker", "fileHeight: $height")
+
             TrickRecord.localFileUri.value = uri.toString()
 
             TrimVideo.activity(uri.toString())
-                .setCompressOption(CompressOption())
+                .setCompressOption(CompressOption(30, "1M", width, height))
                 .setTrimType(TrimType.MIN_MAX_DURATION)
-                .setMinToMax(2, 10)  //seconds`
+                .setMinToMax(2, 10)  // seconds
                 .setHideSeekBar(true)
                 .start(context as Activity, startForResult)
         }
