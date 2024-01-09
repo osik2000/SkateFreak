@@ -1,10 +1,7 @@
 package pl.pawelosinski.skatefreak.ui.common
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.media.MediaMetadataRetriever
 import androidx.annotation.OptIn
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -16,7 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -55,6 +51,27 @@ fun VideoPlayer(videoUrl: String) {
         ),
         contentAlignment = Alignment.Center
     ) {
+        AndroidView(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = interactionSource,
+                    indication = null, // brak wizualnego wskaźnika kliknięcia
+                    onClick = {
+                        isPlaying = !isPlaying
+                        exoPlayer.playWhenReady = !exoPlayer.playWhenReady
+                    }
+                ),
+            factory = { context ->
+                PlayerView(context).apply {
+                    player = exoPlayer
+                    useController = false
+                }
+            },
+            update = { playerView ->
+                playerView.player = exoPlayer
+            }
+        )
         if (!isPlaying) {
             IconButton(
                 onClick = {
@@ -71,24 +88,9 @@ fun VideoPlayer(videoUrl: String) {
                 )
             }
         }
-        else {
-            AndroidView(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                factory = { context ->
-                    PlayerView(context).apply {
-                        player = exoPlayer
-                        useController = false
-                    }
-                },
-                update = { playerView ->
-                    playerView.player = exoPlayer
-                }
-            )
-            DisposableEffect(Unit) {
-                onDispose {
-                    exoPlayer.release()
-                }
+        DisposableEffect(Unit) {
+            onDispose {
+                exoPlayer.release()
             }
         }
     }
