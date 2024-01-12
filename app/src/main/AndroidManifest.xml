@@ -21,22 +21,30 @@
             android:name=".ui.menu.MainMenuActivity"
             android:exported="false"
             android:label="@string/title_activity_main_menu"
-            android:theme="@style/Theme.SkateFreak" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.SkateFreak"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.auth.UserSetDataActivity"
             android:exported="false"
             android:label="@string/title_activity_user_set_data"
-            android:theme="@style/Theme.SkateFreak" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.SkateFreak"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.auth.LoggedUserMenuActivity"
             android:exported="false"
             android:label="@string/title_activity_logged_user_menu"
-            android:theme="@style/Theme.SkateFreak" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.SkateFreak"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false"
             android:label="@string/title_activity_login"
-            android:theme="@style/Theme.SkateFreak" />
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.SkateFreak"
+            tools:ignore="LockedOrientationActivity" />
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
@@ -45,7 +53,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.SkateFreak">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.SkateFreak"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
