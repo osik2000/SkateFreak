@@ -1,7 +1,10 @@
 package pl.pawelosinski.skatefreak.local
 
 import android.content.Context
+import android.util.Log
 import pl.pawelosinski.skatefreak.model.TrickRecord
+import java.text.ParseException
+import java.text.SimpleDateFormat
 
 class LocalDataInit (context : Context) {
     // Theme
@@ -27,24 +30,20 @@ class LocalDataInit (context : Context) {
         allTrickRecords = trickRecordList
         ThumbnailCacheManager.preloadTrickRecordImages(allTrickRecords, context, onSuccess)
         //loadCurrentRecordData()
-        //allTrickRecords.sortByDescending { it.usernamesWhoLiked.size }
+
+        val format = "EEE MMM dd HH:mm:ss 'GMT'Z yyyy"
+        val sdf = SimpleDateFormat(format, java.util.Locale.getDefault())
+        val oldDate = sdf.parse("Thu Jan 01 00:00:00 GMT+01:00 1970")
+
+        Log.d("LocalDataInit", "sorting date")
+        allTrickRecords.sortBy {
+            try {
+                sdf.parse(it.date)
+            } catch (e: ParseException) {
+                e.printStackTrace()
+                oldDate
+            }
+        }
+        allTrickRecords.reverse()
     }
-//
-//    companion object{
-//        fun loadCurrentRecordData(index: Int = 0, trickRecords: MutableList<TrickRecord> = allTrickRecords) {
-//            Log.d("LocalDataInit", "loadCurrentRecordData: $index" +
-//                    "allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty(): " +
-//                    "${allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty()}")
-//            if(allTrickRecordsCreators.size > index && allTrickRecordsCreators[index].firebaseId.isNotEmpty()) {
-//                currentRecordCreator.value = allTrickRecordsCreators[index]
-//            }
-//            else {
-//                databaseService.getUserById(allTrickRecords[index].userID, onSuccess = {
-//                    allTrickRecordsCreators.add(index, it)
-//                    currentRecordCreator.value = it
-//                })
-//            }
-//            currentRecordLikes.value = trickRecords[index].usersWhoSetAsFavorite.size.toString()
-//        }
-//    }
 }
