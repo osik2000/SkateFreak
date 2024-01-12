@@ -5,6 +5,7 @@ import android.util.Log
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.Date
 
 class LocalDataInit (context : Context) {
     // Theme
@@ -33,7 +34,7 @@ class LocalDataInit (context : Context) {
 
         val format = "EEE MMM dd HH:mm:ss 'GMT'Z yyyy"
         val sdf = SimpleDateFormat(format, java.util.Locale.getDefault())
-        val oldDate = sdf.parse("Thu Jan 01 00:00:00 GMT+01:00 1970")
+        val oldDate = Date(0)
 
         Log.d("LocalDataInit", "sorting date")
         allTrickRecords.sortBy {
