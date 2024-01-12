@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
@@ -34,6 +35,7 @@ import coil.request.ImageRequest
 import coil.transform.CircleCropTransformation
 import pl.pawelosinski.skatefreak.R
 import pl.pawelosinski.skatefreak.local.allTrickRecordsCreators
+import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.repository.UserRepository
@@ -65,9 +67,24 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: 
             }
         )
 
+        Row ( // Trick Name
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
+        ){
+            Text(
+                text = TrickInfo.getTrickName(trickRecord.trickID),
+                color = Color.LightGray,
+                fontWeight = FontWeight.Normal,
+                style = MaterialTheme.typography.labelLarge
+            )
+        }
         Row ( // Title
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
         ){
             Text(
                 text = trickRecord.title,
@@ -79,6 +96,8 @@ fun FooterUserData(trickRecord: TrickRecord, modifier: Modifier, navController: 
         Row ( // Description
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .padding(horizontal = 4.dp)
         ){
             Text(
                 text = trickRecord.userDescription.ifEmpty { "Brak opisu" },
