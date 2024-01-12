@@ -111,7 +111,6 @@ fun UserDataSection(user: User = loggedUser.value) {
     ) {
         UserDataTextRow("Nick", user.nickname)
         UserDataTextRow("Imię i nazwisko", user.name)
-        UserDataTextRow("Email", user.email)
         UserDataTextRow("Numer Telefonu", user.phoneNumber)
         UserDataTextRow("Miasto", user.city)
         UserDataTextRow(

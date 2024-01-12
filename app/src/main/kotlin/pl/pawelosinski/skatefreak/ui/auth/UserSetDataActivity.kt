@@ -117,16 +117,6 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
         )
         MyDivider()
         ChangeField(
-            label = "Email",
-            defaultValue = userData.email,
-            onSave = {
-                val value =  it.lowercase().replace("\\s".toRegex(), "")
-                userData.email = value
-                value
-            }
-        )
-        MyDivider()
-        ChangeField(
             label = "Miasto",
             defaultValue = userData.city,
             onSave = {

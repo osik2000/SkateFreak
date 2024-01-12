@@ -6,7 +6,6 @@ import com.google.firebase.auth.FirebaseUser
 data class User(
     val firebaseId: String = "",
     var name: String = "",
-    var email: String = "", // todo ???
     var phoneNumber: String = "",
     var photoUrl: String = "",
     var nickname: String = "",
@@ -21,7 +20,6 @@ data class User(
     override fun toString(): String {
         return "User(firebaseId='$firebaseId',\n" +
                 "name='$name',\n" +
-                "email='$email',\n" +
                 "phoneNumber='$phoneNumber',\n" +
                 "photoUrl='$photoUrl',\n" +
                 "nickname='$nickname',\n" +
@@ -34,7 +32,6 @@ data class User(
         val isUserDataSet = !(
                 firebaseId.isEmpty() ||
                         name.isEmpty() ||
-                        email.isEmpty() ||
                         phoneNumber.isEmpty() ||
                         nickname.isEmpty() ||
                         city.isEmpty()
@@ -54,7 +51,6 @@ data class User(
                 firebaseId = firebaseUser?.uid ?: "",
                 photoUrl = firebaseUser?.photoUrl.toString(),
                 nickname = "",
-                email = firebaseUser?.email ?: "",
                 name = firebaseUser?.displayName ?: "",
                 phoneNumber = firebaseUser?.phoneNumber ?: "",
                 city = "",
