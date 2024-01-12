@@ -101,9 +101,8 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
             label = "Nick",
             defaultValue = userData.nickname,
             onSave = {
-                val value =  it.lowercase().replace("\\s".toRegex(), "")
-                userData.nickname = value
-                value
+                userData.nickname = it
+                it
             }
         )
         MyDivider()
@@ -133,6 +132,7 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
 private fun ChangeField(label: String, defaultValue: String, onSave: (String) -> String) {
     var value by remember { mutableStateOf(defaultValue) }
     var isInEditMode by remember { mutableStateOf(value.isEmpty()) }
+    val context = LocalContext.current
 
     Row(
         modifier = Modifier
@@ -154,8 +154,22 @@ private fun ChangeField(label: String, defaultValue: String, onSave: (String) ->
         if(!(loggedUser.value.accountType == ACCOUNT_TYPE_PHONE && label == "Numer Telefonu")) {
             if (isInEditMode) {
                 SaveButton {
-                    value = onSave(value.trim())
-                    isInEditMode = false
+                    if (label == "Nick") {
+                        val nick =  value.lowercase().replace("\\s".toRegex(), "").trim()
+                        databaseService.checkIfNicknameExists(nick, onSuccess = {
+                            value = onSave(nick)
+                            isInEditMode = false
+                        }, onFail = {
+                            Log.d("UserSetDataActivity", "Nickname already exists")
+                            myToast(
+                                context,
+                                "Podany nick jest już zajęty"
+                            )
+                        })
+                    } else {
+                        value = onSave(value.trim())
+                        isInEditMode = false
+                    }
                 }
             } else {
                 EditButton(onClick = { isInEditMode = true})

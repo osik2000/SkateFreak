@@ -13,6 +13,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
 import pl.pawelosinski.skatefreak.local.LocalDataInit
+import pl.pawelosinski.skatefreak.local.allTrickInfo
 import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
@@ -64,43 +65,51 @@ class MainActivity : ComponentActivity() {
         val currentUserID = Firebase.auth.currentUser?.uid ?: ""
         // set logged user as current user
         databaseService.setLoggedUserById(currentUserID, onSuccess = {
-            // when logged user is set, load all trick records
-            databaseService.getAllTrickRecords(onSuccess = {
-                localDataInit.loadAllTrickRecords(trickRecordList = it, context = this, onSuccess = {
-                    // when all trick records are loaded, assign all trickRecordCreators to allTrickRecordsCreators
-                    UserRepository.getAllTrickRecordCreators(
-                        allTrickRecords = allTrickRecords,
-                        onSuccess = {
-                            if (loggedUser.value.checkRequiredData()) {
-                                onSuccess()
-                                return@getAllTrickRecordCreators
+            databaseService.getAllTrickInfo(onSuccess = {
+                allTrickInfo = it
+                // when logged user is set, load all trick records
+                databaseService.getAllTrickRecords(onSuccess = {
+                    localDataInit.loadAllTrickRecords(trickRecordList = it, context = this, onSuccess = {
+                        // when all trick records are loaded, assign all trickRecordCreators to allTrickRecordsCreators
+                        UserRepository.getAllTrickRecordCreators(
+                            allTrickRecords = allTrickRecords,
+                            onSuccess = {
+                                if (loggedUser.value.checkRequiredData()) {
+                                    onSuccess()
+                                    return@getAllTrickRecordCreators
+                                }
+                                else {
+                                    onFail()
+                                    return@getAllTrickRecordCreators
+                                }
                             }
-                            else {
-                                onFail()
-                                return@getAllTrickRecordCreators
-                            }
-                        }
-                    )
-                    return@loadAllTrickRecords
+                        )
+                        return@loadAllTrickRecords
+                    })
+                    return@getAllTrickRecords
                 })
-                return@getAllTrickRecords
+                return@getAllTrickInfo
             })
             return@setLoggedUserById
         }, onFail = {
-            // when logged user is set, load all trick records
-            databaseService.getAllTrickRecords(onSuccess = {
-                localDataInit.loadAllTrickRecords(trickRecordList = it, context = this, onSuccess = {
-                    // when all trick records are loaded, assign all trickRecordCreators to allTrickRecordsCreators
-                    UserRepository.getAllTrickRecordCreators(
-                        allTrickRecords = allTrickRecords,
-                        onSuccess = {
-                            onFail()
-                            return@getAllTrickRecordCreators
-                        }
-                    )
-                    return@loadAllTrickRecords
+            databaseService.getAllTrickInfo(onSuccess = {
+                allTrickInfo = it
+                // when logged user is set, load all trick records
+                databaseService.getAllTrickRecords(onSuccess = {
+                    localDataInit.loadAllTrickRecords(trickRecordList = it, context = this, onSuccess = {
+                        // when all trick records are loaded, assign all trickRecordCreators to allTrickRecordsCreators
+                        UserRepository.getAllTrickRecordCreators(
+                            allTrickRecords = allTrickRecords,
+                            onSuccess = {
+                                onFail()
+                                return@getAllTrickRecordCreators
+                            }
+                        )
+                        return@loadAllTrickRecords
+                    })
+                    return@getAllTrickRecords
                 })
-                return@getAllTrickRecords
+                return@getAllTrickInfo
             })
             return@setLoggedUserById
         })

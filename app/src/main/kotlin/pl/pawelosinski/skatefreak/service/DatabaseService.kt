@@ -6,8 +6,6 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import pl.pawelosinski.skatefreak.local.allTrickInfo
-import pl.pawelosinski.skatefreak.local.allTrickRecords
 import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
@@ -123,63 +121,24 @@ class DatabaseService {
         }
     }
 
-    fun getTrickInfo(
-        id: String,
-        onSuccess: () -> Unit = {},
-        onFail: () -> Unit = {}
-    ): TrickInfo {
-        Log.d("DataService", "getTrickInfo: $id")
-        var trickInfo = TrickInfo()
-
-        database.getReference("tricks/info").child(id).get().addOnSuccessListener {
-            trickInfo = it.getValue(TrickInfo::class.java) ?: TrickInfo()
-            Log.d("DataService", "Got value $trickInfo")
-            onSuccess()
-        }.addOnFailureListener {
-            Log.e("DataService", "Error getting data", it)
-            onFail()
-        }
-        return trickInfo
-    }
-
-
-    fun setDefaultTrickInfo() {
-        // Write a message to the database
-
-        val tricksMap = allTrickInfo.associateBy { it.id }
-
-        val myRef = database.getReference("tricks/info/")
-        myRef.setValue(tricksMap).addOnSuccessListener {
-            Log.d("DataService", "template tricks saved successfully.")
-        }.addOnFailureListener {
-            Log.e("DataService", "Error writing template tricks", it)
-        }
-    }
-
-    fun setDefaultTrickRecord() {
-        // Write a message to the database
-
-        val trickRecordsMap = allTrickRecords.associateBy { it.id }
-
-        val myRef = database.getReference("tricks/records/")
-        myRef.setValue(trickRecordsMap).addOnSuccessListener {
-            Log.d("DataService", "template trick records saved successfully.")
-        }.addOnFailureListener {
-            Log.e("DataService", "Error writing template trick records", it)
-        }
-    }
-
-    fun getUrlOfStorageFile(path: String) {
-        val storageRef = storage.reference
-
-        storageRef.child(path).downloadUrl.addOnSuccessListener {
-            // Got the download URL for 'users/me/profile.png'
-            Log.d("DataService", "Got the download URL for $path: $it")
-        }.addOnFailureListener {
-            // Handle any errors
-            Log.e("DataService", "Error getting download URL for $path", it)
-        }
-    }
+//    fun getTrickInfo(
+//        id: String,
+//        onSuccess: () -> Unit = {},
+//        onFail: () -> Unit = {}
+//    ): TrickInfo {
+//        Log.d("DataService", "getTrickInfo: $id")
+//        var trickInfo = TrickInfo()
+//
+//        database.getReference("tricks/info").child(id).get().addOnSuccessListener {
+//            trickInfo = it.getValue(TrickInfo::class.java) ?: TrickInfo()
+//            Log.d("DataService", "Got value $trickInfo")
+//            onSuccess()
+//        }.addOnFailureListener {
+//            Log.e("DataService", "Error getting data", it)
+//            onFail()
+//        }
+//        return trickInfo
+//    }
 
     fun addTrickRecordToFavorites(
         trickRecord: TrickRecordDTO,
@@ -501,24 +460,64 @@ class DatabaseService {
         })
     }
 
-//    fun getUserByPhoneNumber(phoneNumber: String) : User {
-//        val myRef = database.getReference("users")
-//        var user: User? = null
+    fun checkIfNicknameExists(nickname: String, onSuccess: () -> Unit, onFail: () -> Unit) {
+        val myRef = database.getReference("users")
+        var isNicknameExists = false
+
+        myRef.orderByChild("nickname").equalTo(nickname).get().addOnSuccessListener {
+            Log.d("DataService", "Got value ${it.value}")
+            if (it.value != null) {
+                Log.d("DataService", "Nickname already exists, it.value = ${it.value}")
+                isNicknameExists = true
+            }
+            if (isNicknameExists) {
+                onFail()
+            } else {
+                onSuccess()
+            }
+        }.addOnFailureListener {
+            Log.e("DataService", "Error getting data", it)
+            onFail()
+        }
+
+    }
+
+//    fun setDefaultTrickInfo() { // ADMIN ONLY
+//        // Write a message to the database
 //
-//        myRef.orderByChild("phoneNumber").equalTo(phoneNumber).addListenerForSingleValueEvent(object : ValueEventListener {
-//            override fun onDataChange(snapshot: DataSnapshot) {
-//                user = snapshot.getValue(User::class.java)
-//                loggedUser = user ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
-//                Log.d(TAG, "loggedUser: $user")
-//            }
+//        val tricksMap = allTrickInfo.associateBy { it.id }
 //
-//            override fun onCancelled(databaseError: DatabaseError) {
-//                // Handle possible errors.
-//                Log.w(TAG, "Failed to read value.", databaseError.toException())
-//            }
-//        })
+//        val myRef = database.getReference("tricks/info/")
+//        myRef.setValue(tricksMap).addOnSuccessListener {
+//            Log.d("DataService", "template tricks saved successfully.")
+//        }.addOnFailureListener {
+//            Log.e("DataService", "Error writing template tricks", it)
+//        }
+//    }
 //
-//        return user ?: User.getUserFromFirebaseUser(Firebase.auth.currentUser)
+//    fun setDefaultTrickRecord() { // ADMIN ONLY
+//        // Write a message to the database
+//
+//        val trickRecordsMap = allTrickRecords.associateBy { it.id }
+//
+//        val myRef = database.getReference("tricks/records/")
+//        myRef.setValue(trickRecordsMap).addOnSuccessListener {
+//            Log.d("DataService", "template trick records saved successfully.")
+//        }.addOnFailureListener {
+//            Log.e("DataService", "Error writing template trick records", it)
+//        }
+//    }
+//
+//    fun getUrlOfStorageFile(path: String) { // ADMIN ONLY
+//        val storageRef = storage.reference
+//
+//        storageRef.child(path).downloadUrl.addOnSuccessListener {
+//            // Got the download URL for 'users/me/profile.png'
+//            Log.d("DataService", "Got the download URL for $path: $it")
+//        }.addOnFailureListener {
+//            // Handle any errors
+//            Log.e("DataService", "Error getting download URL for $path", it)
+//        }
 //    }
 
 
