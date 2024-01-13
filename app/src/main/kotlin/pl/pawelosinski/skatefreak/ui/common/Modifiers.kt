@@ -11,9 +11,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
-val myCommonModifier = Modifier
-    .fillMaxWidth()
-    .padding(16.dp)
+val myButtonModifier8dp = Modifier
+        .fillMaxWidth()
+        .padding(8.dp)
+
+val myButtonModifier16dp = Modifier
+        .fillMaxWidth()
+        .padding(16.dp)
 
 @SuppressLint("ModifierFactoryExtensionFunction")
 fun avatarModifier(borderColor: Color) = Modifier

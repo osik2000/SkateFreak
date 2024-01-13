@@ -33,6 +33,7 @@ import pl.pawelosinski.skatefreak.local.loggedUser
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.ui.common.Screens
 import pl.pawelosinski.skatefreak.ui.common.avatarModifier
+import pl.pawelosinski.skatefreak.ui.common.myButtonModifier16dp
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 @Composable
@@ -143,7 +144,8 @@ fun UserDataTextRow(label: String, value: String) {
 fun EditProfileButton(navController: NavController) {
     Button(
         onClick = { navController.navigate(Screens.EditProfile.route) },
-        modifier = Modifier.fillMaxWidth()
+        shape = MaterialTheme.shapes.small,
+        modifier = myButtonModifier16dp
     ) {
         Text("Edytuj Profil", fontSize = 18.sp)
     }

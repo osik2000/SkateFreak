@@ -33,7 +33,7 @@ import pl.pawelosinski.skatefreak.model.TrickInfo
 import pl.pawelosinski.skatefreak.model.TrickRecord
 import pl.pawelosinski.skatefreak.model.User
 import pl.pawelosinski.skatefreak.repository.UserRepository
-import pl.pawelosinski.skatefreak.service.LoginScreen
+import pl.pawelosinski.skatefreak.ui.auth.LoginScreen
 import pl.pawelosinski.skatefreak.ui.home.HomeScreen
 import pl.pawelosinski.skatefreak.ui.profile.ProfileScreen
 import pl.pawelosinski.skatefreak.ui.profile.edit.EditProfile

@@ -26,9 +26,10 @@ import pl.pawelosinski.skatefreak.local.ThemePreferences
 import pl.pawelosinski.skatefreak.local.firebaseAuthService
 import pl.pawelosinski.skatefreak.local.isDarkMode
 import pl.pawelosinski.skatefreak.local.loggedUser
-import pl.pawelosinski.skatefreak.service.SignOutButton
 import pl.pawelosinski.skatefreak.service.UserService
 import pl.pawelosinski.skatefreak.ui.auth.LoginActivity
+import pl.pawelosinski.skatefreak.ui.auth.SignOutButton
+import pl.pawelosinski.skatefreak.ui.profile.EditProfileButton
 import pl.pawelosinski.skatefreak.ui.theme.SkateFreakTheme
 
 
@@ -56,7 +57,8 @@ fun SettingsScreen(navController: NavController) {
             }
         ) { innerPadding ->
             Column(modifier = Modifier.padding(innerPadding)) {
-                // Przełącznik
+                Text("Profil", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
+                // switch
                 RowSettingsItem(
                     title = "Widoczność profilu",
                     description = "Pozwól innym użytkownikom na\nprzeglądanie Twojego profilu"
@@ -66,8 +68,10 @@ fun SettingsScreen(navController: NavController) {
                         UserService.setUserPublicProfile(it)
                     })
                 }
+                // profile edit button
+                EditProfileButton(navController = navController)
 
-                // Przyciski radio
+                // radio buttons
                 Text("Wybierz motyw", style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(16.dp))
                 themes.forEach { theme ->
                     RowSettingsItem(
