@@ -234,7 +234,7 @@ fun PhoneLoginForm(firebaseAuthService: FirebaseAuthService) {
                 userPhoneNumber = it
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            label = { Text("Phone (+48XXXXXXXXX)") },
+            label = { Text("Numer telefonu (+48XXXXXXXXX)") },
             singleLine = true
         )
         Log.d(FirebaseAuthService.PHONE_TAG, "isAuthInProgress: $isAuthInProgress")
