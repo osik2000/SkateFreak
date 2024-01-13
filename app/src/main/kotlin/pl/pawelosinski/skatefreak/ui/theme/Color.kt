@@ -11,8 +11,11 @@ val MySurfaceColor = Color(0xFF040403)
 val MyWhiteColor = Color(0xFFFFFFFF)
 // val MyBlackColor = Color(0xFF000000)
 
+
 // LIGHT THEME PALETTE
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
-val PinkBG = Color(0xFFFFADEA)
+val MyPrimaryLightColor = Color(0xFF84C5F4) // Jasny błękit
+val MySecondaryLightColor = Color(0xFFBDE0FE) // Bardziej stonowany błękit
+val MyTertiaryLightColor = Color(0xFFA2D2FF) // Pastelowy błękit
+val MyBackgroundLightColor = Color(0xFFDFE2E6) // Bardzo jasny szary
+val MySurfaceLightColor = Color(0xFFDFE2E6) // Taki sam jak tło
+val MyDarkGrayColor = Color(0xFF303030) // Ciemnoszary dla czytelności tekstu

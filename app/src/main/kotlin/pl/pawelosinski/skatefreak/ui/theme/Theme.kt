@@ -25,11 +25,18 @@ private val myDarkColorScheme = darkColorScheme( // main and only scheme for now
 )
 
 private val myLightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-    background = PinkBG,
+    primary = MyPrimaryLightColor,
+    secondary = MySecondaryLightColor,
+    tertiary = MyTertiaryLightColor,
+    background = MyBackgroundLightColor,
+    surface = MySurfaceLightColor,
+    onPrimary = MyDarkGrayColor,
+    onSecondary = MyDarkGrayColor,
+    onTertiary = MyDarkGrayColor,
+    onBackground = MyDarkGrayColor,
+    onSurface = MyPrimaryLightColor
 )
+
 
 @Composable
 fun SkateFreakTheme(
