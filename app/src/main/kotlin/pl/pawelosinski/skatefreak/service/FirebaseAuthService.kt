@@ -159,7 +159,6 @@ class FirebaseAuthService(val activity: ComponentActivity) {
 
     // [START resend_verification]
     fun resendVerificationCode(
-        // TODO zaimplementowac
         phoneNumber: String,
         token: PhoneAuthProvider.ForceResendingToken?,
     ) {
@@ -230,8 +229,7 @@ class FirebaseAuthService(val activity: ComponentActivity) {
             .addOnCompleteListener(currentActivity.value) { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
-                    phoneAuthUserData.value.isVerificationCompleted.value =
-                        true // TODO PHONE SEND TO DATABASE
+                    phoneAuthUserData.value.isVerificationCompleted.value = true
                     databaseService.setLoggedUserById(task.result?.user?.uid!!, onSuccess = {
                         updateUI()
                     }, onFail = {
@@ -247,7 +245,7 @@ class FirebaseAuthService(val activity: ComponentActivity) {
                     // Sign in failed, display a message and update the UI
                     Log.w(PHONE_TAG, "signInWithCredential:failure", task.exception)
                     if (task.exception is FirebaseAuthInvalidCredentialsException) {
-                        // The verification code entered was invalid // TODO zaimplementowac
+                        // The verification code entered was invalid
                         myToast(currentActivity.value, "Niepoprawny kod weryfikacyjny")
                         Log.w(PHONE_TAG, "signInWithCredential:WRONG CREDENTIALS", task.exception)
                     }
@@ -261,7 +259,6 @@ class FirebaseAuthService(val activity: ComponentActivity) {
     fun startPhoneNumberVerification(phoneNumber: String) {
         phoneAuthUserData.value.userPhoneNumber.value = phoneNumber
         phoneAuthUserData.value.isAuthInProgress.value = true
-        // [START start_phone_auth]
         val options = PhoneAuthOptions.newBuilder(auth)
             .setPhoneNumber(phoneNumber) // Phone number to verify
             .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
@@ -269,7 +266,6 @@ class FirebaseAuthService(val activity: ComponentActivity) {
             .setCallbacks(callbacks) // OnVerificationStateChangedCallbacks
             .build()
         PhoneAuthProvider.verifyPhoneNumber(options)
-        // [END start_phone_auth]
     }
 
     private fun firebaseAuthWithGoogle(idToken: String) {
