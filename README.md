@@ -3,32 +3,27 @@
 # Aplikacja Mobilna do Nauki Trików Deskorolkowych
 
 ## Opis
+SkateFreak to zaawansowana aplikacja mobilna stworzona dla miłośników deskorolki, oferująca możliwość nauki i doskonalenia trików deskorolkowych. Aplikacja pozwala nie tylko na przeglądanie i naukę różnorodnych trików, ale także na udział w społeczności, wymianę doświadczeń i wzajemną ocenę umiejętności.
 
-SkateFreak to aplikacja mobilna do nauki trików deskorolkowych, narzędzie dla miłośników deskorolki
-## Funkcje
+## Główne Funkcje
+- Logowanie za pomocą konta Google lub weryfikacja numeru telefonu.
+- Przeglądanie szczegółowych informacji o trikach deskorolkowych wraz z ilustracjami w formie GIFów.
+- Przeglądanie i ocena nagrań innych użytkowników, możliwość oznaczania ulubionych.
+- Publikowanie własnych nagrań z wykonanymi trikami.
+- Personalizacja profilu użytkownika.
 
-- **Lista trików deskorolkowych**
-
-- **Prowadzenie dzienniczka wykonanych trików**
-
-- **Ocenianie wykonań trików innych użytkowników**
-
-[//]: # (- ** TODO **)
-
-## Użyte Technologie
-
-- Android Studio
-- Jetpack Compose
+## Technologie
 - Kotlin
-- Firebase
+- Jetpack Compose
+- Firebase (Authentication, Realtime Database, Storage)
+- Dodatkowe narzędzia: Coil, uCrop, ExoPlayer, Android Video Trimmer, Glide
 
 ## Instalacja
 
 1. Sklonuj repozytorium na swoje urządzenie.
 2. Uruchom projekt w Android Studio.
-
-[//]: # (3. ** TODO **)
-
+3. Skonfiguruj Firebase w swoim projekcie.
+4. Uruchom aplikację na swoim urządzeniu lub emulatorze.
 
 ## Licencja
 
