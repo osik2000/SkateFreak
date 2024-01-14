@@ -1,10 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-
-    // Add the Google services Gradle plugin
     id("com.google.gms.google-services")
-
 }
 
 android {
@@ -60,7 +57,7 @@ dependencies {
     androidTestImplementation(platform("androidx.compose:compose-bom:2023.10.01"))
 //
     implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
     implementation("androidx.activity:activity-compose:1.8.2")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.navigation:navigation-compose:2.7.6")
@@ -98,12 +95,12 @@ dependencies {
     implementation("androidx.media3:media3-exoplayer-dash:1.2.0")
     implementation("androidx.media3:media3-ui:1.2.0")
 
-
     // Trim video
     implementation("com.github.a914-gowtham:android-video-trimmer:1.7.17")
 
     // thumbnails
     implementation("com.github.bumptech.glide:glide:4.16.0")
+
 //    testImplementation("junit:junit:4.13.2")
 //    androidTestImplementation("androidx.test.ext:junit:1.1.5")
 //    androidTestImplementation("androidx.compose.ui:ui-test-junit4")
