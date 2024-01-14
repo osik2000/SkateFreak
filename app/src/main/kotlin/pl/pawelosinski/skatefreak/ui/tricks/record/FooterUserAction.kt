@@ -56,7 +56,7 @@ fun FooterUserAction(modifier: Modifier, trickRecord: TrickRecord) {
             colored = isFavorite,
             color = MaterialTheme.colorScheme.primary,
             onClick = {
-                databaseService.addTrickRecordToFavorites( // TODO zrobić po stronie apki wysylanie zaktualizowanego usera do bazy danych
+                databaseService.addTrickRecordToFavorites(
                     trickRecord = trickRecord.toDTO(),
                     onSuccess = {
                         myToast(context = context, message = it)
