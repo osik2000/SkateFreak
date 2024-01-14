@@ -307,12 +307,6 @@ class FirebaseAuthService(val activity: ComponentActivity) {
                     "user: ${loggedUser.value}\n" +
                     "isUserLoggedIn: $isUserLoggedIn\n\n"
         )
-//        if (loggedUser.value.firebaseId.isEmpty() && auth.currentUser != null) {
-//            loggedUser.value = User.getUserFromFirebaseUser(
-//                auth.currentUser,
-//                accountType = loggedUser.value.accountType
-//            )
-//        }
         if (loggedUser.value.firebaseId.isNotEmpty() && !isUserLoggedIn.value) {
 
             isUserLoggedIn.value = true
@@ -331,18 +325,11 @@ class FirebaseAuthService(val activity: ComponentActivity) {
                 "user already logged in: $isUserLoggedIn"
             )
         }
-
-//        if (isUserLoggedIn.value && isUserDataSet.value) {
-//
-//        }
-        // refresh activity
-//        activity.recreate()
     }
 
 
     companion object {
 //        private const val RC_SIGN_IN = 9001
-
 
         var userLoggedBy = mutableStateOf("")
         var isUserLoggedIn = mutableStateOf(false)

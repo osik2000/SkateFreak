@@ -73,8 +73,6 @@ class UserSetDataActivity : ComponentActivity() {
             }
         }
     }
-
-
 }
 
 @SuppressLint("UnrememberedMutableState")
@@ -85,7 +83,6 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-//            .verticalScroll(rememberScrollState())
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
     ) {
@@ -156,6 +153,10 @@ private fun ChangeField(label: String, defaultValue: String, onSave: (String) ->
                 SaveButton {
                     if (label == "Nick") {
                         val nick =  value.lowercase().replace("\\s".toRegex(), "").trim()
+                        if(nick == loggedUser.value.nickname) {
+                            isInEditMode = false
+                            return@SaveButton
+                        }
                         databaseService.checkIfNicknameExists(nick, onSuccess = {
                             value = onSave(nick)
                             isInEditMode = false
