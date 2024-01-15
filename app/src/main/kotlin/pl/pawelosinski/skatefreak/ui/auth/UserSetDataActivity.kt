@@ -159,6 +159,7 @@ private fun ChangeField(label: String, defaultValue: String, onSave: (String) ->
                             return@SaveButton
                         }
                         databaseService.checkIfNicknameExists(nick, onSuccess = {
+                            value = nick
                             onSave(nick)
                             isInEditMode = false
                         }, onFail = {
@@ -169,6 +170,7 @@ private fun ChangeField(label: String, defaultValue: String, onSave: (String) ->
                             )
                         })
                     } else {
+                        value = value.trim()
                         onSave(value.trim())
                         isInEditMode = false
                     }
