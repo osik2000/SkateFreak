@@ -22,7 +22,7 @@ SkateFreak to zaawansowana aplikacja mobilna stworzona dla miłośników deskoro
 
 1. Sklonuj repozytorium na swoje urządzenie.
 2. Uruchom projekt w Android Studio.
-3. Skonfiguruj Firebase w swoim projekcie.
+3. Skonfiguruj Firebase w swoim projekcie (umieść plik google-services.json): [Firebase (kroki 1, 2 oraz 3)](https://firebase.google.com/docs/android/setup)
 4. Uruchom aplikację na swoim urządzeniu lub emulatorze.
 
 ## Licencja
