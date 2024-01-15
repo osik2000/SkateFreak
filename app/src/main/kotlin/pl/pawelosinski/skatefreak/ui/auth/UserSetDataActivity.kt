@@ -78,7 +78,9 @@ class UserSetDataActivity : ComponentActivity() {
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun ChangeUserDataScreen(firstEdit: Boolean = false) {
-    val userData = loggedUser.value
+    val userData = loggedUser.value.copy()
+    Log.d("todoremove", "ChangeUserDataScreen: userData = $userData")
+    Log.d("todoremove", "ChangeUserDataScreen: loggeduser = ${loggedUser.value.nickname}")
 
     Column(
         modifier = Modifier
@@ -86,9 +88,7 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
     ) {
-        firebaseAuthService.currentActivity.value.let {
-            Log.d("UserSetDataActivity", "currentActivity: $it")
-        }
+
         if (firstEdit) {
             SectionHeader()
             PhoneChangeForm(firebaseAuthService = firebaseAuthService)
@@ -98,8 +98,11 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
             label = "Nick",
             defaultValue = userData.nickname,
             onSave = {
+                Log.d("todoremove", "ChangeUserDataScreen: userData111 przed = ${userData.nickname}")
+                Log.d("todoremove", "ChangeUserDataScreen: loggeduser przed = ${loggedUser.value.nickname}")
                 userData.nickname = it
-                it
+                Log.d("todoremove", "ChangeUserDataScreen: userData111   po = ${userData.nickname}")
+                Log.d("todoremove", "ChangeUserDataScreen: loggeduser   po = ${loggedUser.value.nickname}")
             }
         )
         MyDivider()
@@ -108,7 +111,6 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
             defaultValue = userData.name,
             onSave = {
                 userData.name = it
-                it
             }
         )
         MyDivider()
@@ -117,7 +119,6 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
             defaultValue = userData.city,
             onSave = {
                 userData.city = it
-                it
             }
         )
         MyDivider()
@@ -126,7 +127,7 @@ fun ChangeUserDataScreen(firstEdit: Boolean = false) {
 }
 
 @Composable
-private fun ChangeField(label: String, defaultValue: String, onSave: (String) -> String) {
+private fun ChangeField(label: String, defaultValue: String, onSave: (String) -> Unit) {
     var value by remember { mutableStateOf(defaultValue) }
     var isInEditMode by remember { mutableStateOf(value.isEmpty()) }
     val context = LocalContext.current
@@ -158,7 +159,7 @@ private fun ChangeField(label: String, defaultValue: String, onSave: (String) ->
                             return@SaveButton
                         }
                         databaseService.checkIfNicknameExists(nick, onSuccess = {
-                            value = onSave(nick)
+                            onSave(nick)
                             isInEditMode = false
                         }, onFail = {
                             Log.d("UserSetDataActivity", "Nickname already exists")
@@ -168,7 +169,7 @@ private fun ChangeField(label: String, defaultValue: String, onSave: (String) ->
                             )
                         })
                     } else {
-                        value = onSave(value.trim())
+                        onSave(value.trim())
                         isInEditMode = false
                     }
                 }
@@ -196,6 +197,9 @@ private fun SectionHeader() {
 @Composable
 fun SaveAllButton(databaseService: DatabaseService, componentActivity: ComponentActivity, userData: User) {
     val context = LocalContext.current
+    Log.d("todoremove", "ChangeUserDataScreen: userData222 = $userData")
+    Log.d("todoremove", "ChangeUserDataScreen: loggeduser = ${loggedUser.value.nickname}")
+
     Row (
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -214,12 +218,12 @@ fun SaveAllButton(databaseService: DatabaseService, componentActivity: Component
             .padding(8.dp)
             .clickable {
                 if (!userData.checkRequiredData()) {
-                    Log.d("UserSetDataActivity", "User data is incomplete:\n$loggedUser")
+                    Log.d("UserSetDataActivity", "User data is incomplete:\n${loggedUser.value}")
                     Toast
                         .makeText(context, "Uzupełnij wszystkie dane", Toast.LENGTH_SHORT)
                         .show()
                 } else {
-                    Log.d("UserSetDataActivity", "User data is complete:\n$loggedUser")
+                    Log.d("UserSetDataActivity", "User data is complete:\n${loggedUser.value}")
                     loggedUser.value = userData
                     databaseService.updateUserData(onSuccess = {
                         myToast(context, "Dane użytkownika zaaktualizowane")
@@ -265,7 +269,7 @@ fun SaveButton(
     enabled : Boolean = true, onClick: () -> Unit) {
     IconButton(
         enabled = enabled,
-        onClick = onClick
+        onClick = { onClick() }
     ) {
         Icon(imageVector = Icons.Default.Save, contentDescription = null)
     }
