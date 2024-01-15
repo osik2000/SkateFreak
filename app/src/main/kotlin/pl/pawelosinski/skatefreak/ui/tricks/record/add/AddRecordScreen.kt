@@ -92,7 +92,7 @@ fun AddRecordScreen(navController: NavController) {
                 }
 
 
-                // Pole do wprowadzania opisu
+                // Description input textfield
                 RecordColumn {
                     OutlinedTextField(
                         value = description,

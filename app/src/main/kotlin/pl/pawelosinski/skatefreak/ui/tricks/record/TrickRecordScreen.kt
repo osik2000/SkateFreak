@@ -31,14 +31,15 @@ fun TrickRecordsScreen(navController: NavController) {
 
     LazyColumn(
         state = listState,
-        flingBehavior = snapFlingBehavior(listState, coroutineScope) { index ->
-            // Akcja do wykonania po przewinięciu na element o indeksie 'index';
-//            title = trickRecords[index].title
-//            currentRecordLikes.value = allTrickRecords[index].usersWhoSetAsFavorite.size.toString()
-//            LocalDataInit.loadCurrentRecordData(index, trickRecords)
-            Log.d("TrickRecordsScreen", "snapFlingBehavior: index = '$index'")
-        },
-        modifier = Modifier.fillMaxSize(),
+        flingBehavior = snapFlingBehavior(listState, coroutineScope)
+//        { index ->
+//
+////            title = trickRecords[index].title
+////            currentRecordLikes.value = allTrickRecords[index].usersWhoSetAsFavorite.size.toString()
+////            LocalDataInit.loadCurrentRecordData(index, trickRecords)
+//            Log.d("TrickRecordsScreen", "snapFlingBehavior: index = '$index'")
+//        }
+        ,modifier = Modifier.fillMaxSize(),
     ) {
         items(trickRecords) { trickRecord ->
             Box(
@@ -58,8 +59,9 @@ fun TrickRecordsScreen(navController: NavController) {
     }
 }
 
-fun snapFlingBehavior(listState: LazyListState, coroutineScope: CoroutineScope,
-                      onItemFocused: (Int) -> Unit) = object : FlingBehavior {
+fun snapFlingBehavior(listState: LazyListState, coroutineScope: CoroutineScope
+//                      ,onItemFocused: (Int) -> Unit
+) = object : FlingBehavior {
     override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {
         val layoutInfo = listState.layoutInfo
         val visibleItemsInfo = layoutInfo.visibleItemsInfo
@@ -71,7 +73,7 @@ fun snapFlingBehavior(listState: LazyListState, coroutineScope: CoroutineScope,
         val targetIndex = visibleItemClosestToCenter.index
         coroutineScope.launch {
             listState.animateScrollToItem(index = targetIndex)
-            onItemFocused(targetIndex)
+//            onItemFocused(targetIndex)
         }
 
         return initialVelocity
